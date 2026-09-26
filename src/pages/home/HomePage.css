@@ -1,0 +1,95 @@
+/* ============================================================
+   HomePage.css — Nexeus viewport shell + design tokens
+   ============================================================ */
+
+/* ── Design tokens ────────────────────────────────────────── */
+.nx-viewport {
+  --u:   min(calc(100vw / 1600), calc(100vh / 780), 1.6px);
+  --fw:  calc(1600 * var(--u));
+  --pad: clamp(20px, 5.6vw, 56px);
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+  --fw-regular:   400;
+  --fw-medium:    500;
+  --text-primary: #fff;
+  --text-heading: rgba(255,255,255,0.86);
+  --text-muted:   rgba(255,255,255,0.68);
+  --text-invert:  #000;
+}
+
+/* ── Viewport shell ───────────────────────────────────────── */
+.nx-viewport {
+  position: relative;
+  width: 100%;
+  background: #1d8fb8;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* ── Stage — normal block flow, centred ───────────────────── */
+.nx-stage {
+  position: relative;
+  width: 100%;
+}
+
+.nx-stage > * {
+  pointer-events: auto;
+}
+
+/* ── Portrait / narrow: no change needed — already block flow ── */
+@media (max-aspect-ratio: 5/4) {
+  .nx-viewport {
+    overflow-x: hidden;
+  }
+}
+
+/* ── Entrance animation initial states ───────────────────── */
+/* js-enter is added to <html> by the blocking script in index.html
+   if prefers-reduced-motion is NOT reduce.
+   These rules hide elements before the Web Animations API plays them. */
+
+html.js-enter .nx-eyebrow,
+html.js-enter .nx-lede,
+html.js-enter .nx-cta,
+html.js-enter .nx-brandrow,
+html.js-enter .nx-tagline,
+html.js-enter .nx-col,
+html.js-enter .nx-legal,
+html.js-enter .nx-social-link {
+  opacity: 0;
+}
+
+html.js-enter .nx-headline-mask {
+  clip-path: inset(-45% -8% -6px -3%);
+}
+
+html.js-enter .nx-headline {
+  transform: translate3d(0, 118%, 0);
+}
+
+html.js-enter .nx-rule {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* prefers-reduced-motion: show everything, no transitions */
+@media (prefers-reduced-motion: reduce) {
+  html.js-enter .nx-eyebrow,
+  html.js-enter .nx-lede,
+  html.js-enter .nx-cta,
+  html.js-enter .nx-brandrow,
+  html.js-enter .nx-tagline,
+  html.js-enter .nx-col,
+  html.js-enter .nx-legal,
+  html.js-enter .nx-social-link {
+    opacity: 1;
+  }
+
+  html.js-enter .nx-headline-mask { clip-path: none; }
+  html.js-enter .nx-headline       { transform: none; }
+  html.js-enter .nx-rule           { transform: none; }
+
+  * { transition: none !important; }
+}
