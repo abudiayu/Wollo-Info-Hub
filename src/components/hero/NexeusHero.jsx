@@ -36,6 +36,20 @@ export default function NexeusHero() {
       <a className="nx-cta" href="#">
         <span>Take Control</span>
       </a>
+
+      {/* Wave divider — bridges hero into the body section below */}
+      <div className="nx-hero-wave" aria-hidden="true">
+        <svg
+          viewBox="0 0 1440 120"
+          preserveAspectRatio="none"
+          className="nx-hero-wave-svg"
+        >
+          <path
+            d="M0,50 C240,10 480,90 720,50 C960,20 1200,90 1440,40 L1440,120 L0,120 Z"
+            className="nx-hero-wave-path"
+          />
+        </svg>
+      </div>
     </section>
   );
 }

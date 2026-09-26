@@ -3,6 +3,7 @@ import NexeusHero   from '../../components/hero/NexeusHero';
 import NexeusFooter from '../../components/footer/NexeusFooter';
 import './HomePage.css';
 import NexeusFeatures from '../../components/body/NexeusFeatures';
+import Navebar from '../../components/naveBar/Navebar';
 
 /* ── Web Animations easings ────────────────────────────────── */
 const EXPO   = [0.16, 1, 0.3, 1];
@@ -147,6 +148,7 @@ export default function HomePage() {
   return (
     <div className="nx-viewport" ref={viewportRef}>
       <div className="nx-stage">
+        <Navebar/>
         <NexeusHero />
         <NexeusFeatures/>
         <NexeusFooter />

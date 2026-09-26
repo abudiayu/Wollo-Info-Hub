@@ -1,14 +1,17 @@
 /* ============================================================
-   NexeusHero.css — background video + hero copy
+   NexeusHero.css — nav + background video + hero copy + wave
    All lengths in calc(N * var(--u)) — unit defined on .nx-viewport
    ============================================================ */
 
-/* ── Hero section — full viewport height, normal flow ─────── */
+/* ── Hero section — reduced height, normal flow ────────────
+   Minimized from full 100dvh down to a shorter, more compact
+   band so the body/features section is visible sooner.       */
 .nx-hero {
   position: relative;
   width: 100%;
-  height: 100vh;
-  height: 100dvh;
+  height: 74vh;
+  height: 74dvh;
+  min-height: 560px;
   overflow: hidden;
   background: #1d8fb8;
 }
@@ -90,6 +93,9 @@
   }
 }
 
+/* ── Nav bar — sits on top of the hero video ───────────────── */
+/*  */
+
 /* ── Hero copy — absolute positions inside .nx-hero ──────── */
 .nx-eyebrow {
   position: absolute;
@@ -167,12 +173,36 @@
   white-space:    nowrap;
 }
 
+/* ── Wave divider — bridges hero into the body section ─────
+   Sits at the very bottom of .nx-hero, above the video/scrim,
+   color matches the features section background (#0d1420).  */
+.nx-hero-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px; /* avoids a hairline gap at some zoom levels */
+  z-index: 3;
+  line-height: 0;
+  pointer-events: none;
+}
+
+.nx-hero-wave-svg {
+  display: block;
+  width: 100%;
+  height: clamp(50px, 8vw, 100px);
+}
+
+.nx-hero-wave-path {
+  fill: #0d1420;
+}
+
 /* ── Portrait / narrow responsive ────────────────────────── */
 @media (max-aspect-ratio: 5/4) {
   .nx-hero {
     height: auto;
-    min-height: 100vh;
-    min-height: 100dvh;
+    min-height: unset;
+    padding-top: clamp(64px, 12vh, 92px); /* room for the nav */
+    padding-bottom: clamp(40px, 6vh, 64px);
   }
 
   .nx-bg video {
@@ -196,10 +226,14 @@
     );
   }
 
+  .nx-nav {
+    padding: 14px var(--pad);
+  }
+
   .nx-eyebrow {
     position: static;
     display: block;
-    margin-top: clamp(28px, 7vh, 72px);
+    margin-top: clamp(12px, 3vh, 28px);
     font-size:      clamp(10.5px, 2.9vw, 15px);
     letter-spacing: 0.09em;
     padding: 0 var(--pad);
@@ -245,6 +279,10 @@
     position: static;
     font-size: clamp(13px, 3.5vw, 16px);
   }
+
+  .nx-hero-wave-svg {
+    height: clamp(34px, 8vw, 60px);
+  }
 }
 
 @media (max-aspect-ratio: 5/4) and (max-width: 648px) {
@@ -261,6 +299,6 @@
 
 @media (max-height: 620px) and (max-aspect-ratio: 5/4) {
   .nx-eyebrow {
-    margin-top: clamp(16px, 4vh, 28px);
+    margin-top: clamp(10px, 2.5vh, 20px);
   }
 }

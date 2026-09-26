@@ -7,7 +7,7 @@
   position: relative;
   width: 100%;
   background: #0d1420;
-  padding: clamp(64px, 9vw, 128px) clamp(20px, 5.6vw, 56px);
+  padding: clamp(64px, 9vw, 128px) clamp(20px, 5.6vw, 56px) clamp(48px, 6vw, 80px);
   overflow: hidden;
 }
 
@@ -101,9 +101,124 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.10);
 }
 
+/* ── Topic icon ───────────────────────────────────── */
+.nx-feat-icon-wrap {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nx-icon {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* gentle continuous float on every icon */
+.nx-icon { animation: nx-icon-float 4.5s ease-in-out infinite; }
+
+@keyframes nx-icon-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+/* Building — windows softly pulse in sequence */
+.nx-icon-building .nx-icon-body,
+.nx-icon-building .nx-icon-roof {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 2;
+}
+.nx-icon-building .nx-icon-window {
+  fill: rgba(255, 255, 255, 0.30);
+  animation: nx-icon-glow 2.4s ease-in-out infinite;
+}
+.nx-icon-building .w1 { animation-delay: 0s; }
+.nx-icon-building .w2 { animation-delay: 0.15s; }
+.nx-icon-building .w3 { animation-delay: 0.3s; }
+.nx-icon-building .w4 { animation-delay: 0.45s; }
+.nx-icon-building .w5 { animation-delay: 0.6s; }
+.nx-icon-building .w6 { animation-delay: 0.75s; }
+
+@keyframes nx-icon-glow {
+  0%, 100% { fill: rgba(255, 255, 255, 0.22); }
+  50%      { fill: rgba(255, 210, 130, 0.85); }
+}
+
+/* Graduation cap — tassel gently swings */
+.nx-icon-cap .nx-icon-cap-top {
+  fill: rgba(255, 255, 255, 0.85);
+}
+.nx-icon-cap .nx-icon-cap-band {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 2;
+}
+.nx-icon-cap .nx-icon-cap-string {
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 1.6;
+  transform-origin: 52px 27px;
+  animation: nx-icon-swing 2.8s ease-in-out infinite;
+}
+.nx-icon-cap .nx-icon-cap-tassel {
+  fill: rgba(255, 210, 130, 0.9);
+  transform-origin: 52px 27px;
+  animation: nx-icon-swing 2.8s ease-in-out infinite;
+}
+
+@keyframes nx-icon-swing {
+  0%, 100% { transform: rotate(-6deg); }
+  50%      { transform: rotate(6deg); }
+}
+
+/* Network — nodes pulse, lines stay static */
+.nx-icon-network .nx-icon-line {
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 1.6;
+}
+.nx-icon-network .nx-icon-node {
+  fill: rgba(255, 255, 255, 0.85);
+  animation: nx-icon-pulse 2.6s ease-in-out infinite;
+}
+.nx-icon-network .n1 { animation-delay: 0s; }
+.nx-icon-network .n2 { animation-delay: 0.3s; }
+.nx-icon-network .n3 { animation-delay: 0.6s; }
+
+@keyframes nx-icon-pulse {
+  0%, 100% { r: 6; opacity: 0.85; }
+  50%      { r: 7.5; opacity: 1; }
+}
+
+/* Spark — rotates slowly, opportunity/energy feel */
+.nx-icon-spark .nx-icon-spark-shape {
+  fill: rgba(255, 210, 130, 0.9);
+  transform-origin: 32px 32px;
+  animation: nx-icon-spin 6s linear infinite;
+}
+
+@keyframes nx-icon-spin {
+  from { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.08); }
+  to   { transform: rotate(360deg) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-icon,
+  .nx-icon-building .nx-icon-window,
+  .nx-icon-cap .nx-icon-cap-string,
+  .nx-icon-cap .nx-icon-cap-tassel,
+  .nx-icon-network .nx-icon-node,
+  .nx-icon-spark .nx-icon-spark-shape {
+    animation: none !important;
+  }
+}
+
 .nx-feat-mark {
   display: inline-block;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-weight: 500;
   font-size: 13px;

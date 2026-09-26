@@ -1,0 +1,98 @@
+/* ── Nav bar — floating glass pill, fixed on scroll ─────────── */
+.nx-nav {
+  position: fixed;
+  top: clamp(14px, 2vw, 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(20px, 3vw, 40px);
+
+  width: min(94%, 1100px);
+  padding: 10px 10px 10px 22px;
+  border-radius: 999px;
+
+  background: rgba(30, 30, 60, 0.45);
+  backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.nx-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nx-nav-mark {
+  width: 22px;
+  height: 22px;
+  fill: #fff;
+  flex-shrink: 0;
+}
+
+.nx-nav-word {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.nx-nav-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.4vw, 30px);
+}
+
+.nx-nav-links a {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.nx-nav-links a:first-child {
+  color: #fff;
+}
+
+.nx-nav-links a:hover {
+  opacity: 0.7;
+}
+
+.nx-nav-cta {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 13.5px;
+  color: #1a1a2e;
+  background: #fff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.nx-nav-cta:hover {
+  background: #eef2f3;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 720px) {
+  .nx-nav-links { display: none; }
+}
+
+/* Push hero content below the floating nav so nothing sits under it */
+.nx-hero {
+  padding-top: 90px;
+}

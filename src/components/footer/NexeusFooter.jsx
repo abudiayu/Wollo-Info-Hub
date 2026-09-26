@@ -1,6 +1,6 @@
 import './NexeusFooter.css';
 
-/* ── Social SVG icons ─────────────────────────────────────── */
+/* ── Social SVG icons — exact paths ──────────────────────── */
 function IconLinkedIn() {
   return (
     <svg viewBox="0 0 30 30" fill="none" aria-hidden="true" focusable="false">
@@ -33,70 +33,90 @@ function IconMedium() {
   );
 }
 
+/* ── Footer ───────────────────────────────────────────────── */
 export default function NexeusFooter() {
   return (
     <footer className="nx-footer">
+
+      {/* Wave divider — bridges from the section above into the footer.
+          translateY(-99%) in CSS pulls it up to sit flush at the seam.
+          fill #1d6f7d matches the teal tone at the footer's top edge. */}
+      <div className="nx-footer-wave" aria-hidden="true">
+        <svg
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+          className="nx-footer-wave-svg"
+        >
+          <path
+            d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,30 L1440,80 L0,80 Z"
+            className="nx-footer-wave-path"
+          />
+        </svg>
+      </div>
+
       <div className="nx-finner">
 
-        {/* Brand row */}
-        <div className="nx-brandrow">
-          <svg
-            className="nx-mark"
-            viewBox="0 0 100 100"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path fill="#fff" d="M 45.13 1.28 L 54.87 1.28 L 54.87 42.42 L 45.13 38.09 Z" />
-            <path fill="#fff" d="M 79.47 12.10 L 87.90 20.53 L 58.80 49.62 L 53.45 38.13 Z" />
-            <path fill="#fff" d="M 98.72 45.13 L 98.72 54.87 L 57.58 54.87 L 61.91 45.13 Z" />
-            <path fill="#fff" d="M 87.90 79.47 L 79.47 87.90 L 50.38 58.80 L 61.87 53.45 Z" />
-            <path fill="#fff" d="M 54.87 98.72 L 45.13 98.72 L 45.13 57.58 L 54.87 61.91 Z" />
-            <path fill="#fff" d="M 20.53 87.90 L 12.10 79.47 L 41.20 50.38 L 46.55 61.87 Z" />
-            <path fill="#fff" d="M 1.28 54.87 L 1.28 45.13 L 42.42 45.13 L 38.09 54.87 Z" />
-            <path fill="#fff" d="M 12.10 20.53 L 20.53 12.10 L 49.62 41.20 L 38.13 46.55 Z" />
-          </svg>
-          <span className="nx-wordmark">Nexeus</span>
+        {/* Top: brand (left) + nav columns (right) */}
+        <div className="nx-footer-top">
+
+          {/* Brand column */}
+          <div className="nx-brandcol">
+            <div className="nx-brandrow">
+              {/* 8-spoke starburst mark — exact paths */}
+              <svg className="nx-mark" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+                <path fill="#fff" d="M 45.13 1.28 L 54.87 1.28 L 54.87 42.42 L 45.13 38.09 Z" />
+                <path fill="#fff" d="M 79.47 12.10 L 87.90 20.53 L 58.80 49.62 L 53.45 38.13 Z" />
+                <path fill="#fff" d="M 98.72 45.13 L 98.72 54.87 L 57.58 54.87 L 61.91 45.13 Z" />
+                <path fill="#fff" d="M 87.90 79.47 L 79.47 87.90 L 50.38 58.80 L 61.87 53.45 Z" />
+                <path fill="#fff" d="M 54.87 98.72 L 45.13 98.72 L 45.13 57.58 L 54.87 61.91 Z" />
+                <path fill="#fff" d="M 20.53 87.90 L 12.10 79.47 L 41.20 50.38 L 46.55 61.87 Z" />
+                <path fill="#fff" d="M 1.28 54.87 L 1.28 45.13 L 42.42 45.13 L 38.09 54.87 Z" />
+                <path fill="#fff" d="M 12.10 20.53 L 20.53 12.10 L 49.62 41.20 L 38.13 46.55 Z" />
+              </svg>
+              <span className="nx-wordmark">Nexeus</span>
+            </div>
+            <p className="nx-tagline">
+              Change your future today using marketing and growth systems everything
+              you need starts here.
+            </p>
+          </div>
+
+          {/* Nav columns — h3 text is natural case; CSS applies text-transform: uppercase */}
+          <nav className="nx-nav" aria-label="Footer navigation">
+            <div className="nx-col">
+              <h3>Solutions</h3>
+              <ul>
+                <li><a href="#">Revenue Acceleration</a></li>
+                <li><a href="#">Search Visibility</a></li>
+                <li><a href="#">Conversion Optimization</a></li>
+                <li><a href="#">Customer Automation</a></li>
+              </ul>
+            </div>
+            <div className="nx-col">
+              <h3>Capabilities</h3>
+              <ul>
+                <li><a href="#">Web Architecture</a></li>
+                <li><a href="#">Brand Systems</a></li>
+                <li><a href="#">Growth Marketing</a></li>
+                <li><a href="#">E-commerce Infrastructure</a></li>
+              </ul>
+            </div>
+            <div className="nx-col">
+              <h3>Resources</h3>
+              <ul>
+                <li><a href="#">Case Studies</a></li>
+                <li><a href="#">Growth Insights</a></li>
+                <li><a href="#">Playbooks</a></li>
+                <li><a href="#">Industry Reports</a></li>
+              </ul>
+            </div>
+          </nav>
         </div>
 
-        <p className="nx-tagline">
-          Change your future today using marketing and growth systems everything
-          you need starts here.
-        </p>
+        {/* Rule */}
+        <hr className="nx-rule" />
 
-        {/* Nav columns */}
-        <nav className="nx-nav" aria-label="Footer navigation">
-          <div className="nx-col nx-c1">
-            <h3>SOLUTIONS</h3>
-            <ul>
-              <li><a href="#">Revenue Acceleration</a></li>
-              <li><a href="#">Search Visibility</a></li>
-              <li><a href="#">Conversion Optimization</a></li>
-              <li><a href="#">Customer Automation</a></li>
-            </ul>
-          </div>
-          <div className="nx-col nx-c2">
-            <h3>CAPABILITIES</h3>
-            <ul>
-              <li><a href="#">Web Architecture</a></li>
-              <li><a href="#">Brand Systems</a></li>
-              <li><a href="#">Growth Marketing</a></li>
-              <li><a href="#">E-commerce Infrastructure</a></li>
-            </ul>
-          </div>
-          <div className="nx-col nx-c3">
-            <h3>RESOURCES</h3>
-            <ul>
-              <li><a href="#">Case Studies</a></li>
-              <li><a href="#">Growth Insights</a></li>
-              <li><a href="#">Playbooks</a></li>
-              <li><a href="#">Industry Reports</a></li>
-            </ul>
-          </div>
-        </nav>
-
-        <div className="nx-rule" aria-hidden="true" />
-
-        {/* Footer row: legal + socials */}
+        {/* Bottom row: legal + socials */}
         <div className="nx-footrow">
           <p className="nx-legal">® 2025 Nexeus all rights reserved.</p>
           <div className="nx-socials">
