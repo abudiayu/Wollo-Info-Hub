@@ -153,8 +153,8 @@ export default function HomePage() {
         <Navebar/>
         <NexeusHero />
         <NexeusFeatures/>
-        <OpportunitiesPage/>
         <DepartmentsPage/>
+        <OpportunitiesPage/>
         <NexeusFooter />
       </div>
     </div>
