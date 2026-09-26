@@ -34,7 +34,7 @@ export default function NexeusHero() {
       </p>
 
       <a className="nx-cta" href="#">
-        <span>Take Control</span>
+        <span>Expllor more</span>
       </a>
 
       {/* Wave divider — bridges hero into the body section below */}

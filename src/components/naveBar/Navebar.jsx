@@ -17,7 +17,7 @@ function Navebar() {
             <path d="M1.28 54.87 L1.28 45.13 L42.42 45.13 L38.09 54.87 Z" />
             <path d="M12.10 20.53 L20.53 12.10 L49.62 41.20 L38.13 46.55 Z" />
           </svg>
-          <span className="ab-navbar-word">Nexeus</span>
+          <span className="ab-navbar-word">Wollo-Info</span>
         </a>
 
         <div className="ab-navbar-links">
@@ -26,7 +26,7 @@ function Navebar() {
           <a href="#">Resources</a>
         </div>
 
-        <a className="ab-navbar-cta" href="#">Take Control</a>
+        <a className="ab-navbar-cta" href="#">Login</a>
       </nav>
     </div>
   )
