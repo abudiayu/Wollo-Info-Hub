@@ -39,15 +39,6 @@
     inset  0   -1px 0 rgba(255,255,255,0.17),
     inset  0    1px 0 rgba(255,255,255,0.03);
 }
-
-/* ── Wave divider ─────────────────────────────────────────── */
-/*
-   Sits at the very top of the footer.
-   translateY(-99%) pulls it up so it overlaps the section above —
-   the fill #1d6f7d matches the teal tone at the footer's own top
-   edge so the seam is seamless.
-   overflow: visible on .nx-footer is required for this to show.
-*/
 .nx-footer-wave {
   position: absolute;
   top: 0;
