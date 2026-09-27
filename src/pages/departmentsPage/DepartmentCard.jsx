@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import "./DepartmentCard.css";
+import { useTranslation } from 'react-i18next';
+import './DepartmentCard.css';
 
-/* ── Arrow icon — rotates on expand ───────────────────────────── */
 function ArrowIcon({ open }) {
   return (
     <svg
@@ -24,15 +24,20 @@ function ArrowIcon({ open }) {
 }
 
 /**
- * Reusable department card.
  * Props:
- *  - name: string
- *  - description: string
- *  - image: imported image asset
- *  - programs: string[] — the programs/fields under this department
+ *  - deptId: string  ('informatics' | 'engineering' | 'social' | 'health' | 'sport')
+ *  - image:  imported image asset
  */
-export default function DepartmentCard({ name, description, image, programs = [] }) {
+export default function DepartmentCard({ deptId, image }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+
+  const name        = t(`departments.${deptId}.name`);
+  const description = t(`departments.${deptId}.description`);
+  // i18next returns the array from JSON directly when returnObjects:true,
+  // but we use a safe fallback in case it comes back as a string.
+  const programs    = t(`departments.${deptId}.programs`, { returnObjects: true });
+  const programList = Array.isArray(programs) ? programs : [];
 
   return (
     <article className="dcard">
@@ -49,15 +54,14 @@ export default function DepartmentCard({ name, description, image, programs = []
           onClick={() => setIsOpen((o) => !o)}
           aria-expanded={isOpen}
         >
-          {isOpen ? 'Close' : 'Explore More'}
+          {isOpen ? t('departments.close') : t('departments.exploreMore')}
           <ArrowIcon open={isOpen} />
         </button>
 
-        {/* Expand panel — CSS grid-rows trick for a smooth height animation */}
         <div className={`dcard-programs-wrap ${isOpen ? 'is-open' : ''}`}>
           <div className="dcard-programs-inner">
             <ul className="dcard-programs-list">
-              {programs.map((p) => (
+              {programList.map((p) => (
                 <li key={p} className="dcard-program-item">
                   <span className="dcard-program-dot" aria-hidden="true" />
                   {p}
@@ -69,7 +73,7 @@ export default function DepartmentCard({ name, description, image, programs = []
               onClick={() => setIsOpen(false)}
               type="button"
             >
-              ← Back
+              {t('departments.back')}
             </button>
           </div>
         </div>

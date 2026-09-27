@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "Home": "Home",
+    "Medicine": "Health Science",
+    "Informatics": "Informatics",
+    "Engineering": "Engineering",
+    "Social": "Social Science",
+    "Sports": "Sports",
+    "solutions": "Solutions",
+    "capabilities": "Capabilities",
+    "resources": "Resources",
+    "login": "Login"
+  },
+  "hero": {
+    "eyebrow": "Ready when you are",
+    "headline": "Build your future now",
+    "lede": "From branding and websites to marketing and growth systems, everything you need to move forward starts right here.",
+    "cta": "Explore more"
+  },
+  "features": {
+    "eyebrow": "What's inside",
+    "heading": "Everything your campus needs",
+    "departments": {
+      "title": "Departments",
+      "desc": "Browse every faculty and program, from course structure to career paths, all in one place."
+    },
+    "students": {
+      "title": "Student Records",
+      "desc": "Enrollment, progress, and academic history — organized and accessible whenever you need it."
+    },
+    "alumni": {
+      "title": "Alumni Network",
+      "desc": "See where graduates are today and connect with a growing community beyond campus."
+    },
+    "opportunities": {
+      "title": "Opportunities",
+      "desc": "Internships, research, hackathons, and jobs — open doors, updated as they arrive."
+    },
+    "stats": {
+      "students": "Students",
+      "departments": "Departments",
+      "alumni": "Alumni",
+      "opportunities": "Opportunities"
+    }
+  },
+  "departments": {
+    "eyebrow": "Academics",
+    "heading": "Explore Our Departments",
+    "sub": "Five faculties at Wollo University — select a department to see the programs it offers.",
+    "exploreMore": "Explore More",
+    "close": "Close",
+    "back": "← Back",
+    "informatics": {
+      "name": "Informatics",
+      "description": "Explore computing, software, and information systems shaping tomorrow's digital world.",
+      "programs": ["Computer Science", "Software Engineering", "Information Technology", "Information Systems", "Data Science"]
+    },
+    "engineering": {
+      "name": "Engineering",
+      "description": "Build the infrastructure, machines, and systems that power modern life.",
+      "programs": ["Civil Engineering", "Electrical Engineering", "Mechanical Engineering", "Chemical Engineering", "Water Resources Engineering", "Architecture & Urban Planning"]
+    },
+    "social": {
+      "name": "Social Science",
+      "description": "Study society, governance, and the economic forces that shape communities.",
+      "programs": ["Sociology", "Economics", "Law", "Political Science"]
+    },
+    "health": {
+      "name": "Health Science",
+      "description": "Train to diagnose, treat, and care for patients across every stage of life.",
+      "programs": ["Medicine", "Nursing", "Pharmacy", "Public Health", "Midwifery"]
+    },
+    "sport": {
+      "name": "Sport Science",
+      "description": "Develop athletic performance, coaching expertise, and physical education skills.",
+      "programs": ["Sport Science", "Physical Education"]
+    }
+  },
+  "opportunities": {
+    "eyebrow": "Get involved",
+    "heading": "Opportunities at Wollo University",
+    "sub": "Beyond the classroom — clubs, academies, and teams where students build, create, and compete.",
+    "learnMore": "Learn more",
+    "items": {
+      "mudayArt": {
+        "tag": "Creative",
+        "title": "Muday Art Club",
+        "desc": "A community of painters, sketch artists, and designers who exhibit work every semester and mentor first-year students in visual art."
+      },
+      "appFactory": {
+        "tag": "Tech",
+        "title": "AppFactory Academy",
+        "desc": "A hands-on program where students build real mobile and web apps in teams, guided by senior students and industry mentors."
+      },
+      "techClubs": {
+        "tag": "Tech",
+        "title": "Tech Clubs",
+        "desc": "Weekly meetups on programming, robotics, and AI — workshops, hackathons, and a space to build side projects with peers."
+      },
+      "football": {
+        "tag": "National Level",
+        "title": "Football Club",
+        "desc": "Wollo University's football team competes at national inter-university level, with open tryouts each year for new talent."
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Change your future today using marketing and growth systems everything you need starts here.",
+    "legal": "® 2025 Nexeus all rights reserved.",
+    "solutions": {
+      "heading": "Solutions",
+      "revenue": "Revenue Acceleration",
+      "search": "Search Visibility",
+      "conversion": "Conversion Optimization",
+      "customer": "Customer Automation"
+    },
+    "capabilities": {
+      "heading": "Capabilities",
+      "web": "Web Architecture",
+      "brand": "Brand Systems",
+      "growth": "Growth Marketing",
+      "ecommerce": "E-commerce Infrastructure"
+    },
+    "resources": {
+      "heading": "Resources",
+      "case": "Case Studies",
+      "insights": "Growth Insights",
+      "playbooks": "Playbooks",
+      "reports": "Industry Reports"
+    }
+  }
+}

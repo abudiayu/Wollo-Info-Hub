@@ -1,18 +1,13 @@
+import { useTranslation } from 'react-i18next';
 import './NexeusFooter.css';
 
-/* ── Social SVG icons — exact paths ──────────────────────── */
+/* ── Social SVG icons ─────────────────────────────────────── */
 function IconLinkedIn() {
   return (
     <svg viewBox="0 0 30 30" fill="none" aria-hidden="true" focusable="false">
       <rect width="30" height="30" rx="4" fill="white" />
-      <path
-        d="M7.5 11.5H10.5V22.5H7.5V11.5ZM9 10C8.17 10 7.5 9.33 7.5 8.5C7.5 7.67 8.17 7 9 7C9.83 7 10.5 7.67 10.5 8.5C10.5 9.33 9.83 10 9 10Z"
-        fill="#0A66C2"
-      />
-      <path
-        d="M13 11.5H15.9V12.9H15.94C16.36 12.11 17.38 11.27 18.9 11.27C22 11.27 22.5 13.3 22.5 15.93V22.5H19.5V16.55C19.5 15.39 19.48 13.89 17.88 13.89C16.26 13.89 16 15.16 16 16.47V22.5H13V11.5Z"
-        fill="#0A66C2"
-      />
+      <path d="M7.5 11.5H10.5V22.5H7.5V11.5ZM9 10C8.17 10 7.5 9.33 7.5 8.5C7.5 7.67 8.17 7 9 7C9.83 7 10.5 7.67 10.5 8.5C10.5 9.33 9.83 10 9 10Z" fill="#0A66C2" />
+      <path d="M13 11.5H15.9V12.9H15.94C16.36 12.11 17.38 11.27 18.9 11.27C22 11.27 22.5 13.3 22.5 15.93V22.5H19.5V16.55C19.5 15.39 19.48 13.89 17.88 13.89C16.26 13.89 16 15.16 16 16.47V22.5H13V11.5Z" fill="#0A66C2" />
     </svg>
   );
 }
@@ -33,36 +28,23 @@ function IconMedium() {
   );
 }
 
-/* ── Footer ───────────────────────────────────────────────── */
 export default function NexeusFooter() {
+  const { t } = useTranslation();
+
   return (
     <footer className="nx-footer">
-
-      {/* Wave divider — bridges from the section above into the footer.
-          translateY(-99%) in CSS pulls it up to sit flush at the seam.
-          fill #1d6f7d matches the teal tone at the footer's top edge. */}
       <div className="nx-footer-wave" aria-hidden="true">
-        <svg
-          viewBox="0 0 1440 80"
-          preserveAspectRatio="none"
-          className="nx-footer-wave-svg"
-        >
-          <path
-            d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,30 L1440,80 L0,80 Z"
-            className="nx-footer-wave-path"
-          />
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="nx-footer-wave-svg">
+          <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,30 L1440,80 L0,80 Z" className="nx-footer-wave-path" />
         </svg>
       </div>
 
       <div className="nx-finner">
-
-        {/* Top: brand (left) + nav columns (right) */}
         <div className="nx-footer-top">
 
           {/* Brand column */}
           <div className="nx-brandcol">
             <div className="nx-brandrow">
-              {/* 8-spoke starburst mark — exact paths */}
               <svg className="nx-mark" viewBox="0 0 100 100" fill="none" aria-hidden="true">
                 <path fill="#fff" d="M 45.13 1.28 L 54.87 1.28 L 54.87 42.42 L 45.13 38.09 Z" />
                 <path fill="#fff" d="M 79.47 12.10 L 87.90 20.53 L 58.80 49.62 L 53.45 38.13 Z" />
@@ -75,63 +57,51 @@ export default function NexeusFooter() {
               </svg>
               <span className="nx-wordmark">Nexeus</span>
             </div>
-            <p className="nx-tagline">
-              Change your future today using marketing and growth systems everything
-              you need starts here.
-            </p>
+            <p className="nx-tagline">{t('footer.tagline')}</p>
           </div>
 
-          {/* Nav columns — h3 text is natural case; CSS applies text-transform: uppercase */}
+          {/* Nav columns */}
           <nav className="nx-nav" aria-label="Footer navigation">
             <div className="nx-col">
-              <h3>Solutions</h3>
+              <h3>{t('footer.solutions.heading')}</h3>
               <ul>
-                <li><a href="#">Revenue Acceleration</a></li>
-                <li><a href="#">Search Visibility</a></li>
-                <li><a href="#">Conversion Optimization</a></li>
-                <li><a href="#">Customer Automation</a></li>
+                <li><a href="#">{t('footer.solutions.revenue')}</a></li>
+                <li><a href="#">{t('footer.solutions.search')}</a></li>
+                <li><a href="#">{t('footer.solutions.conversion')}</a></li>
+                <li><a href="#">{t('footer.solutions.customer')}</a></li>
               </ul>
             </div>
             <div className="nx-col">
-              <h3>Capabilities</h3>
+              <h3>{t('footer.capabilities.heading')}</h3>
               <ul>
-                <li><a href="#">Web Architecture</a></li>
-                <li><a href="#">Brand Systems</a></li>
-                <li><a href="#">Growth Marketing</a></li>
-                <li><a href="#">E-commerce Infrastructure</a></li>
+                <li><a href="#">{t('footer.capabilities.web')}</a></li>
+                <li><a href="#">{t('footer.capabilities.brand')}</a></li>
+                <li><a href="#">{t('footer.capabilities.growth')}</a></li>
+                <li><a href="#">{t('footer.capabilities.ecommerce')}</a></li>
               </ul>
             </div>
             <div className="nx-col">
-              <h3>Resources</h3>
+              <h3>{t('footer.resources.heading')}</h3>
               <ul>
-                <li><a href="#">Case Studies</a></li>
-                <li><a href="#">Growth Insights</a></li>
-                <li><a href="#">Playbooks</a></li>
-                <li><a href="#">Industry Reports</a></li>
+                <li><a href="#">{t('footer.resources.case')}</a></li>
+                <li><a href="#">{t('footer.resources.insights')}</a></li>
+                <li><a href="#">{t('footer.resources.playbooks')}</a></li>
+                <li><a href="#">{t('footer.resources.reports')}</a></li>
               </ul>
             </div>
           </nav>
         </div>
 
-        {/* Rule */}
         <hr className="nx-rule" />
 
-        {/* Bottom row: legal + socials */}
         <div className="nx-footrow">
-          <p className="nx-legal">® 2025 Nexeus all rights reserved.</p>
+          <p className="nx-legal">{t('footer.legal')}</p>
           <div className="nx-socials">
-            <a href="#" aria-label="LinkedIn" className="nx-social-link">
-              <IconLinkedIn />
-            </a>
-            <a href="#" aria-label="GitHub" className="nx-social-link">
-              <IconGitHub />
-            </a>
-            <a href="#" aria-label="Medium" className="nx-social-link">
-              <IconMedium />
-            </a>
+            <a href="#" aria-label="LinkedIn" className="nx-social-link"><IconLinkedIn /></a>
+            <a href="#" aria-label="GitHub"   className="nx-social-link"><IconGitHub /></a>
+            <a href="#" aria-label="Medium"   className="nx-social-link"><IconMedium /></a>
           </div>
         </div>
-
       </div>
     </footer>
   );

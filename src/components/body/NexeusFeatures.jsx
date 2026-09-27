@@ -1,47 +1,23 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import './NexeusFeatures.css';
 
-/* ── Content ───────────────────────────────────────────────── */
-/* Each feature gets its own small animated SVG icon (topic-matched) */
-const FEATURES = [
-  {
-    id: 'departments',
-    mark: '01',
-    title: 'Departments',
-    desc: 'Browse every faculty and program, from course structure to career paths, all in one place.',
-    icon: 'building',
-  },
-  {
-    id: 'students',
-    mark: '02',
-    title: 'Student Records',
-    desc: 'Enrollment, progress, and academic history — organized and accessible whenever you need it.',
-    icon: 'cap',
-  },
-  {
-    id: 'alumni',
-    mark: '03',
-    title: 'Alumni Network',
-    desc: 'See where graduates are today and connect with a growing community beyond campus.',
-    icon: 'network',
-  },
-  {
-    id: 'opportunities',
-    mark: '04',
-    title: 'Opportunities',
-    desc: 'Internships, research, hackathons, and jobs — open doors, updated as they arrive.',
-    icon: 'spark',
-  },
+/* Feature icon keys mapped to translation keys */
+const FEATURE_KEYS = [
+  { id: 'departments', mark: '01', icon: 'building', tKey: 'features.departments' },
+  { id: 'students',    mark: '02', icon: 'cap',      tKey: 'features.students'    },
+  { id: 'alumni',      mark: '03', icon: 'network',  tKey: 'features.alumni'      },
+  { id: 'opportunities', mark: '04', icon: 'spark',  tKey: 'features.opportunities' },
 ];
 
-const STATS = [
-  { value: '1,200+', label: 'Students' },
-  { value: '45',     label: 'Departments' },
-  { value: '300+',   label: 'Alumni' },
-  { value: '20',     label: 'Opportunities' },
+const STAT_KEYS = [
+  { value: '1,200+', tKey: 'features.stats.students'     },
+  { value: '45',     tKey: 'features.stats.departments'  },
+  { value: '300+',   tKey: 'features.stats.alumni'       },
+  { value: '20',     tKey: 'features.stats.opportunities'},
 ];
 
-/* ── Topic icons — small looping SVG animations, CSS-driven ──── */
+/* ── Topic icons ──────────────────────────────────────────── */
 function FeatureIcon({ type }) {
   switch (type) {
     case 'building':
@@ -91,9 +67,9 @@ function FeatureIcon({ type }) {
 }
 
 export default function NexeusFeatures() {
+  const { t } = useTranslation();
   const sectionRef = useRef(null);
 
-  /* ── scroll-reveal (rise + fade) ───────────────────────────── */
   useEffect(() => {
     const root = sectionRef.current;
     if (!root) return;
@@ -125,11 +101,11 @@ export default function NexeusFeatures() {
   return (
     <section className="nx-features" ref={sectionRef} aria-label="Platform overview">
       <div className="nx-feat-inner">
-        <p className="nx-feat-eyebrow">What's inside</p>
-        <h2 className="nx-feat-heading">Everything your campus needs</h2>
+        <p className="nx-feat-eyebrow">{t('features.eyebrow')}</p>
+        <h2 className="nx-feat-heading">{t('features.heading')}</h2>
 
         <div className="nx-feat-grid">
-          {FEATURES.map((f, i) => (
+          {FEATURE_KEYS.map((f, i) => (
             <article
               className="nx-feat-card"
               key={f.id}
@@ -139,21 +115,21 @@ export default function NexeusFeatures() {
                 <FeatureIcon type={f.icon} />
               </div>
               <span className="nx-feat-mark">{f.mark}</span>
-              <h3 className="nx-feat-title">{f.title}</h3>
-              <p className="nx-feat-desc">{f.desc}</p>
+              <h3 className="nx-feat-title">{t(`${f.tKey}.title`)}</h3>
+              <p className="nx-feat-desc">{t(`${f.tKey}.desc`)}</p>
             </article>
           ))}
         </div>
 
         <div className="nx-feat-stats">
-          {STATS.map((s, i) => (
+          {STAT_KEYS.map((s, i) => (
             <div
               className="nx-feat-stat"
-              key={s.label}
+              key={s.tKey}
               style={{ transitionDelay: `${i * 80}ms` }}
             >
               <span className="nx-feat-stat-value">{s.value}</span>
-              <span className="nx-feat-stat-label">{s.label}</span>
+              <span className="nx-feat-stat-label">{t(s.tKey)}</span>
             </div>
           ))}
         </div>

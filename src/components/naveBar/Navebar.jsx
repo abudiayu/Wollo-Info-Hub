@@ -1,35 +1,230 @@
-import React from 'react';
-import "./NaveBar.css"
+import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import './NaveBar.css';
+import Logo from '../../assets/wolloLogo.png';
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
+
+const MEGA_MENU_DATA = {
+  Health: {
+    columns: [
+      {
+        heading: 'Departments',
+        links: ['Medicine', 'Pharmacy', 'Nurses', 'Midwifery', 'Veternary Medicine'],
+      },
+      {
+        heading: 'Quick Links',
+        links: ['Course Catalog', 'Admission Requirements', 'Lab Facilities', 'Research Groups', 'Student Projects'],
+      },
+      {
+        heading: 'Resources',
+        links: ['Faculty Directory', 'Academic Calendar', 'Internship Opportunities', 'Alumni Network', 'Career Services'],
+      },
+    ],
+  },
+  informatics: {
+    columns: [
+      {
+        heading: 'Departments',
+        links: ['Computer Science', 'Information Technology', 'Information Systems', 'Software Engineering', 'Data Science'],
+      },
+      {
+        heading: 'Quick Links',
+        links: ['Course Catalog', 'Admission Requirements', 'Lab Facilities', 'Research Groups', 'Student Projects'],
+      },
+      {
+        heading: 'Resources',
+        links: ['Faculty Directory', 'Academic Calendar', 'Internship Opportunities', 'Alumni Network', 'Career Services'],
+      },
+    ],
+  },
+  engineering: {
+    columns: [
+      {
+        heading: 'Departments',
+        links: ['Civil Engineering', 'Electrical Engineering', 'Mechanical Engineering', 'Chemical Engineering', 'Water Resources Engineering'],
+      },
+      {
+        heading: 'Quick Links',
+        links: ['Course Catalog', 'Admission Requirements', 'Engineering Labs', 'Research Projects', 'Industrial Attachment'],
+      },
+      {
+        heading: 'Resources',
+        links: ['Faculty Directory', 'Academic Calendar', 'Scholarships', 'Alumni Network', 'Career Services'],
+      },
+    ],
+  },
+  Social: {
+    columns: [
+      {
+        heading: 'Departments',
+        links: ['Low Income', 'Accounting', 'Management', 'Journalism', 'Arts and Culture', 'Political Science', 'Economics', 'Sociology', 'Psychology',"sports"],
+      },
+      {
+        heading: 'Quick Links',
+        links: ['Course Catalog', 'Admission Requirements', 'Engineering Labs', 'Research Projects', 'Industrial Attachment'],
+      },
+      {
+        heading: 'Resources',
+        links: ['Faculty Directory', 'Academic Calendar', 'Scholarships', 'Alumni Network', 'Career Services'],
+      },
+    ],
+  },
+};
 
 function Navebar() {
+  const { t } = useTranslation();
+  const [openMenu, setOpenMenu] = useState(null);
+  const closeTimer = useRef(null);
+  const navRef = useRef(null);
+
+  const openWithHover = (key) => {
+    clearTimeout(closeTimer.current);
+    setOpenMenu(key);
+  };
+
+  const closeWithDelay = () => {
+    closeTimer.current = setTimeout(() => setOpenMenu(null), 150);
+  };
+
+  const toggleOnClick = (key) => {
+    clearTimeout(closeTimer.current);
+    setOpenMenu((prev) => (prev === key ? null : key));
+  };
+
+  useEffect(() => {
+    function handleOutsideClick(e) {
+      if (navRef.current && !navRef.current.contains(e.target)) {
+        setOpenMenu(null);
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  const renderMegaMenu = (key) => {
+    const data = MEGA_MENU_DATA[key];
+    if (!data) return null;
+    return (
+      <div
+        className={`ab-mega-menu ${openMenu === key ? 'ab-mega-menu-open' : ''}`}
+        onMouseEnter={() => openWithHover(key)}
+        onMouseLeave={closeWithDelay}
+      >
+        <div className="ab-mega-menu-inner">
+          {data.columns.map((col) => (
+            <div className="ab-mega-menu-column" key={col.heading}>
+              <h4 className="ab-mega-menu-heading">{col.heading}</h4>
+              <ul>
+                {col.links.map((link) => (
+                  <li key={link}>
+                    <a href="#">{link}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="ab-navbar-container">
-      {/* Nav bar */}
+    <div className="ab-navbar-container" ref={navRef}>
       <nav className="ab-navbar" aria-label="Primary">
+
+        {/* Brand */}
         <a className="ab-navbar-brand" href="#">
-          <svg className="ab-navbar-mark" viewBox="0 0 100 100" aria-hidden="true">
-            <path d="M45.13 1.28 L54.87 1.28 L54.87 42.42 L45.13 38.09 Z" />
-            <path d="M79.47 12.10 L87.90 20.53 L58.80 49.62 L53.45 38.13 Z" />
-            <path d="M98.72 45.13 L98.72 54.87 L57.58 54.87 L61.91 45.13 Z" />
-            <path d="M87.90 79.47 L79.47 87.90 L50.38 58.80 L61.87 53.45 Z" />
-            <path d="M54.87 98.72 L45.13 98.72 L45.13 57.58 L54.87 61.91 Z" />
-            <path d="M20.53 87.90 L12.10 79.47 L41.20 50.38 L46.55 61.87 Z" />
-            <path d="M1.28 54.87 L1.28 45.13 L42.42 45.13 L38.09 54.87 Z" />
-            <path d="M12.10 20.53 L20.53 12.10 L49.62 41.20 L38.13 46.55 Z" />
-          </svg>
+          <img src={Logo} alt="Wollo-Info Logo" className="ab-navbar-logo" />
           <span className="ab-navbar-word">Wollo-Info</span>
         </a>
 
+        {/* Nav links */}
         <div className="ab-navbar-links">
-          <a href="#">Solutions</a>
-          <a href="#">Capabilities</a>
-          <a href="#">Resources</a>
+          <a href="#">{t('nav.Home')}</a>
+
+          {/* Health */}
+          <div
+            className="ab-navbar-item-with-menu"
+            onMouseEnter={() => openWithHover('Health')}
+            onMouseLeave={closeWithDelay}
+          >
+            <a
+              href="#"
+              className={openMenu === 'Health' ? 'ab-navlink-active' : ''}
+              onClick={(e) => { e.preventDefault(); toggleOnClick('Health'); }}
+              aria-expanded={openMenu === 'Health'}
+              aria-haspopup="true"
+            >
+              {t('nav.Medicine')}
+            </a>
+          </div>
+
+          {/* Informatics */}
+          <div
+            className="ab-navbar-item-with-menu"
+            onMouseEnter={() => openWithHover('informatics')}
+            onMouseLeave={closeWithDelay}
+          >
+            <a
+              href="#"
+              className={openMenu === 'informatics' ? 'ab-navlink-active' : ''}
+              onClick={(e) => { e.preventDefault(); toggleOnClick('informatics'); }}
+              aria-expanded={openMenu === 'informatics'}
+              aria-haspopup="true"
+            >
+              {t('nav.Informatics')}
+            </a>
+          </div>
+
+          {/* Engineering */}
+          <div
+            className="ab-navbar-item-with-menu"
+            onMouseEnter={() => openWithHover('engineering')}
+            onMouseLeave={closeWithDelay}
+          >
+            <a
+              href="#"
+              className={openMenu === 'engineering' ? 'ab-navlink-active' : ''}
+              onClick={(e) => { e.preventDefault(); toggleOnClick('engineering'); }}
+              aria-expanded={openMenu === 'engineering'}
+              aria-haspopup="true"
+            >
+              {t('nav.Engineering')}
+            </a>
+          </div>
+          
+          {/* Social Science */}
+          <div
+            className="ab-navbar-item-with-menu"
+            onMouseEnter={() => openWithHover('Social')}
+            onMouseLeave={closeWithDelay}
+          >
+            <a
+              href="#"
+              className={openMenu === 'Social' ? 'ab-navlink-active' : ''}
+              onClick={(e) => { e.preventDefault(); toggleOnClick('Social'); }}
+              aria-expanded={openMenu === 'Social'}
+              aria-haspopup="true"
+            >
+              {t('nav.Social')}
+            </a>
+          </div>
         </div>
 
-        <a className="ab-navbar-cta" href="#">Login</a>
+        {/* Right side: Login CTA + Language Switcher */}
+        <div className="ab-navbar-right">
+          <a className="ab-navbar-cta" href="#">{t('nav.login')}</a>
+          <LanguageSwitcher />
+        </div>
+
       </nav>
+
+      {renderMegaMenu('Health')}
+      {renderMegaMenu('informatics')}
+      {renderMegaMenu('engineering')}
+      {renderMegaMenu('Social')}
     </div>
-  )
+  );
 }
 
 export default Navebar;

@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "Home": "Mana",
+    "Medicine": "Saayinsii Fayyaa",
+    "Informatics": "Informatiksi",
+    "Engineering": "Injinariingii",
+    "Social": "Saayinsii Hawaasaa",
+    "Sports": "Ispoortii",
+    "solutions": "Furmaata",
+    "capabilities": "Dandeettiwwan",
+    "resources": "Qabeenya",
+    "login": "Seeni"
+  },
+  "hero": {
+    "eyebrow": "Qophaa'aa jirta",
+    "headline": "Fuuldura kee amma ijaaruu jalqabi",
+    "lede": "Branding fi marsariitii hanga sirna gabaa fi guddina, hundumti si barbaachisu as irraa jalqaba.",
+    "cta": "Dabalata qo'adhu"
+  },
+  "features": {
+    "eyebrow": "Keessa maal jira",
+    "heading": "Kampasni kee barbaadu hundumtu",
+    "departments": {
+      "title": "Kutaalee",
+      "desc": "Mana barumsaa fi sagantaa hunda, caasaa koorsii hanga karaa hojii, bakka tokkotti ilaaluu dandeessa."
+    },
+    "students": {
+      "title": "Galmee Barattoota",
+      "desc": "Galmaawwii, fooyya'iinsa fi seenaa barnootaa — yeroo barbaaddetti qindaa'ee argamuu danda'a."
+    },
+    "alumni": {
+      "title": "Netwarkii Mezzeynii",
+      "desc": "Mezzeynoonni har'a eessaa akka jiran ilaali, hawaasa guddachaa jiru kampasii ala waliin walqunnamaa."
+    },
+    "opportunities": {
+      "title": "Carraalee",
+      "desc": "Internshipii, qorannoo, hackathon fi hojii — yeroo dhufanitti haaromfamu karaaleen banaadha."
+    },
+    "stats": {
+      "students": "Barattootaa",
+      "departments": "Kutaalee",
+      "alumni": "Mezzeynii",
+      "opportunities": "Carraalee"
+    }
+  },
+  "departments": {
+    "eyebrow": "Barnootaa",
+    "heading": "Kutaalee Keenya Qo'adhu",
+    "sub": "Yunivarsitii Wolloo keessatti kutaalee shan — sagantaalee dhiyaatan ilaaluuf kutaa filadhu.",
+    "exploreMore": "Dabalata Qo'adhu",
+    "close": "Cufi",
+    "back": "← Deebi'i",
+    "informatics": {
+      "name": "Informatiksi",
+      "description": "Addunyaa dijitaalaa boru bocuu kompiitingii, sooftweeriii fi sirna odeeffannoo qo'adhu.",
+      "programs": ["Saayinsii Kompiitaraa", "Injinariingii Sooftweeriii", "Teeknooloojii Odeeffannoo", "Sirna Odeeffannoo", "Saayinsii Daataa"]
+    },
+    "engineering": {
+      "name": "Injinariingii",
+      "description": "Bu'uura, maashiinaa fi sirnaalee jireenya ammayyaa oofan ijaari.",
+      "programs": ["Injinariingii Siivil", "Injinariingii Elektriikaalaa", "Injinariingii Mekaaniikaalaa", "Injinariingii Keemikaalaa", "Injinariingii Qabeenya Bishaanii", "Arkitektaraa fi Karoora Magaalaa"]
+    },
+    "social": {
+      "name": "Saayinsii Hawaasaa",
+      "description": "Hawaasa, bulchiinsa fi humnoota dinagdee hawaasota bocan baradi.",
+      "programs": ["Soosiyooloojii", "Ikonoomiksi", "Seeraa", "Saayinsii Siyaasaa"]
+    },
+    "health": {
+      "name": "Saayinsii Fayyaa",
+      "description": "Dhukkubsattootaaf sadarkaa jireenya hundatti dhukkuba adda baasuu, yaaluuf fi kunuunsuuf leenjadhu.",
+      "programs": ["Ogeessa Fayyaa", "Narsii", "Farmaasii", "Fayyaa Uummataa", "Midwaayifarii"]
+    },
+    "sport": {
+      "name": "Saayinsii Ispoortii",
+      "description": "Agarsiisa atileetiksii, dandeettii leenjisaa fi beekumsa barnootaa qaamaa guddisi.",
+      "programs": ["Saayinsii Ispoortii", "Barnootaa Qaamaa"]
+    }
+  },
+  "opportunities": {
+    "eyebrow": "Hirmaadhu",
+    "heading": "Carraalee Yunivarsitii Wolloo",
+    "sub": "Kutaa ala — barattoonni itti ijaaruu, uumuu fi dorgomuu danda'an kubbii, akademii fi garee.",
+    "learnMore": "Dabalata baradhu",
+    "items": {
+      "mudayArt": {
+        "tag": "Uumamaa",
+        "title": "Kubbii Aartii Muday",
+        "desc": "Hawaasa kaasota, fakkii kaasotaa fi dizaayinaroota hojii isaanii semiistara hundatti agarsiisanii fi barattootaa wagga tokkoffaa aartii mul'ataa keessatti gorsan."
+      },
+      "appFactory": {
+        "tag": "Teeknoloojii",
+        "title": "Akademii AppFactory",
+        "desc": "Sagantaa harka itti bulchamu kan barattoonni garee keessatti appiilikeeshinoota mobaayilaa fi weebii dhugaa ijaaruu, barattootaa xiyyeeffannoo olaanaa fi gorsitoota industirii gidduutti."
+      },
+      "techClubs": {
+        "tag": "Teeknoloojii",
+        "title": "Kubbiileen Teeknoloojii",
+        "desc": "Walga'iileen torbaan hundaa sagantaa, roobootiksi fi AI irratti — workshoopota, hackathonota fi qaamolee caalaa waliin ijaaruuf bakka."
+      },
+      "football": {
+        "tag": "Sadarkaa Biyyaaleessaa",
+        "title": "Kubbii Miilaa",
+        "desc": "Gareen kubbii miilaa Yunivarsitii Wolloo sadarkaa biyyaalessaa dorgommii garee yunivarsiitiiwwanii keessatti hirmaata, carraa haaraa barbaadamuuf waggaa waggaan banaa."
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Fuuldura kee har'a jijjiiri, sirna gabaa fi guddina fayyadamuun hundumti si barbaachisu as irraa jalqabi.",
+    "legal": "® 2025 Nexeus mirgi hundi eegameera.",
+    "solutions": {
+      "heading": "Furmaata",
+      "revenue": "Ariifachiisuu Galii",
+      "search": "Mul'achuu Barbaaduu",
+      "conversion": "Fooyya'iinsa Jijjiirraa",
+      "customer": "Automation Maamiltootaa"
+    },
+    "capabilities": {
+      "heading": "Dandeettiwwan",
+      "web": "Architect Weebii",
+      "brand": "Sirna Braandii",
+      "growth": "Gabaa Guddina",
+      "ecommerce": "Bu'uuraalee Daldalaa Eletiroonikii"
+    },
+    "resources": {
+      "heading": "Qabeenya",
+      "case": "Qorannoo Dhimmaa",
+      "insights": "Hubannoo Guddina",
+      "playbooks": "Qajeelfamoota",
+      "reports": "Gabaasaalee Indaastirii"
+    }
+  }
+}
