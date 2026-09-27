@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import './NexeusFooter.css';
+import Logo from '../../assets/wolloLogo.png';
 
 /* ── Social SVG icons ─────────────────────────────────────── */
 function IconLinkedIn() {
@@ -45,17 +46,10 @@ export default function NexeusFooter() {
           {/* Brand column */}
           <div className="nx-brandcol">
             <div className="nx-brandrow">
-              <svg className="nx-mark" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-                <path fill="#fff" d="M 45.13 1.28 L 54.87 1.28 L 54.87 42.42 L 45.13 38.09 Z" />
-                <path fill="#fff" d="M 79.47 12.10 L 87.90 20.53 L 58.80 49.62 L 53.45 38.13 Z" />
-                <path fill="#fff" d="M 98.72 45.13 L 98.72 54.87 L 57.58 54.87 L 61.91 45.13 Z" />
-                <path fill="#fff" d="M 87.90 79.47 L 79.47 87.90 L 50.38 58.80 L 61.87 53.45 Z" />
-                <path fill="#fff" d="M 54.87 98.72 L 45.13 98.72 L 45.13 57.58 L 54.87 61.91 Z" />
-                <path fill="#fff" d="M 20.53 87.90 L 12.10 79.47 L 41.20 50.38 L 46.55 61.87 Z" />
-                <path fill="#fff" d="M 1.28 54.87 L 1.28 45.13 L 42.42 45.13 L 38.09 54.87 Z" />
-                <path fill="#fff" d="M 12.10 20.53 L 20.53 12.10 L 49.62 41.20 L 38.13 46.55 Z" />
-              </svg>
-              <span className="nx-wordmark">Nexeus</span>
+              <a className="ab-navbar-brand" href="#">
+                  <img src={Logo} alt="Wollo-Info Logo" className="ab-navbar-logo" />
+                  <span className="ab-navbar-word">Wollo-Info</span>
+                </a>
             </div>
             <p className="nx-tagline">{t('footer.tagline')}</p>
           </div>
@@ -97,9 +91,9 @@ export default function NexeusFooter() {
         <div className="nx-footrow">
           <p className="nx-legal">{t('footer.legal')}</p>
           <div className="nx-socials">
-            <a href="#" aria-label="LinkedIn" className="nx-social-link"><IconLinkedIn /></a>
-            <a href="#" aria-label="GitHub"   className="nx-social-link"><IconGitHub /></a>
-            <a href="#" aria-label="Medium"   className="nx-social-link"><IconMedium /></a>
+            <a href="https://www.linkedin.com/in/abdulkadir-abudi-0b1aa637b/" target="_blank" aria-label="LinkedIn" className="nx-social-link"><IconLinkedIn /></a>
+            <a href="https://github.com/abudiayu" target="_blank" aria-label="GitHub"   className="nx-social-link"><IconGitHub /></a>
+            <a href="https://medium.com/@abdulkadir.abudi" target="_blank" aria-label="Medium"   className="nx-social-link"><IconMedium /></a>
           </div>
         </div>
       </div>
