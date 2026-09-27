@@ -70,7 +70,7 @@
 }
 
 @media (max-width: 560px) {
-  .opp-grid { grid-template-columns: 1fr; }
+  .opp-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ── Card shell — mirrors .dcard ─────────────────── */
