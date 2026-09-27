@@ -1,0 +1,183 @@
+/* =====================================================
+   MotivationCard.css
+   Default: image clean, title + CTA always visible at bottom
+   Hover:   heavy dark overlay, title underlined, desc appears, CTA btn turns white
+   ===================================================== */
+
+.mcard {
+  position: relative;
+  height: 380px;
+  overflow: hidden;
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+}
+
+.mcard:focus-visible {
+  outline: 3px solid #111;
+  outline-offset: 3px;
+}
+
+/* ── Image — always full visible ── */
+.mcard-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.mcard:hover .mcard-img,
+.mcard:focus-within .mcard-img {
+  transform: scale(1.04);
+}
+
+/* ── Overlay ──
+   Default: light gradient only at bottom (so image shows clearly)
+   Hover:   heavy dark overlay covers whole card
+── */
+.mcard-overlay {
+  position: absolute;
+  inset: 0;
+  /* default: only bottom gradient so title is readable */
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.25) 45%,
+    rgba(0, 0, 0, 0.0)  70%
+  );
+  transition: background 0.4s ease;
+}
+
+.mcard:hover .mcard-overlay,
+.mcard:focus-within .mcard-overlay {
+  /* hover: heavy uniform dark over entire card */
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.75) 45%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* ── Body — always pinned to bottom, always visible ── */
+.mcard-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 22px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Title — always visible, underline appears on hover ── */
+.mcard-title {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: clamp(17px, 1.9vw, 22px);
+  line-height: 1.25;
+  color: #fff;
+  /* underline via border — hidden by default */
+  padding-bottom: 10px;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.mcard:hover .mcard-title,
+.mcard:focus-within .mcard-title {
+  border-bottom-color: rgba(255, 255, 255, 0.55);
+}
+
+/* ── Description — hidden by default, fades in on hover ── */
+.mcard-desc {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.85);
+  /* hidden state */
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.35s ease 0.05s, max-height 0.35s ease;
+}
+
+.mcard:hover .mcard-desc,
+.mcard:focus-within .mcard-desc {
+  opacity: 1;
+  max-height: 120px;
+}
+
+/* ── CTA row ── */
+.mcard-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Default: dark grey translucent button */
+.mcard-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(120, 120, 120, 0.75);
+  color: #fff;
+  flex-shrink: 0;
+  transition: background 0.3s ease, transform 0.25s ease;
+}
+
+/* Hover: button turns white with dark arrow */
+.mcard:hover .mcard-cta-btn,
+.mcard:focus-within .mcard-cta-btn {
+  background: #fff;
+  color: #111;
+  transform: translateX(3px);
+}
+
+.mcard-cta-link {
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.80);
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+  outline: none;
+}
+
+/* Hover: link gets underline and full white */
+.mcard:hover .mcard-cta-link,
+.mcard:focus-within .mcard-cta-link {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Reduced motion — always show everything ── */
+@media (prefers-reduced-motion: reduce) {
+  .mcard-img,
+  .mcard-overlay,
+  .mcard-title,
+  .mcard-desc,
+  .mcard-cta-btn { transition: none !important; }
+  .mcard-desc    { opacity: 1; max-height: 120px; }
+  .mcard-overlay { background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.0) 60%); }
+}
+
+/* ── Mobile ── */
+@media (max-width: 800px) {
+  .mcard { height: 300px; }
+  /* on touch devices always show desc since no hover */
+  .mcard-desc { opacity: 1; max-height: 120px; }
+  .mcard-cta-btn { background: #fff; color: #111; }
+  .mcard-cta-link { color: #fff; }
+}

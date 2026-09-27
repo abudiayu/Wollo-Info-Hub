@@ -1,0 +1,55 @@
+/* =====================================================
+   MotivationPage.css
+   Light-themed section — 4-col desktop, 2-col mobile
+   ===================================================== */
+
+.motiv-section {
+  width: 100%;
+  background: #f4f4f5;
+  padding: clamp(56px, 7vw, 100px) clamp(20px, 5.6vw, 56px);
+}
+
+.motiv-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Heading ── */
+.motiv-heading {
+  margin: 0 0 18px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: clamp(26px, 3.5vw, 42px);
+  line-height: 1.1;
+  color: #111;
+  max-width: 26ch;
+}
+
+/* ── Thick rule ── */
+.motiv-rule {
+  border: none;
+  border-top: 3px solid #111;
+  margin: 0 0 clamp(32px, 4vw, 52px);
+}
+
+/* ── Grid — 4 columns desktop ── */
+.motiv-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* 2-column on tablet */
+@media (max-width: 1000px) {
+  .motiv-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 2-column on mobile too */
+@media (max-width: 800px) {
+  .motiv-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}

@@ -18,8 +18,10 @@
     "cta": "Dabalata qo'adhu"
   },
   "features": {
-    "eyebrow": "Keessa maal jira",
-    "heading": "Kampasni kee barbaadu hundumtu",
+    "eyebrow": "Qabxiilee",
+    "heading": "Dhiibbaa Keenya Lakkoofsa Keessatti",
+    "viewAll": "Hunda ilaali",
+    "quickLinks": "LINK ARIIFATAA:",
     "departments": {
       "title": "Kutaalee",
       "desc": "Mana barumsaa fi sagantaa hunda, caasaa koorsii hanga karaa hojii, bakka tokkotti ilaaluu dandeessa."
@@ -43,37 +45,27 @@
       "opportunities": "Carraalee"
     }
   },
-  "departments": {
-    "eyebrow": "Barnootaa",
-    "heading": "Kutaalee Keenya Qo'adhu",
-    "sub": "Yunivarsitii Wolloo keessatti kutaalee shan — sagantaalee dhiyaatan ilaaluuf kutaa filadhu.",
-    "exploreMore": "Dabalata Qo'adhu",
-    "close": "Cufi",
-    "back": "← Deebi'i",
-    "informatics": {
-      "name": "Informatiksi",
-      "description": "Addunyaa dijitaalaa boru bocuu kompiitingii, sooftweeriii fi sirna odeeffannoo qo'adhu.",
-      "programs": ["Saayinsii Kompiitaraa", "Injinariingii Sooftweeriii", "Teeknooloojii Odeeffannoo", "Sirna Odeeffannoo", "Saayinsii Daataa"]
+  "motivation": {
+    "heading": "Fuulduratti itti fufuuf kakaasa",
+    "card1": {
+      "title": "Koorsii tokko kufuun seenaa kee xumura miti",
+      "description": "",
+      "cta": "Dabalata dubbisi"
     },
-    "engineering": {
-      "name": "Injinariingii",
-      "description": "Bu'uura, maashiinaa fi sirnaalee jireenya ammayyaa oofan ijaari.",
-      "programs": ["Injinariingii Siivil", "Injinariingii Elektriikaalaa", "Injinariingii Mekaaniikaalaa", "Injinariingii Keemikaalaa", "Injinariingii Qabeenya Bishaanii", "Arkitektaraa fi Karoora Magaalaa"]
+    "card2": {
+      "title": "Kakaasni yoo dhumatu akkamitti xiyyeeffannaa qabatta",
+      "description": "Gorsitoota tiin qorataman kan torbaan rakkisaa semiistara keessa si baatu.",
+      "cta": "Gorsa dubbisi"
     },
-    "social": {
-      "name": "Saayinsii Hawaasaa",
-      "description": "Hawaasa, bulchiinsa fi humnoota dinagdee hawaasota bocan baradi.",
-      "programs": ["Soosiyooloojii", "Ikonoomiksi", "Seeraa", "Saayinsii Siyaasaa"]
+    "card3": {
+      "title": "Barattuu olaanoo irraa barattootaaf xalayaa Wolloo",
+      "description": "Torbaan qormaata ishee jalqabaa dura namni tokko itti himee barbaadde.",
+      "cta": "Xalayaa ishee dubbisi"
     },
-    "health": {
-      "name": "Saayinsii Fayyaa",
-      "description": "Dhukkubsattootaaf sadarkaa jireenya hundatti dhukkuba adda baasuu, yaaluuf fi kunuunsuuf leenjadhu.",
-      "programs": ["Ogeessa Fayyaa", "Narsii", "Farmaasii", "Fayyaa Uummataa", "Midwaayifarii"]
-    },
-    "sport": {
-      "name": "Saayinsii Ispoortii",
-      "description": "Agarsiisa atileetiksii, dandeettii leenjisaa fi beekumsa barnootaa qaamaa guddisi.",
-      "programs": ["Saayinsii Ispoortii", "Barnootaa Qaamaa"]
+    "card4": {
+      "title": "As jiraatta, yoo itti hin dhagahamne illee",
+      "description": "Barattootaaf yaadannoo kan yeroo kamiyyuu kampasarra iddoo hin qabne itti dhagahame.",
+      "cta": "Seenaa dubbisi"
     }
   },
   "opportunities": {

@@ -18,8 +18,10 @@
     "cta": "Explore more"
   },
   "features": {
-    "eyebrow": "What's inside",
-    "heading": "Everything your campus needs",
+    "eyebrow": "Statistics",
+    "heading": "Our Impact in Numbers",
+    "viewAll": "View all",
+    "quickLinks": "QUICK LINKS:",
     "departments": {
       "title": "Departments",
       "desc": "Browse every faculty and program, from course structure to career paths, all in one place."
@@ -43,37 +45,27 @@
       "opportunities": "Opportunities"
     }
   },
-  "departments": {
-    "eyebrow": "Academics",
-    "heading": "Explore Our Departments",
-    "sub": "Five faculties at Wollo University — select a department to see the programs it offers.",
-    "exploreMore": "Explore More",
-    "close": "Close",
-    "back": "← Back",
-    "informatics": {
-      "name": "Informatics",
-      "description": "Explore computing, software, and information systems shaping tomorrow's digital world.",
-      "programs": ["Computer Science", "Software Engineering", "Information Technology", "Information Systems", "Data Science"]
+  "motivation": {
+    "heading": "Motivation to keep going",
+    "card1": {
+      "title": "Failing a class isn't the end of your story",
+      "description": "",
+      "cta": "Read more"
     },
-    "engineering": {
-      "name": "Engineering",
-      "description": "Build the infrastructure, machines, and systems that power modern life.",
-      "programs": ["Civil Engineering", "Electrical Engineering", "Mechanical Engineering", "Chemical Engineering", "Water Resources Engineering", "Architecture & Urban Planning"]
+    "card2": {
+      "title": "How to stay focused when motivation runs out",
+      "description": "Advisor-tested habits that carry you through the hardest weeks of the semester.",
+      "cta": "Read the advice"
     },
-    "social": {
-      "name": "Social Science",
-      "description": "Study society, governance, and the economic forces that shape communities.",
-      "programs": ["Sociology", "Economics", "Law", "Political Science"]
+    "card3": {
+      "title": "A senior's letter to first-year Wollo students",
+      "description": "What she wishes someone had told her before her first exam week.",
+      "cta": "Read her letter"
     },
-    "health": {
-      "name": "Health Science",
-      "description": "Train to diagnose, treat, and care for patients across every stage of life.",
-      "programs": ["Medicine", "Nursing", "Pharmacy", "Public Health", "Midwifery"]
-    },
-    "sport": {
-      "name": "Sport Science",
-      "description": "Develop athletic performance, coaching expertise, and physical education skills.",
-      "programs": ["Sport Science", "Physical Education"]
+    "card4": {
+      "title": "You belong here, even when it doesn't feel like it",
+      "description": "A reminder for every student who has ever felt out of place on campus.",
+      "cta": "Read the story"
     }
   },
   "opportunities": {

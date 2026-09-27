@@ -41,7 +41,6 @@ const NAV_ITEMS = [
   { key: 'informatics', tKey: 'nav.Informatics', menu: 'informatics' },
   { key: 'engineering', tKey: 'nav.Engineering', menu: 'engineering' },
   { key: 'Social',      tKey: 'nav.Social',      menu: 'Social'    },
-  { key: 'Sports',      tKey: 'nav.Sports',      menu: null        },
 ];
 
 function Navebar() {

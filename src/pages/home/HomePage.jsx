@@ -5,7 +5,7 @@ import './HomePage.css';
 import NexeusFeatures from '../../components/body/NexeusFeatures';
 import Navebar from '../../components/naveBar/Navebar';
 import OpportunitiesPage from '../opportunitiesPage/OpportunitiesPage';
-import DepartmentsPage from '../departmentsPage/DepartmentsPage.jsx';
+import MotivationPage from '../motivationPage/MotivationPage.jsx';
 
 /* ── Web Animations easings ────────────────────────────────── */
 const EXPO   = [0.16, 1, 0.3, 1];
@@ -153,7 +153,7 @@ export default function HomePage() {
         <Navebar/>
         <NexeusHero />
         <NexeusFeatures/>
-        <DepartmentsPage/>
+        <MotivationPage/>
         <OpportunitiesPage/>
         <NexeusFooter />
       </div>
