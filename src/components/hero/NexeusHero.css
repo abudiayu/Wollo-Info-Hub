@@ -302,3 +302,110 @@
     margin-top: clamp(10px, 2.5vh, 20px);
   }
 }
+
+/* ── Mobile phones — always show text regardless of orientation ── */
+@media (max-width: 768px) {
+  .nx-hero {
+    height: 100svh;
+    min-height: 600px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  /* Reset video to fill the hero fully and center the boy */
+  .nx-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .nx-bg video {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    object-fit: cover !important;
+    /* shift slightly right-center to keep the boy visible */
+    object-position: 60% center !important;
+    filter: saturate(0.86);
+  }
+
+  /* Stronger bottom gradient so text stays readable over the landscape */
+  .nx-scrim {
+    position: absolute !important;
+    inset: 0 !important;
+    height: 100% !important;
+    background: linear-gradient(
+      to bottom,
+      rgba(4, 18, 30, 0.52) 0%,
+      rgba(4, 18, 30, 0.30) 35%,
+      rgba(4, 18, 30, 0.08) 60%,
+      rgba(4, 18, 30, 0.0) 100%
+    ) !important;
+  }
+
+  /* Stack text at top-left, absolutely positioned within the hero */
+  .nx-eyebrow {
+    position: absolute !important;
+    left: 24px !important;
+    top: clamp(90px, 14vh, 120px) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.12em !important;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .nx-headline-mask {
+    position: absolute !important;
+    left: 22px !important;
+    top: calc(clamp(90px, 14vh, 120px) + 28px) !important;
+    overflow: visible !important;
+    width: calc(100% - 44px) !important;
+  }
+
+  .nx-headline {
+    white-space: normal !important;
+    font-size: clamp(32px, 9.5vw, 52px) !important;
+    line-height: 1.06 !important;
+    color: #fff;
+  }
+
+  .nx-lede {
+    position: absolute !important;
+    left: 24px !important;
+    top: calc(clamp(90px, 14vh, 120px) + 28px + clamp(80px, 22vw, 130px)) !important;
+    width: calc(100% - 48px) !important;
+    font-size: clamp(13.5px, 3.8vw, 16px) !important;
+    line-height: 1.48 !important;
+    color: rgba(255,255,255,0.92);
+    letter-spacing: 0 !important;
+  }
+
+  .nx-cta {
+    position: absolute !important;
+    left: 24px !important;
+    top: calc(clamp(90px, 14vh, 120px) + 28px + clamp(80px, 22vw, 130px) + clamp(90px, 20vw, 120px)) !important;
+    width: auto !important;
+    height: 44px !important;
+    min-width: 140px !important;
+    padding: 0 24px !important;
+    border-radius: 4px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .nx-cta span {
+    position: static !important;
+    font-size: 14px !important;
+    color: #000;
+  }
+
+  .nx-hero-wave-svg {
+    height: clamp(30px, 6vw, 50px) !important;
+  }
+}

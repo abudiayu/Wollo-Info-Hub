@@ -89,7 +89,13 @@ export default function NexeusFooter() {
         <hr className="nx-rule" />
 
         <div className="nx-footrow">
-          <p className="nx-legal">{t('footer.legal')}</p>
+          <p className="nx-legal">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true" style={{display:'inline-block', verticalAlign:'middle', marginRight:'4px', marginBottom:'1px'}}>
+              <circle cx="6.5" cy="6.5" r="5.75" stroke="currentColor" strokeWidth="1.1"/>
+              <path d="M8.3 4.8A2.3 2.3 0 1 0 8.3 8.2" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+            </svg>
+            2025 Abdulqadir MD all rights reserved.
+          </p>
           <div className="nx-socials">
             <a href="https://www.linkedin.com/in/abdulkadir-abudi-0b1aa637b/" target="_blank" aria-label="LinkedIn" className="nx-social-link"><IconLinkedIn /></a>
             <a href="https://github.com/abudiayu" target="_blank" aria-label="GitHub"   className="nx-social-link"><IconGitHub /></a>

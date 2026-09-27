@@ -13,7 +13,7 @@ const STATS = [
         <path d="M36 24c0-3.314-1.79-6-4-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
       </svg>
     ),
-    title:    'AAU Notable Alumni',
+    title:    'WOU Notable Alumni',
     desc:     'Our university has produced numerous notable alumni who lead across every sector.',
     ctaLabel: 'View List ↗',
   },
@@ -25,7 +25,7 @@ const STATS = [
       </svg>
     ),
     prefix:   '#',
-    number:   '1',
+    number:   'Top 10',
     caption:  'The best university in East Africa',
     subtext:  'QS World University Rankings',
   },
