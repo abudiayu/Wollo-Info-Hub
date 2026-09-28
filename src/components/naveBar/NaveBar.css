@@ -1,224 +1,216 @@
+/* ================================================================
+   NAVBAR — AAU-style clean white institutional bar
+   FIX NOTES:
+   1. Icon + text sizing: home icon 20px, chevron 13×13, links 15px
+   2. Dropdown: position:absolute on parent, width:max-content panel
+   3. Sticky: container is sticky top:0 z-index:200, NO overflow:hidden
+              so absolute-positioned dropdowns are never clipped
+   ================================================================ */
 
+/* ─────────────────────────────────────────────────────────────────
+   FIX 3 — Sticky container
+   CRITICAL: overflow must stay 'visible' (default).
+   Setting overflow:hidden/auto/scroll on a sticky element creates a
+   new scroll container that clips absolutely-positioned children
+   (the dropdowns). Never add overflow here.
+   ───────────────────────────────────────────────────────────────── */
 .ab-navbar-container {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 200;
+  width: 100%;
+  /* overflow: visible — do NOT override this */
 }
-.ab-navbar-logo {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-.ab-navbar {
-  position: fixed;
-  top: clamp(14px, 2vw, 24px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
 
+/* ── The bar ───────────────────────────────────────────────────── */
+.ab-navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(20px, 3vw, 40px);
+  gap: 0;
 
-  width: min(94%, 1100px);
-  padding: 10px 10px 10px 22px;
-  border-radius: 999px;
+  width: 100%;
+  padding: 0 clamp(16px, 4vw, 48px);
+  height: 68px;
 
-  background: rgba(18, 18, 34, 0.45);
-  backdrop-filter: blur(46px) saturate(1.3);
-  -webkit-backdrop-filter: blur(46px) saturate(1.3);
-  box-shadow:
-    0 8px 30px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
+/* ── Brand — logo + two-line stacked title ─────────────────────── */
 .ab-navbar-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
   flex-shrink: 0;
+  margin-right: 32px;
 }
 
-.ab-navbar-mark {
-  width: 22px;
-  height: 22px;
-  fill: #fff;
+.ab-navbar-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
-.ab-navbar-word {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 16px;
-  letter-spacing: 0.01em;
-  color: #fff;
-  white-space: nowrap;
+.ab-navbar-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.2;
 }
 
+.ab-navbar-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a3c6e;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.ab-navbar-subtitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: #6b7280;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+/* ── Nav links row ─────────────────────────────────────────────── */
 .ab-navbar-links {
   display: flex;
   align-items: center;
-  gap: clamp(18px, 2.4vw, 30px);
+  gap: 2px;
+  flex: 1;
+  justify-content: flex-end;
+  margin-right: 16px;
 }
 
-.ab-navbar-links a {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.78);
+/* FIX 1 — Home icon: rendered at 20px so it matches 15px text visually */
+.ab-navlink-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  color: #374151;
+  border-radius: 6px;
   text-decoration: none;
-  transition: opacity 0.2s ease, color 0.2s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.ab-navbar-links a:first-child {
-  color: #fff;
+.ab-navlink-home:hover {
+  background: #f3f4f6;
+  color: #1a3c6e;
 }
 
-.ab-navbar-links a:hover {
-  opacity: 0.7;
+/* FIX 1 — Force MUI HomeTwoToneIcon to exactly 20px */
+.ab-navlink-home .ab-home-icon,
+.ab-navlink-home svg {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
 }
 
-.ab-navbar-cta {
-  font-family: var(--font-body);
+/* FIX 1 — Nav link text: 15px (was 14px), gap widened to 5px */
+.ab-navlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 15px;          /* was 14px */
   font-weight: 500;
-  font-size: 13.5px;
-  color: #1a1a2e;
-  background: #fff;
-  padding: 10px 20px;
-  border-radius: 999px;
+  color: #374151;
   text-decoration: none;
+  border-radius: 6px;
   white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ab-navlink:hover,
+.ab-navlink.ab-navlink-active {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* FIX 1 — Chevron: 13×13px (was 11×11), rotates when active */
+.ab-chevron-icon {
+  color: #9ca3af;
   flex-shrink: 0;
-  transition: background 0.25s ease, transform 0.25s ease;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
-.ab-navbar-cta:hover {
-  background: #eef2f3;
-  transform: translateY(-1px);
+.ab-navlink:hover .ab-chevron-icon {
+  color: #374151;
 }
 
-/* ── Right-side group: Login + Language Switcher ─────────── */
+.ab-navlink.ab-navlink-active .ab-chevron-icon {
+  transform: rotate(180deg);
+  color: #374151;
+}
+
+/* Vertical divider */
+.ab-nav-divider {
+  display: inline-block;
+  width: 1px;
+  height: 22px;
+  background: #d1d5db;
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+
+/* FIX 1 — Search icon: 19×19px (was 17×17) */
+.ab-nav-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.ab-nav-search:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* ── Right group — login + language + hamburger (UNTOUCHED) ──── */
 .ab-navbar-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-@media (max-width: 720px) {
-  .ab-navbar-links { display: none; }
-}
-
-
-.ab-navbar-item-with-menu {
-  position: relative;
-}
-
-.ab-navbar-links a.ab-navlink-active {
-  opacity: 1;
-  color: #fff;
-}
-
-.ab-mega-menu {
-  position: fixed;
-  top: calc(clamp(14px, 2vw, 24px) + 62px); /* pill top offset + pill height + gap */
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  z-index: 49;
-
-  width: min(94%, 1100px);
-  border-radius: 24px;
-  padding: 32px 40px;
-
-  background: rgba(30, 30, 60, 0.55);
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-
-  display: flex;
-  gap: 56px;
-
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
-}
-
-.ab-mega-menu-open {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
-}
-
-.ab-mega-menu-inner {
-  display: flex;
-  gap: 56px;
-  width: 100%;
-}
-
-.ab-mega-menu-column {
-  min-width: 160px;
-}
-
-.ab-mega-menu-heading {
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0 0 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.ab-mega-menu-column ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.ab-mega-menu-column li a {
-  font-family: var(--font-body);
-  font-size: 15px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+.ab-navbar-cta {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #ffffff;
+  background: #1a3c6e;
+  padding: 8px 20px;
+  border-radius: 9999px;
   text-decoration: none;
-  transition: opacity 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.ab-mega-menu-column li a:hover {
-  opacity: 0.7;
-  color: #fff;
-  text-decoration: underline;
+.ab-navbar-cta:hover {
+  background: #1e4a8a;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
 }
 
-@media (max-width: 900px) {
-  .ab-mega-menu {
-    flex-direction: column;
-    gap: 28px;
-    padding: 24px;
-  }
-  .ab-mega-menu-inner {
-    flex-direction: column;
-    gap: 28px;
-  }
-}
-
-@media (max-width: 720px) {
-  .ab-mega-menu { display: none; }
-}
-
-/* ════════════════════════════════════════════════════
-   HAMBURGER BUTTON — visible only on mobile
-   ════════════════════════════════════════════════════ */
+/* ── Hamburger ──────────────────────────────────────────────────── */
 .ab-hamburger {
   display: none;
   flex-direction: column;
@@ -228,85 +220,152 @@
   width: 36px;
   height: 36px;
   padding: 0;
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
-  border-radius: 50%;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.2s ease;
 }
 
-.ab-hamburger:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
+.ab-hamburger:hover { background: #e5e7eb; }
 
 .ab-hamburger-bar {
   display: block;
-  width: 18px;
-  height: 2px;
+  width: 17px;
+  height: 1.8px;
   border-radius: 2px;
-  background: #fff;
-  transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease;
+  background: #374151;
+  transition: transform 0.28s ease, opacity 0.28s ease, width 0.28s ease;
   transform-origin: center;
 }
 
-.ab-hamburger--open .ab-hamburger-bar:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
+.ab-hamburger--open .ab-hamburger-bar:nth-child(1) { transform: translateY(6.8px) rotate(45deg); }
+.ab-hamburger--open .ab-hamburger-bar:nth-child(2) { opacity: 0; width: 0; }
+.ab-hamburger--open .ab-hamburger-bar:nth-child(3) { transform: translateY(-6.8px) rotate(-45deg); }
+
+/* ─────────────────────────────────────────────────────────────────
+   FIX 2 — Dropdown panel: content-hugging width
+   The parent .ab-navbar-item-with-menu is position:relative so the
+   panel can use position:absolute and align to the trigger item.
+   width:max-content lets the panel shrink-wrap its column content.
+   A min-width stops it from being too narrow on short link lists.
+   ───────────────────────────────────────────────────────────────── */
+.ab-navbar-item-with-menu {
+  position: relative;   /* dropdown anchor point */
 }
-.ab-hamburger--open .ab-hamburger-bar:nth-child(2) {
+
+.ab-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);   /* 8px gap below the nav link */
+  left: 0;                 /* left-aligns with the trigger item */
+  z-index: 201;            /* above navbar container (200) */
+
+  width: max-content;      /* shrink-wraps column content */
+  min-width: 280px;        /* prevents very narrow panels */
+  max-width: 520px;        /* caps very wide panels */
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.11), 0 2px 6px rgba(0, 0, 0, 0.06);
+
+  padding: 20px 24px 24px;
+
   opacity: 0;
-  width: 0;
-}
-.ab-hamburger--open .ab-hamburger-bar:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
-}
-
-@media (max-width: 720px) {
-  .ab-hamburger { display: flex; }
-  .ab-navbar-cta { display: none; }
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
 }
 
-/* ════════════════════════════════════════════════════
-   MOBILE DRAWER
-   ════════════════════════════════════════════════════ */
+/* If the trigger is near the right edge, flip alignment so the panel
+   doesn't overflow off-screen */
+.ab-navbar-item-with-menu:last-of-type .ab-dropdown {
+  left: auto;
+  right: 0;
+}
+
+.ab-dropdown-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.ab-dropdown-inner {
+  display: flex;
+  gap: 32px;
+}
+
+.ab-dropdown-column {
+  min-width: 130px;
+}
+
+/* Small blue uppercase heading — matches reference image */
+.ab-dropdown-heading {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #1a3c6e;           /* university blue */
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  white-space: nowrap;
+}
+
+.ab-dropdown-column ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.ab-dropdown-column li a {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.14s ease;
+}
+
+.ab-dropdown-column li a:hover {
+  color: #1a3c6e;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Mobile drawer ──────────────────────────────────────────────── */
 .ab-mobile-drawer {
   display: none;
   position: fixed;
-  top: calc(clamp(14px, 2vw, 24px) + 62px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(94%, 1100px);
-  z-index: 48;
+  top: 69px;
+  left: 0;
+  width: 100%;
+  z-index: 198;
 
-  background: rgba(15, 15, 40, 0.96);
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
 
-  padding: 8px 0 20px;
+  padding: 8px 0 24px;
   overflow-y: auto;
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 69px);
 
-  /* slide down animation */
   opacity: 0;
-  transform: translateX(-50%) translateY(-10px);
   pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform: translateY(-6px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
 .ab-mobile-drawer--open {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
   pointer-events: auto;
 }
 
-@media (max-width: 720px) {
-  .ab-mobile-drawer { display: block; }
-}
-
-/* ── Nav list ── */
 .ab-mobile-nav {
   list-style: none;
   margin: 0;
@@ -314,57 +373,58 @@
 }
 
 .ab-mobile-nav-item {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .ab-mobile-nav-item:last-child {
   border-bottom: none;
 }
 
-/* Plain link row */
+.ab-mobile-home-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .ab-mobile-nav-link {
   display: block;
-  padding: 15px 24px;
-  font-family: var(--font-body, system-ui, sans-serif);
+  padding: 14px clamp(16px, 4vw, 32px);
   font-size: 15px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+  color: #374151;
   text-decoration: none;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .ab-mobile-nav-link:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.05);
+  background: #f9fafb;
+  color: #111827;
 }
 
-/* Accordion trigger button */
 .ab-mobile-nav-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 15px 24px;
+  padding: 14px clamp(16px, 4vw, 32px);
   background: none;
   border: none;
-  font-family: var(--font-body, system-ui, sans-serif);
   font-size: 15px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+  color: #374151;
   cursor: pointer;
   text-align: left;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .ab-mobile-nav-btn:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.05);
+  background: #f9fafb;
+  color: #111827;
 }
 
-/* Chevron */
 .ab-mobile-chevron {
-  color: rgba(255, 255, 255, 0.5);
-  transition: transform 0.25s ease;
+  color: #9ca3af;
+  transition: transform 0.24s ease;
   flex-shrink: 0;
 }
 
@@ -372,12 +432,11 @@
   transform: rotate(180deg);
 }
 
-/* Accordion sub-links */
 .ab-mobile-sub {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.28s ease;
-  background: rgba(255, 255, 255, 0.03);
+  transition: grid-template-rows 0.26s ease;
+  background: #f9fafb;
 }
 
 .ab-mobile-sub--open {
@@ -387,20 +446,32 @@
 .ab-mobile-sub-link {
   display: block;
   overflow: hidden;
-  padding: 10px 24px 10px 36px;
-  font-family: var(--font-body, system-ui, sans-serif);
+  padding: 10px clamp(16px, 4vw, 32px) 10px calc(clamp(16px, 4vw, 32px) + 16px);
   font-size: 13.5px;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.60);
+  color: #6b7280;
   text-decoration: none;
   transition: color 0.15s ease;
 }
 
 .ab-mobile-sub-link:hover {
-  color: #fff;
+  color: #1a3c6e;
 }
 
-/* Footer area with Login button */
 .ab-mobile-footer {
-  padding: 16px 24px 4px;
+  padding: 16px clamp(16px, 4vw, 32px) 4px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .ab-navbar-links  { display: none; }
+  .ab-hamburger     { display: flex; }
+  .ab-mobile-drawer { display: block; }
+}
+
+@media (max-width: 600px) {
+  .ab-navbar-cta      { display: none; }
+  .ab-navbar-logo     { width: 36px; height: 36px; }
+  .ab-navbar-title    { font-size: 15px; }
+  .ab-navbar-subtitle { display: none; }
 }
