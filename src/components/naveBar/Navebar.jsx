@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import './NaveBar.css';
 import Logo from '../../assets/wolloLogo.png';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
+import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
 
 const MEGA_MENU_DATA = {
   Health: {
@@ -36,11 +38,11 @@ const MEGA_MENU_DATA = {
 };
 
 const NAV_ITEMS = [
-  { key: 'Home',        tKey: 'nav.Home',        menu: null        },
-  { key: 'Health',      tKey: 'nav.Medicine',    menu: 'Health'    },
-  { key: 'informatics', tKey: 'nav.Informatics', menu: 'informatics' },
-  { key: 'engineering', tKey: 'nav.Engineering', menu: 'engineering' },
-  { key: 'Social',      tKey: 'nav.Social',      menu: 'Social'    },
+  { key: 'Home',        icon: <HomeTwoToneIcon />, tKey: 'nav.Home',        menu: null        },
+  { key: 'Health',      icon: null,                tKey: 'nav.Medicine',    menu: 'Health'    },
+  { key: 'informatics', icon: null,                tKey: 'nav.Informatics', menu: 'informatics' },
+  { key: 'engineering', icon: null,                tKey: 'nav.Engineering', menu: 'engineering' },
+  { key: 'Social',      icon: null,                tKey: 'nav.Social',      menu: 'Social'    },
 ];
 
 function Navebar() {
@@ -131,14 +133,16 @@ function Navebar() {
                 </a>
               </div>
             ) : (
-              <a key={item.key} href="#">{t(item.tKey)}</a>
+              <a key={item.key} href="#" aria-label={t(item.tKey)}>
+                {item.icon ?? t(item.tKey)}
+              </a>
             )
           )}
         </div>
 
         {/* Right: Login + Language + Hamburger */}
         <div className="ab-navbar-right">
-          <a className="ab-navbar-cta" href="#">{t('nav.login')}</a>
+          <Link className="ab-navbar-cta" to="/auth">{t('nav.login')}</Link>
           <LanguageSwitcher />
 
           {/* Hamburger — mobile only */}
@@ -191,16 +195,18 @@ function Navebar() {
                   </div>
                 </>
               ) : (
-                <a href="#" className="ab-mobile-nav-link">{t(item.tKey)}</a>
+                <a href="#" className="ab-mobile-nav-link" aria-label={t(item.tKey)}>
+                  {item.icon ?? t(item.tKey)}
+                </a>
               )}
             </li>
           ))}
         </ul>
 
         <div className="ab-mobile-footer">
-          <a className="ab-navbar-cta" href="#" style={{ display: 'inline-block', textAlign: 'center' }}>
+          <Link className="ab-navbar-cta" to="/auth" style={{ display: 'inline-block', textAlign: 'center' }}>
             {t('nav.login')}
-          </a>
+          </Link>
         </div>
       </div>
     </div>
