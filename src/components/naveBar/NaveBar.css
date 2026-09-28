@@ -112,8 +112,6 @@
   .ab-navbar-links { display: none; }
 }
 
-/* ── Mega dropdown (Informatics / Engineering) ────────────────── */
-/* Positioned fixed so it tracks the floating pill regardless of scroll */
 
 .ab-navbar-item-with-menu {
   position: relative;
