@@ -81,7 +81,7 @@ export default function Auth() {
         {/* ============ LEFT ============ */}
         <section className="lg-left">
           <div className="lg-logo">
-            <a className="ab-navbar-brand" href="/HomePage">
+            <a className="ab-navbar-brand" href={<HomePage />}>
                 <img src={Logo} alt="Wollo-Info Logo" className="ab-navbar-logo" />
                 <span >Wollo-Info</span>
               </a>    
