@@ -1,4 +1,4 @@
-/* ── Floating glass-pill nav bar, fixed on scroll ─────────────── */
+
 .ab-navbar-container {
   position: sticky;
   top: 0;
@@ -250,7 +250,6 @@
   transform-origin: center;
 }
 
-/* Animate to X when open */
 .ab-hamburger--open .ab-hamburger-bar:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
