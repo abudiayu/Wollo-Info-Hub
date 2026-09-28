@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Auth.css"
 import teamImg from "../../assets/team.jpg";
 import Logo from '../../assets/wolloLogo.png';
-import HomePage from "../home/HomePage.jsx";
+// import HomePage from "../home/HomePage.jsx";
 
 import CloseIcon from "@mui/icons-material/Close";
 import AppleIcon from "@mui/icons-material/Apple";
@@ -81,7 +81,7 @@ export default function Auth() {
         {/* ============ LEFT ============ */}
         <section className="lg-left">
           <div className="lg-logo">
-            <a className="ab-navbar-brand" href={<HomePage />}>
+            <a className="ab-navbar-brand" href="/">
                 <img src={Logo} alt="Wollo-Info Logo" className="ab-navbar-logo" />
                 <span >Wollo-Info</span>
               </a>    
