@@ -105,12 +105,14 @@ export default function CampusLife() {
       {/* Overlay sits above the track */}
       <div className="campus-life__overlay" />
 
+      {/* Badge — centred on mobile, absolute top-left on desktop */}
       <span className="campus-life__badge">EXPLORE LIFE AT WOU</span>
 
+      {/* Hero title — desktop only, hidden on mobile */}
       <h2 className="campus-life__hero-title">{current.heroTitle}</h2>
 
-      {/* LEFT SIDE CARD */}
-      <div className="campus-life__side campus-life__side--left">
+      {/* ── DESKTOP side cards (hidden on mobile) ── */}
+      <div className="campus-life__side campus-life__side--left campus-life__desktop-only">
         {leftOpen ? (
           <CampusCard item={items[leftIndex]} onClose={() => setLeftOpen(false)} />
         ) : (
@@ -125,8 +127,7 @@ export default function CampusLife() {
         )}
       </div>
 
-      {/* RIGHT SIDE CARD */}
-      <div className="campus-life__side campus-life__side--right">
+      <div className="campus-life__side campus-life__side--right campus-life__desktop-only">
         {rightOpen ? (
           <CampusCard item={items[rightIndex]} onClose={() => setRightOpen(false)} />
         ) : (
@@ -139,6 +140,22 @@ export default function CampusLife() {
             +
           </button>
         )}
+      </div>
+
+      {/* ── MOBILE centre card (hidden on desktop) ── */}
+      <div className="campus-life__mobile-card">
+        <div
+          className="campus-life__mobile-card-img"
+          style={{ backgroundImage: `url(${current.heroImage})` }}
+        />
+        <div className="campus-life__mobile-card-body">
+          <span className="campus-card__category">{current.category}</span>
+          <h3 className="campus-card__title">{current.heroTitle}</h3>
+          <p className="campus-card__description">{current.description}</p>
+          <a href={current.galleryUrl} className="campus-card__link">
+            Learn More <span className="campus-card__link-arrow">↗</span>
+          </a>
+        </div>
       </div>
 
       {/* BOTTOM NAVIGATION */}
