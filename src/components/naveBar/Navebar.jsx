@@ -124,9 +124,9 @@ function Navebar() {
         <div className="ab-navbar-links">
 
           {/* FIX 1: Home icon rendered at "medium" size (20px via CSS) */}
-          <a href="#" className="ab-navlink-home" aria-label={t('nav.Home')}>
+          <Link to="/" className="ab-navlink-home" aria-label={t('nav.Home')}>
             <HomeTwoToneIcon className="ab-home-icon" />
-          </a>
+          </Link>
 
           {/* FIX 2: each item with a menu now wraps its OWN dropdown panel
               so the panel can be position:absolute relative to this parent,
@@ -141,7 +141,7 @@ function Navebar() {
               >
                 {/* Trigger link */}
                 <a
-                  href="#"
+                  href="/"
                   className={`ab-navlink ${openMenu === item.menu ? 'ab-navlink-active' : ''}`}
                   onClick={(e) => { e.preventDefault(); toggleOnClick(item.menu); }}
                   aria-expanded={openMenu === item.menu}
@@ -296,12 +296,12 @@ function Navebar() {
                   </div>
                 </>
               ) : (
-                <a href="#" className="ab-mobile-nav-link">
+                <Link to="/" className="ab-mobile-nav-link" aria-label={t(item.tKey)}>
                   {item.icon
                     ? <span className="ab-mobile-home-icon"><HomeTwoToneIcon style={{ fontSize: 18 }} />{t(item.tKey)}</span>
                     : t(item.tKey)
                   }
-                </a>
+                </Link>
               )}
             </li>
           ))}

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import './NexeusFeatures.css';
-import Satistics from "../../components/Statistics/Statistics";
 
 /* ── Data ─────────────────────────────────────────────────── */
 const STATS = [
@@ -94,7 +94,7 @@ export default function NexeusFeatures() {
               <span className="nf-underline-blue" />
             </div>
           </div>
-          <a className="nf-viewall" href="/Satisistics">{t('features.viewAll')} <Arrow /></a>
+          <Link className="nf-viewall" to="/statistics">{t('features.viewAll')} <Arrow /></Link>
         </div>
 
         {/* ── 4-column strip ── */}

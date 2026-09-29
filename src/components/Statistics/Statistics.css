@@ -17,6 +17,9 @@
   color: var(--stats-ink);
   background: #fff;
   min-height: 100vh;
+
+  /* Push content below the fixed navbar (68px tall) */
+  padding-top: 68px;
 }
 
 .stats-page *,

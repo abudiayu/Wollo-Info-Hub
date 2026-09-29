@@ -1,8 +1,6 @@
 import React from "react";
 import "./Statistics.css";
 import wolloLogo from "../../assets/wolloLogo.png";
-import Navebar from "../naveBar/Navebar";
-import NexeusFooter from "../footer/NexeusFooter";
 
 
 /* ---------- Edit your data here ---------- */
@@ -87,8 +85,6 @@ function SectionHeading({ children }) {
 export default function Statistics() {
   return (
     <div className="stats-page">
-      <Navebar />
-
       {/* Hero */}
       <header className="stats-hero">
         <div className="stats-container">
@@ -139,8 +135,6 @@ export default function Statistics() {
           </section>
         </div>
       </main>
-
-      <NexeusFooter />
     </div>
   );
 }

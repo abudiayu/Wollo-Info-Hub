@@ -1,9 +1,7 @@
 import { useEffect, useRef } from 'react';
 import NexeusHero   from '../../components/hero/NexeusHero';
-import NexeusFooter from '../../components/footer/NexeusFooter';
 import './HomePage.css';
 import NexeusFeatures from '../../components/body/NexeusFeatures';
-import Navebar from '../../components/naveBar/Navebar';
 import OpportunitiesPage from '../opportunitiesPage/OpportunitiesPage';
 import MotivationPage from '../motivationPage/MotivationPage.jsx';
 import CampusLife from '../../components/CampusLife/Campuslife.jsx';
@@ -151,13 +149,11 @@ export default function HomePage() {
   return (
     <div className="nx-viewport" ref={viewportRef}>
       <div className="nx-stage">
-        <Navebar/>
         <NexeusHero />
         <NexeusFeatures/>
         <CampusLife/>
         <MotivationPage/>
         <OpportunitiesPage/>
-        <NexeusFooter />
       </div>
     </div>
   );
