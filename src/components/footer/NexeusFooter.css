@@ -4,17 +4,24 @@
    ============================================================ */
 
 /* ── Footer shell ─────────────────────────────────────────── */
-*{
-  font-family: "Public Sans", "Inter", "Segoe UI", Arial, sans-serif;
-  fontsize: 18px;
+
+.nx-footer,
+.nx-footer * {
+  box-sizing: border-box;
 }
+
 .nx-footer {
+  font-family: "Public Sans", "Inter", "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
   position: relative;
   width: 100%;
   padding: clamp(48px, 8vw, 96px) clamp(24px, 5vw, 72px) 36px;
-  overflow: visible; /* wave must paint ABOVE the footer top edge */
+
+  /* Wave must be able to paint above the footer */
+  overflow: visible;
+
   -webkit-backdrop-filter: blur(40px) saturate(0.85);
-  backdrop-filter:         blur(40px) saturate(0.85);
+  backdrop-filter: blur(40px) saturate(0.85);
 
   background:
     radial-gradient(
@@ -24,15 +31,6 @@
       rgba(8, 35, 48, 0) 72%
     ),
 
-    /* subtle top glow */
-    /* linear-gradient(
-      180deg,
-      rgba(29, 111, 125, 0.28) 0%,
-      rgba(11, 38, 52, 0.10) 16%,
-      rgba(5, 20, 30, 0) 38%
-    ), */
-
-    /* side glass highlights */
     linear-gradient(
       90deg,
       #004266 0%,
@@ -40,10 +38,9 @@
       rgba(255, 255, 255, 0) 42%,
       rgba(255, 255, 255, 0) 58%,
       rgba(255, 255, 255, 0.045) 82%,
-      rgba(255, 255, 255, 0.020) 100%
+      rgba(255, 255, 255, 0.02) 100%
     ),
 
-    /* main deep background */
     linear-gradient(
       180deg,
       #004266 0%,
@@ -54,43 +51,54 @@
 
   color: #fff;
 
-
-  /* hairline inset box-shadows */
   box-shadow:
-    inset  1px  0   0 rgba(255,255,255,0.145),
-    inset -1px  0   0 rgba(255,255,255,0.125),
-    inset  0   -1px 0 rgba(255,255,255,0.17),
-    inset  0    1px 0 rgba(255,255,255,0.03);
+    inset 1px 0 0 rgba(255, 255, 255, 0.145),
+    inset -1px 0 0 rgba(255, 255, 255, 0.125),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.17),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
+
+/* ── Footer wave ──────────────────────────────────────────── */
+
 .nx-footer-wave {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
+
+  width: 100%;
   line-height: 0;
+
   pointer-events: none;
+
+  /* Pull wave above footer */
   transform: translateY(-99%);
-  z-index: 1;
+
+  z-index: 2;
 }
 
 .nx-footer-wave-svg {
   display: block;
   width: 100%;
   height: clamp(48px, 7vw, 96px);
+  overflow: visible;
 }
 
 .nx-footer-wave-path {
   fill: #004266;
 }
 
-/* ── Inner container — max-width centred ──────────────────── */
+/* ── Inner container ──────────────────────────────────────── */
+
 .nx-finner {
   position: relative;
+  z-index: 3;
   max-width: 1400px;
   margin: 0 auto;
 }
 
-/* ── Top row: brand column + nav columns ─────────────────── */
+/* ── Top row ──────────────────────────────────────────────── */
+
 .nx-footer-top {
   display: flex;
   flex-wrap: wrap;
@@ -100,7 +108,8 @@
   margin-bottom: 48px;
 }
 
-/* ── Brand column (left) ──────────────────────────────────── */
+/* ── Brand column ─────────────────────────────────────────── */
+
 .nx-brandcol {
   flex: 0 0 auto;
   max-width: 300px;
@@ -113,8 +122,36 @@
   margin-bottom: 14px;
 }
 
+/*
+  Keep footer branding independent from Navbar styling.
+  This prevents .ab-navbar-* rules from affecting the footer.
+*/
+.nx-footer .ab-navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nx-footer .ab-navbar-logo {
+  width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.nx-footer .ab-navbar-word {
+  font-weight: 400;
+  font-size: 20px;
+  letter-spacing: 0.012em;
+  color: #fff;
+  white-space: nowrap;
+  line-height: 1;
+}
+
 .nx-mark {
-  width:  22px;
+  width: 22px;
   height: 22px;
   flex-shrink: 0;
 }
@@ -133,12 +170,13 @@
   font-weight: 500;
   line-height: 1.55;
   letter-spacing: -0.01em;
-  color: rgba(255,255,255,0.68);
+  color: rgba(255, 255, 255, 0.68);
   max-width: 28ch;
   margin: 0;
 }
 
-/* ── Nav columns (right) ──────────────────────────────────── */
+/* ── Nav columns ──────────────────────────────────────────── */
+
 .nx-nav {
   display: flex;
   gap: clamp(32px, 5vw, 80px);
@@ -150,8 +188,8 @@
   font-weight: 400;
   font-size: 12.5px;
   letter-spacing: 0.09em;
-  text-transform: uppercase; /* uppercase via CSS, NOT hardcoded in JSX */
-  color: rgba(255,255,255,0.86);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.86);
   white-space: nowrap;
   margin: 0 0 14px;
 }
@@ -173,7 +211,9 @@
   color: #fff;
   text-decoration: none;
   white-space: nowrap;
-  transition: opacity 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
 }
 
 .nx-col ul a:hover {
@@ -181,16 +221,18 @@
 }
 
 /* ── Rule divider ─────────────────────────────────────────── */
+
 .nx-rule {
   display: block;
   width: 100%;
   height: 1px;
-  background: rgba(255,255,255,0.32);
+  background: rgba(255, 255, 255, 0.32);
   border: none;
   margin: 0 0 22px;
 }
 
-/* ── Bottom row: legal + socials ──────────────────────────── */
+/* ── Bottom row ───────────────────────────────────────────── */
+
 .nx-footrow {
   display: flex;
   align-items: center;
@@ -203,7 +245,7 @@
   font-size: 13px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  color: rgba(255,255,255,0.68);
+  color: rgba(255, 255, 255, 0.68);
   white-space: nowrap;
   margin: 0;
 }
@@ -220,11 +262,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width:  26px;
+
+  width: 26px;
   height: 26px;
+
   color: rgba(255, 255, 255, 0.75);
   text-decoration: none;
-  transition: color 0.2s ease, transform 0.2s ease;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .nx-social-link:hover {
@@ -234,14 +281,18 @@
 
 .nx-social-link svg {
   display: block;
-  width:  100%;
+  width: 100%;
   height: 100%;
 }
 
-/* ── Mobile — stack brand above nav ──────────────────────── */
+/* ── Mobile ───────────────────────────────────────────────── */
+
 @media (max-width: 720px) {
   .nx-footer {
-    padding: clamp(56px, 10vw, 80px) clamp(20px, 5vw, 40px) 28px;
+    padding:
+      clamp(56px, 10vw, 80px)
+      clamp(20px, 5vw, 40px)
+      28px;
   }
 
   .nx-footer-top {
@@ -269,7 +320,6 @@
 
 @media (max-width: 400px) {
   .nx-nav {
-    /* 2-column grid on very narrow phones */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px 20px;

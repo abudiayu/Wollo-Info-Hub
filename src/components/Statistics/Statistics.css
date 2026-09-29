@@ -28,6 +28,7 @@
   box-sizing: border-box;
 }
 
+
 .stats-container {
   width: 100%;
   max-width: 1240px;
@@ -237,30 +238,81 @@
 }
 
 /* ---------- Responsive ---------- */
+
+/* Tablet — 3-col rankings becomes 2-col */
 @media (max-width: 900px) {
   .stats-grid--3 {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid--stats {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* Mobile — keep 2 columns (matches reference image) */
 @media (max-width: 600px) {
   .stats-container {
-    padding: 0 20px;
+    padding: 0 16px;
+  }
+
+  .stats-page {
+    padding-top: 68px;
   }
 
   .stats-hero {
-    padding: 48px 0 80px;
+    padding: 40px 0 64px;
   }
 
   .stats-breadcrumb {
-    margin-bottom: 28px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  /* 2-column grid — exactly as in the reference image */
+  .stats-grid--3 {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .stats-grid--stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Tighter card padding on small screens */
+  .stats-card {
+    padding: 28px 14px 24px;
+  }
+
+  .rank-number__hash {
+    font-size: 1.6rem;
   }
 
   .rank-number__digit {
-    font-size: 4.6rem;
+    font-size: 3.4rem;
+  }
+
+  .stats-card__title {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .stats-card__text {
+    font-size: 0.82rem;
+  }
+
+  .stat-value {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+  }
+
+  .stats-card--stat .stats-card__title {
+    font-size: 0.95rem;
+  }
+
+  .stats-heading__title {
+    font-size: 1.5rem;
+  }
+
+  .stats-hero__title {
+    font-size: clamp(1.6rem, 7vw, 2.4rem);
   }
 }
