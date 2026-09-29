@@ -1,0 +1,263 @@
+/* ==========================================================
+   Statistics & Rankings page
+   ========================================================== */
+
+.stats-page {
+  --stats-navy: #004266;
+  --stats-blue: #0a6aa8;
+  --stats-line-blue: #5b9fd0;
+  --stats-coral: #f27c72;
+  --stats-ink: #1b2432;
+  --stats-muted: #4a5563;
+  --stats-card-bg: #f8f9fb;
+  --stats-card-border: #e3e6ea;
+
+  font-family: "Public Sans", "Segoe UI", system-ui, -apple-system, Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  color: var(--stats-ink);
+  background: #fff;
+  min-height: 100vh;
+}
+
+.stats-page *,
+.stats-page *::before,
+.stats-page *::after {
+  box-sizing: border-box;
+}
+
+.stats-container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ---------- Hero ---------- */
+.stats-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--stats-navy);
+  color: #fff;
+  padding: 72px 0 96px;
+}
+
+.stats-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 17px;
+  margin-bottom: 40px;
+}
+
+.stats-breadcrumb a {
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+}
+
+.stats-breadcrumb a:hover,
+.stats-breadcrumb a:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.stats-breadcrumb__sep {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.stats-hero__title {
+  margin: 0;
+  font-size: clamp(2.25rem, 5vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+/* Wollo logo as a faint watermark, half hidden at the bottom of the hero */
+.stats-hero__seal {
+  position: absolute;
+  left: 50%;
+  bottom: -70px;
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  transform: translateX(-50%);
+  opacity: 0.18;
+  filter: grayscale(1) brightness(2);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---------- Main ---------- */
+.stats-main {
+  padding: 48px 0 80px;
+}
+
+.stats-section + .stats-section {
+  margin-top: 64px;
+}
+
+/* ---------- Section heading ---------- */
+.stats-heading {
+  margin-bottom: 40px;
+}
+
+.stats-heading__title {
+  margin: 0 0 20px;
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--stats-ink);
+}
+
+.stats-heading__bars {
+  display: flex;
+  gap: 20px;
+}
+
+.stats-heading__bar {
+  display: block;
+  height: 4px;
+}
+
+.stats-heading__bar--short {
+  width: 40px;
+  background: var(--stats-coral);
+}
+
+.stats-heading__bar--long {
+  width: 120px;
+  background: var(--stats-line-blue);
+}
+
+/* ---------- Grids ---------- */
+.stats-grid {
+  display: grid;
+  border-top: 1px solid var(--stats-card-border);
+  border-left: 1px solid var(--stats-card-border);
+  max-width: 1240px;
+}
+
+.stats-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.stats-grid--stats {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* ---------- Cards ---------- */
+.stats-card {
+  background: var(--stats-card-bg);
+  border-right: 1px solid var(--stats-card-border);
+  border-bottom: 1px solid var(--stats-card-border);
+  padding: 48px 28px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-card__title {
+  margin: 0 0 24px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--stats-ink);
+  max-width: 320px;
+}
+
+.stats-card__text {
+  margin: auto 0 0;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  color: var(--stats-muted);
+}
+
+/* Ranking numbers: #1 */
+.rank-number {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: var(--stats-blue);
+  line-height: 1;
+  margin-bottom: 28px;
+}
+
+.rank-number__hash {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-right: 2px;
+  padding-bottom: 6px;
+}
+
+.rank-number__digit {
+  font-size: 5.6rem;
+  font-weight: 800;
+}
+
+/* Stat cards */
+.stats-card--stat {
+  padding-top: 40px;
+}
+
+.stats-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.stats-icon__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.stat-value {
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--stats-blue);
+  margin-bottom: 20px;
+}
+
+.stats-card--stat .stats-card__title {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+.stats-card--stat .stats-card__text {
+  margin-top: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .stats-grid--3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-container {
+    padding: 0 20px;
+  }
+
+  .stats-hero {
+    padding: 48px 0 80px;
+  }
+
+  .stats-breadcrumb {
+    margin-bottom: 28px;
+  }
+
+  .stats-grid--stats {
+    grid-template-columns: 1fr;
+  }
+
+  .rank-number__digit {
+    font-size: 4.6rem;
+  }
+}

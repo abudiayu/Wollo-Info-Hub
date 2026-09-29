@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import './NexeusFeatures.css';
+import Satistics from "../../components/Statistics/Statistics";
 
 /* ── Data ─────────────────────────────────────────────────── */
 const STATS = [
@@ -93,7 +94,7 @@ export default function NexeusFeatures() {
               <span className="nf-underline-blue" />
             </div>
           </div>
-          <a className="nf-viewall" href="#">{t('features.viewAll')} <Arrow /></a>
+          <a className="nf-viewall" href="/Satisistics">{t('features.viewAll')} <Arrow /></a>
         </div>
 
         {/* ── 4-column strip ── */}
