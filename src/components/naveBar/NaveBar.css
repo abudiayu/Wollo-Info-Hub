@@ -15,7 +15,7 @@
    (the dropdowns). Never add overflow here.
    ───────────────────────────────────────────────────────────────── */
 .ab-navbar-container {
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 200;
   width: 100%;
@@ -49,8 +49,8 @@
 }
 
 .ab-navbar-logo {
-  width: 44px;
-  height: 44px;
+  width: 58px;
+  height: 58px;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -63,7 +63,7 @@
 }
 
 .ab-navbar-title {
-  font-size: 17px;
+  font-size: 30px;
   font-weight: 700;
   color: #1a3c6e;
   white-space: nowrap;
@@ -108,9 +108,9 @@
 /* FIX 1 — Force MUI HomeTwoToneIcon to exactly 20px */
 .ab-navlink-home .ab-home-icon,
 .ab-navlink-home svg {
-  font-size: 20px !important;
-  width: 20px !important;
-  height: 20px !important;
+  font-size: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
 }
 
 /* FIX 1 — Nav link text: 15px (was 14px), gap widened to 5px */
@@ -304,7 +304,7 @@
 
 /* Small blue uppercase heading — matches reference image */
 .ab-dropdown-heading {
-  font-size: 10.5px;
+  font-size: 15px;
   font-weight: 700;
   color: #1a3c6e;           /* university blue */
   margin: 0 0 10px;
