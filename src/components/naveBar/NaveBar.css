@@ -462,16 +462,183 @@
   padding: 16px clamp(16px, 4vw, 32px) 4px;
 }
 
+/* Hide mobile search button on desktop — the one in ab-navbar-links handles it */
+/* MUST be defined BEFORE the media query, not after, to avoid cascade override */
+.ab-nav-search--mobile {
+  display: none;
+}
+
 /* ── Responsive ─────────────────────────────────────────────────── */
 @media (max-width: 860px) {
   .ab-navbar-links  { display: none; }
   .ab-hamburger     { display: flex; }
   .ab-mobile-drawer { display: block; }
+
+  /* Show the search icon in the mobile bar, left of the hamburger */
+  .ab-nav-search--mobile { display: flex; }
+
+  /* Hide login button and language switcher —
+     mobile bar becomes: logo/title ··· search | hamburger */
+  .ab-navbar-cta { display: none; }
+  .ls-root       { display: none; }
+
+  /* Make search icon visually consistent with hamburger on mobile:
+     same plain style (no box background), same color, same size */
+  .ab-nav-search--mobile {
+    display: flex;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: #374151;
+    width: 36px;
+    height: 36px;
+  }
+
+  .ab-nav-search--mobile:hover,
+  .ab-nav-search--mobile.ab-nav-search--active {
+    background: #f3f4f6;
+    color: #1a3c6e;
+  }
+
+  /* Scale the hamburger bars to match the search SVG weight */
+  .ab-hamburger {
+    background: none;
+    border: none;
+    color: #374151;
+  }
+
+  .ab-hamburger:hover {
+    background: #f3f4f6;
+  }
 }
 
 @media (max-width: 600px) {
-  .ab-navbar-cta      { display: none; }
   .ab-navbar-logo     { width: 36px; height: 36px; }
   .ab-navbar-title    { font-size: 15px; }
   .ab-navbar-subtitle { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEARCH DROPDOWN PANEL
+   Appears below the navbar bar on search icon click.
+   position:absolute so it sits in the sticky container's flow
+   without affecting page layout; z-index:199 keeps it under
+   the navbar bar (200) but above all page content.
+   ═══════════════════════════════════════════════════════════════ */
+.ab-search-dropdown {
+  position: absolute;
+  top: 100%;            /* flush below the navbar bar */
+  left: 0;
+  width: 100%;
+  z-index: 199;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+
+  padding: 14px clamp(16px, 4vw, 48px);
+
+  /* Slide-down + fade transition */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition:
+    opacity   0.22s ease,
+    transform 0.22s ease,
+    visibility 0.22s;
+}
+
+.ab-search-dropdown--open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Search field row — rounded container holding icon + input + X */
+.ab-search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+
+  max-width: 640px;      /* reasonable max so it doesn't stretch wall-to-wall */
+  width: 100%;
+  margin: 0 auto;        /* center within the full-width panel */
+
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ab-search-field:focus-within {
+  border-color: #1a3c6e;
+  box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.10);
+  background: #ffffff;
+}
+
+/* Left magnifying glass — muted, non-interactive */
+.ab-search-field-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* The input itself — no default browser styles */
+.ab-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  font-weight: 400;
+  color: #111827;
+  line-height: 1.4;
+  /* remove browser's native search cancel button */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ab-search-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Remove default Safari/Chrome search clear button */
+.ab-search-input::-webkit-search-cancel-button,
+.ab-search-input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Right X close button */
+.ab-search-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ab-search-close:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* Active state on the search icon button when panel is open */
+.ab-nav-search--active {
+  background: #f3f4f6;
+  color: #1a3c6e;
 }

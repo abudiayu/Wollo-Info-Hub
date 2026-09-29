@@ -6,6 +6,7 @@ import NexeusFeatures from '../../components/body/NexeusFeatures';
 import Navebar from '../../components/naveBar/Navebar';
 import OpportunitiesPage from '../opportunitiesPage/OpportunitiesPage';
 import MotivationPage from '../motivationPage/MotivationPage.jsx';
+import CampusLife from '../../components/CampusLife/Campuslife.jsx';
 
 /* ── Web Animations easings ────────────────────────────────── */
 const EXPO   = [0.16, 1, 0.3, 1];
@@ -153,6 +154,7 @@ export default function HomePage() {
         <Navebar/>
         <NexeusHero />
         <NexeusFeatures/>
+        <CampusLife/>
         <MotivationPage/>
         <OpportunitiesPage/>
         <NexeusFooter />

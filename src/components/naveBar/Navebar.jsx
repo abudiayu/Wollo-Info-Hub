@@ -68,6 +68,8 @@ function Navebar() {
   const [openMenu,       setOpenMenu]       = useState(null);
   const [mobileOpen,     setMobileOpen]     = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(null);
+  const [searchOpen,     setSearchOpen]     = useState(false);
+  const searchInputRef = useRef(null);
   const closeTimer = useRef(null);
   const navRef     = useRef(null);
 
@@ -82,11 +84,19 @@ function Navebar() {
       if (navRef.current && !navRef.current.contains(e.target)) {
         setOpenMenu(null);
         setMobileOpen(false);
+        setSearchOpen(false);
       }
     }
     document.addEventListener('mousedown', handle);
     return () => document.removeEventListener('mousedown', handle);
   }, []);
+
+  /* ── Auto-focus search input when panel opens ── */
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [searchOpen]);
 
   /* ── Lock body scroll when mobile drawer is open ── */
   useEffect(() => {
@@ -172,7 +182,12 @@ function Navebar() {
 
           {/* Divider + Search */}
           <span className="ab-nav-divider" aria-hidden="true" />
-          <button className="ab-nav-search" aria-label="Search">
+          <button
+            className={`ab-nav-search ${searchOpen ? 'ab-nav-search--active' : ''}`}
+            aria-label={searchOpen ? 'Close search' : 'Open search'}
+            aria-expanded={searchOpen}
+            onClick={() => setSearchOpen(v => !v)}
+          >
             <SearchIcon />
           </button>
         </div>
@@ -181,6 +196,16 @@ function Navebar() {
         <div className="ab-navbar-right">
           <Link className="ab-navbar-cta" to="/auth">{t('nav.login')}</Link>
           <LanguageSwitcher />
+
+          {/* Mobile-only search icon — hidden on desktop (ab-navbar-links has its own) */}
+          <button
+            className={`ab-nav-search ab-nav-search--mobile ${searchOpen ? 'ab-nav-search--active' : ''}`}
+            aria-label={searchOpen ? 'Close search' : 'Open search'}
+            aria-expanded={searchOpen}
+            onClick={() => setSearchOpen(v => !v)}
+          >
+            <SearchIcon />
+          </button>
 
           <button
             className={`ab-hamburger ${mobileOpen ? 'ab-hamburger--open' : ''}`}
@@ -194,6 +219,46 @@ function Navebar() {
           </button>
         </div>
       </nav>
+
+      {/* ══════════════════════════════════════════
+          SEARCH DROPDOWN
+          ══════════════════════════════════════════ */}
+      <div
+        className={`ab-search-dropdown ${searchOpen ? 'ab-search-dropdown--open' : ''}`}
+        role="search"
+        aria-hidden={!searchOpen}
+      >
+        <div className="ab-search-field">
+          {/* Left: magnifying glass */}
+          <span className="ab-search-field-icon" aria-hidden="true">
+            <SearchIcon />
+          </span>
+
+          <input
+            ref={searchInputRef}
+            type="search"
+            className="ab-search-input"
+            placeholder="Search here...."
+            aria-label="Search"
+            tabIndex={searchOpen ? 0 : -1}
+          />
+
+          {/* Right: close X */}
+          <button
+            className="ab-search-close"
+            aria-label="Close search"
+            tabIndex={searchOpen ? 0 : -1}
+            onClick={() => setSearchOpen(false)}
+          >
+            {/* inline X so no extra dependency */}
+            <svg viewBox="0 0 14 14" width="14" height="14" fill="none" aria-hidden="true"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="1" y1="1" x2="13" y2="13"/>
+              <line x1="13" y1="1" x2="1" y2="13"/>
+            </svg>
+          </button>
+        </div>
+      </div>
 
       {/* ══════════════════════════════════════════
           MOBILE DRAWER

@@ -1,0 +1,303 @@
+/* ============================
+   CampusLife hero carousel
+   ============================ */
+
+/* The outer section is the viewport window.
+   overflow:hidden clips the off-screen slides.
+   No backgroundImage here — the track handles it. */
+.campus-life {
+  position: relative;
+  width: 100%;
+  min-height: 620px;
+  overflow: hidden;           /* clips the sliding track */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: inherit;
+}
+
+/* ── Sliding track ───────────────────────────────────────────────
+   A flex row as wide as (100% × number-of-slides).
+   translateX(-N * 100%) moves the active slide into view.
+   The CSS transition creates the smooth horizontal slide.         */
+.campus-life__track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  /* smooth horizontal slide — 700 ms cubic-bezier feel */
+  transition: transform 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: transform;
+  z-index: 0;
+}
+
+/* Each slide fills exactly one "viewport" width */
+.campus-life__slide {
+  flex: 0 0 100%;          /* never shrink, always 100% wide */
+  width: 100%;
+  height: 100%;
+  min-height: 620px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ── Overlay (above track, below UI) ────────────────────────── */
+.campus-life__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.15) 40%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── UI elements — all z-index > 1 so they sit above track+overlay */
+.campus-life__badge {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  z-index: 3;
+  background: #ffffff;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  border-radius: 4px;
+}
+
+.campus-life__hero-title {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  margin: 0;
+  padding: 0 24px;
+  text-align: center;
+  /* smooth title fade when slide changes */
+  transition: opacity 0.35s ease;
+}
+
+/* ── Side card panels ───────────────────────────────────────── */
+.campus-life__side {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+}
+
+.campus-life__side--left  { left: 32px;  }
+.campus-life__side--right { right: 32px; }
+
+.campus-life__toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.campus-life__toggle:hover {
+  background: rgba(0, 0, 0, 0.45);
+  transform: scale(1.06);
+}
+
+/* ── Bottom navigation ──────────────────────────────────────── */
+.campus-life__nav {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.campus-life__arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111827;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.campus-life__arrow:hover {
+  background: #ffffff;
+  transform: scale(1.05);
+}
+
+.campus-life__dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.campus-life__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.campus-life__dot--active {
+  background: #ffffff;
+  transform: scale(1.3);
+}
+
+/* ============================
+   Detail card
+   ============================ */
+.campus-card {
+  position: relative;
+  width: 340px;
+  max-width: 86vw;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  color: #111827;
+  text-align: left;
+}
+
+.campus-card__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.35);
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.campus-card__close:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.campus-card__image {
+  width: 100%;
+  height: 190px;
+  background-size: cover;
+  background-position: center;
+  background-color: #d1d5db;
+}
+
+.campus-card__body {
+  padding: 18px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campus-card__category {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #b91c1c;
+}
+
+.campus-card__title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 2px 0 4px;
+  color: #111827;
+}
+
+.campus-card__description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+  margin: 0 0 10px;
+}
+
+.campus-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.campus-card__link:hover {
+  text-decoration: underline;
+}
+
+.campus-card__link-arrow {
+  font-size: 14px;
+  transform: translateY(-1px);
+}
+
+/* ============================
+   Responsive
+   ============================ */
+@media (max-width: 1024px) {
+  .campus-life__side--left  { left: 16px;  }
+  .campus-life__side--right { right: 16px; }
+  .campus-card { width: 280px; }
+}
+
+@media (max-width: 768px) {
+  .campus-life        { min-height: 520px; }
+  .campus-life__slide { min-height: 520px; }
+
+  .campus-life__side {
+    position: static;
+    transform: none;
+    justify-content: center;
+    margin: 12px auto;
+  }
+
+  .campus-life__side--left,
+  .campus-life__side--right {
+    left: auto;
+    right: auto;
+  }
+
+  .campus-card { width: 92vw; }
+
+  .campus-life__hero-title {
+    font-size: clamp(1.8rem, 8vw, 2.6rem);
+  }
+}
