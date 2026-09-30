@@ -77,7 +77,7 @@ export default function NexeusFooter() {
           {/* Brand column */}
           <div className="nx-brandcol">
             <div className="nx-brandrow">
-              <a className="ab-navbar-brand" href="#">
+              <a className="ab-navbar-brand" href="/">
                   <img src={Logo} alt="Wollo-Info Logo" className="ab-navbar-logo" />
                   <span className="ab-navbar-word">Wollo-Info</span>
                 </a>
@@ -90,28 +90,28 @@ export default function NexeusFooter() {
             <div className="nx-col">
               <h3>{t('footer.solutions.heading')}</h3>
               <ul>
-                <li><a href="#">{t('footer.solutions.revenue')}</a></li>
-                <li><a href="#">{t('footer.solutions.search')}</a></li>
-                <li><a href="#">{t('footer.solutions.conversion')}</a></li>
-                <li><a href="#">{t('footer.solutions.customer')}</a></li>
+                <li><a href="/">{t('footer.solutions.revenue')}</a></li>
+                <li><a href="/">{t('footer.solutions.search')}</a></li>
+                <li><a href="/">{t('footer.solutions.conversion')}</a></li>
+                <li><a href="/">{t('footer.solutions.customer')}</a></li>
               </ul>
             </div>
             <div className="nx-col">
               <h3>{t('footer.capabilities.heading')}</h3>
               <ul>
-                <li><a href="#">{t('footer.capabilities.web')}</a></li>
-                <li><a href="#">{t('footer.capabilities.brand')}</a></li>
-                <li><a href="#">{t('footer.capabilities.growth')}</a></li>
-                <li><a href="#">{t('footer.capabilities.ecommerce')}</a></li>
+                <li><a href="/">{t('footer.capabilities.web')}</a></li>
+                <li><a href="/">{t('footer.capabilities.brand')}</a></li>
+                <li><a href="/">{t('footer.capabilities.growth')}</a></li>
+                <li><a href="/">{t('footer.capabilities.ecommerce')}</a></li>
               </ul>
             </div>
             <div className="nx-col">
               <h3>{t('footer.resources.heading')}</h3>
               <ul>
-                <li><a href="#">{t('footer.resources.case')}</a></li>
-                <li><a href="#">{t('footer.resources.insights')}</a></li>
-                <li><a href="#">{t('footer.resources.playbooks')}</a></li>
-                <li><a href="#">{t('footer.resources.reports')}</a></li>
+                <li><a href="/">{t('footer.resources.case')}</a></li>
+                <li><a href="/">{t('footer.resources.insights')}</a></li>
+                <li><a href="/">{t('footer.resources.playbooks')}</a></li>
+                <li><a href="/">{t('footer.resources.reports')}</a></li>
               </ul>
             </div>
           </nav>
@@ -128,13 +128,13 @@ export default function NexeusFooter() {
             2025 Abdulqadir MD all rights reserved.
           </p>
           <div className="nx-socials">
-            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="nx-social-link"><IconX /></a>
-            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="YouTube"     className="nx-social-link"><IconYouTube /></a>
-            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Facebook"    className="nx-social-link"><IconFacebook /></a>
-            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"    className="nx-social-link"><IconLinkedIn /></a>
-            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Telegram"    className="nx-social-link"><IconTelegram /></a>
-            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="TikTok"      className="nx-social-link"><IconTikTok /></a>
-            <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram"   className="nx-social-link"><IconInstagram /></a>
+            <a href="/" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="nx-social-link"><IconX /></a>
+            <a href="/" target="_blank" rel="noopener noreferrer" aria-label="YouTube"     className="nx-social-link"><IconYouTube /></a>
+            <a href="/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"    className="nx-social-link"><IconFacebook /></a>
+            <a href="/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"    className="nx-social-link"><IconLinkedIn /></a>
+            <a href="/" target="_blank" rel="noopener noreferrer" aria-label="Telegram"    className="nx-social-link"><IconTelegram /></a>
+            <a href="/" target="_blank" rel="noopener noreferrer" aria-label="TikTok"      className="nx-social-link"><IconTikTok /></a>
+            <a href="/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"   className="nx-social-link"><IconInstagram /></a>
           </div>
         </div>
       </div>

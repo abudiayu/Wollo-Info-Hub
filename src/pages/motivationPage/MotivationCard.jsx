@@ -54,7 +54,7 @@ export default function MotivationCard({ cardKey, image }) {
               />
             </svg>
           </span>
-          <a className="mcard-cta-link" href="#" tabIndex={0}>
+          <a className="mcard-cta-link" href="/" tabIndex={0}>
             {cta}
           </a>
         </div>

@@ -19,6 +19,7 @@
   top: 0;
   z-index: 200;
   width: 100%;
+  font-family: "Inter", sans-serif;
   /* overflow: visible — do NOT override this */
 }
 

@@ -105,7 +105,7 @@ export default function NexeusFeatures() {
                 <div className="nf-col-icon">{s.icon}</div>
                 <h3 className="nf-col-title">{s.title}</h3>
                 <p  className="nf-col-desc">{s.desc}</p>
-                <a  className="nf-cta-btn" href="#">{s.ctaLabel}</a>
+                <a  className="nf-cta-btn" href="/">{s.ctaLabel}</a>
               </div>
             ) : (
               <div key={i} className="nf-col nf-col--stat">

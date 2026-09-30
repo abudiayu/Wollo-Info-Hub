@@ -163,7 +163,7 @@ function Navebar() {
                             <h4 className="ab-dropdown-heading">{col.heading}</h4>
                             <ul>
                               {col.links.map((link) => (
-                                <li key={link}><a href="#">{link}</a></li>
+                                <li key={link}><a href="/">{link}</a></li>
                               ))}
                             </ul>
                           </div>
