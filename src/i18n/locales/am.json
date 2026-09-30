@@ -10,7 +10,8 @@
     "capabilities": "ችሎታዎች",
     "resources": "ሀብቶች",
     "login": "ግባ",
-    "subtitle": "የወሎ ዩኒቨርሲቲ መረጃ ማዕከል"
+    "subtitle": "የወሎ ዩኒቨርሲቲ መረጃ ማዕከል",
+    "logout": "ውጣ"
   },
   "hero": {
     "eyebrow": "ዝግጁ ሲሆኑ",

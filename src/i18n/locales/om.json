@@ -10,7 +10,8 @@
     "capabilities": "Dandeettiwwan",
     "resources": "Qabeenya",
     "login": "Seeni",
-    "subtitle": "Buufata Odeeffannoo Yunivarsiitii Wolloo"
+    "subtitle": "Buufata Odeeffannoo Yunivarsiitii Wolloo",
+    "logout": "Ba'i"
   },
   "hero": {
     "eyebrow": "Qophaa'aa jirta",

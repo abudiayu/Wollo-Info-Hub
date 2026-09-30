@@ -211,6 +211,39 @@
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
 }
 
+/* ── Logged-in: username display ── */
+.ab-navbar-username {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1a3c6e;
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+/* ── Logged-in: logout button ── */
+.ab-navbar-logout {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #ffffff;
+  background: #dc2626;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.ab-navbar-logout:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
 /* ── Hamburger ──────────────────────────────────────────────────── */
 .ab-hamburger {
   display: none;

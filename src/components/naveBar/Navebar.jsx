@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './NaveBar.css';
 import Logo from '../../assets/wolloLogo.png';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
+import { useAuth } from '../../context/AuthContext';
 
 /* ── Inline SVG icons ── */
-/* FIX 1: chevron is now 13×13 (was 11×11) — more legible next to 15px text */
 const ChevronDown = () => (
   <svg className="ab-chevron-icon" viewBox="0 0 12 12" width="13" height="13"
     fill="none" aria-hidden="true">
@@ -64,19 +64,30 @@ const NAV_ITEMS = [
 ];
 
 function Navebar() {
-  const { t } = useTranslation();
+  const { t }             = useTranslation();
+  const { user, logout }  = useAuth();
+  const navigate          = useNavigate();
+
   const [openMenu,       setOpenMenu]       = useState(null);
   const [mobileOpen,     setMobileOpen]     = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(null);
   const [searchOpen,     setSearchOpen]     = useState(false);
   const searchInputRef = useRef(null);
-  const closeTimer = useRef(null);
-  const navRef     = useRef(null);
+  const closeTimer     = useRef(null);
+  const navRef         = useRef(null);
 
   /* ── Desktop hover helpers ── */
   const openWithHover  = (key) => { clearTimeout(closeTimer.current); setOpenMenu(key); };
   const closeWithDelay = ()    => { closeTimer.current = setTimeout(() => setOpenMenu(null), 150); };
   const toggleOnClick  = (key) => { clearTimeout(closeTimer.current); setOpenMenu(p => p === key ? null : key); };
+
+  /* ── If user is not logged in, intercept nav link clicks → /auth ── */
+  const handleProtectedClick = (e) => {
+    if (!user) {
+      e.preventDefault();
+      navigate('/auth');
+    }
+  };
 
   /* ── Close on outside click ── */
   useEffect(() => {
@@ -104,9 +115,12 @@ function Navebar() {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
-    /* FIX 3: ab-navbar-container is position:sticky — defined in CSS.
-       overflow must NOT be hidden here or the absolute dropdown gets clipped. */
     <div className="ab-navbar-container" ref={navRef}>
 
       <nav className="ab-navbar" aria-label="Primary">
@@ -120,17 +134,14 @@ function Navebar() {
           </div>
         </Link>
 
-        {/* CENTER / RIGHT — nav links row */}
+        {/* CENTER / RIGHT — desktop nav links */}
         <div className="ab-navbar-links">
 
-          {/* FIX 1: Home icon rendered at "medium" size (20px via CSS) */}
+          {/* Home icon */}
           <Link to="/" className="ab-navlink-home" aria-label={t('nav.Home')}>
             <HomeTwoToneIcon className="ab-home-icon" />
           </Link>
 
-          {/* FIX 2: each item with a menu now wraps its OWN dropdown panel
-              so the panel can be position:absolute relative to this parent,
-              giving it content-hugging width instead of full-page width. */}
           {NAV_ITEMS.filter(i => i.key !== 'Home').map((item) =>
             item.menu ? (
               <div
@@ -139,11 +150,15 @@ function Navebar() {
                 onMouseEnter={() => openWithHover(item.menu)}
                 onMouseLeave={closeWithDelay}
               >
-                {/* Trigger link */}
+                {/* Trigger — clicks redirect to /auth if not logged in */}
                 <a
                   href="/"
                   className={`ab-navlink ${openMenu === item.menu ? 'ab-navlink-active' : ''}`}
-                  onClick={(e) => { e.preventDefault(); toggleOnClick(item.menu); }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!user) { navigate('/auth'); return; }
+                    toggleOnClick(item.menu);
+                  }}
                   aria-expanded={openMenu === item.menu}
                   aria-haspopup="true"
                 >
@@ -151,7 +166,7 @@ function Navebar() {
                   <ChevronDown />
                 </a>
 
-                {/* Dropdown panel — position:absolute, width:max-content */}
+                {/* Dropdown panel */}
                 {(() => {
                   const data = MEGA_MENU_DATA[item.menu];
                   if (!data) return null;
@@ -163,7 +178,9 @@ function Navebar() {
                             <h4 className="ab-dropdown-heading">{col.heading}</h4>
                             <ul>
                               {col.links.map((link) => (
-                                <li key={link}><a href="/">{link}</a></li>
+                                <li key={link}>
+                                  <a href="/" onClick={handleProtectedClick}>{link}</a>
+                                </li>
                               ))}
                             </ul>
                           </div>
@@ -174,7 +191,7 @@ function Navebar() {
                 })()}
               </div>
             ) : (
-              <a key={item.key} href="#" className="ab-navlink">
+              <a key={item.key} href="/" className="ab-navlink" onClick={handleProtectedClick}>
                 {t(item.tKey)}
               </a>
             )
@@ -192,12 +209,27 @@ function Navebar() {
           </button>
         </div>
 
-        {/* RIGHT — login + language + hamburger (UNTOUCHED) */}
+        {/* RIGHT — auth controls + language + hamburger */}
         <div className="ab-navbar-right">
-          <Link className="ab-navbar-cta" to="/auth">{t('nav.login')}</Link>
+
+          {user ? (
+            /* ── Logged in: show name + logout ── */
+            <>
+              <span className="ab-navbar-username" title={user.email}>
+                {user.full_name?.split(' ')[0] || user.email}
+              </span>
+              <button className="ab-navbar-logout" onClick={handleLogout}>
+                {t('nav.logout') || 'Logout'}
+              </button>
+            </>
+          ) : (
+            /* ── Logged out: show login button ── */
+            <Link className="ab-navbar-cta" to="/auth">{t('nav.login')}</Link>
+          )}
+
           <LanguageSwitcher />
 
-          {/* Mobile-only search icon — hidden on desktop (ab-navbar-links has its own) */}
+          {/* Mobile-only search icon */}
           <button
             className={`ab-nav-search ab-nav-search--mobile ${searchOpen ? 'ab-nav-search--active' : ''}`}
             aria-label={searchOpen ? 'Close search' : 'Open search'}
@@ -220,20 +252,14 @@ function Navebar() {
         </div>
       </nav>
 
-      {/* ══════════════════════════════════════════
-          SEARCH DROPDOWN
-          ══════════════════════════════════════════ */}
+      {/* ── Search dropdown ── */}
       <div
         className={`ab-search-dropdown ${searchOpen ? 'ab-search-dropdown--open' : ''}`}
         role="search"
         aria-hidden={!searchOpen}
       >
         <div className="ab-search-field">
-          {/* Left: magnifying glass */}
-          <span className="ab-search-field-icon" aria-hidden="true">
-            <SearchIcon />
-          </span>
-
+          <span className="ab-search-field-icon" aria-hidden="true"><SearchIcon /></span>
           <input
             ref={searchInputRef}
             type="search"
@@ -242,15 +268,12 @@ function Navebar() {
             aria-label="Search"
             tabIndex={searchOpen ? 0 : -1}
           />
-
-          {/* Right: close X */}
           <button
             className="ab-search-close"
             aria-label="Close search"
             tabIndex={searchOpen ? 0 : -1}
             onClick={() => setSearchOpen(false)}
           >
-            {/* inline X so no extra dependency */}
             <svg viewBox="0 0 14 14" width="14" height="14" fill="none" aria-hidden="true"
               stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="1" y1="1" x2="13" y2="13"/>
@@ -260,9 +283,7 @@ function Navebar() {
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════
-          MOBILE DRAWER
-          ══════════════════════════════════════════ */}
+      {/* ── Mobile drawer ── */}
       <div
         className={`ab-mobile-drawer ${mobileOpen ? 'ab-mobile-drawer--open' : ''}`}
         aria-hidden={!mobileOpen}
@@ -274,7 +295,10 @@ function Navebar() {
                 <>
                   <button
                     className="ab-mobile-nav-btn"
-                    onClick={() => setMobileExpanded(p => p === item.menu ? null : item.menu)}
+                    onClick={() => {
+                      if (!user) { navigate('/auth'); setMobileOpen(false); return; }
+                      setMobileExpanded(p => p === item.menu ? null : item.menu);
+                    }}
                     aria-expanded={mobileExpanded === item.menu}
                   >
                     {t(item.tKey)}
@@ -290,7 +314,14 @@ function Navebar() {
                   <div className={`ab-mobile-sub ${mobileExpanded === item.menu ? 'ab-mobile-sub--open' : ''}`}>
                     <div style={{ overflow: 'hidden' }}>
                       {MEGA_MENU_DATA[item.menu].columns[0].links.map((link) => (
-                        <a key={link} href="#" className="ab-mobile-sub-link">{link}</a>
+                        <a
+                          key={link}
+                          href="/"
+                          className="ab-mobile-sub-link"
+                          onClick={handleProtectedClick}
+                        >
+                          {link}
+                        </a>
                       ))}
                     </div>
                   </div>
@@ -298,7 +329,9 @@ function Navebar() {
               ) : (
                 <Link to="/" className="ab-mobile-nav-link" aria-label={t(item.tKey)}>
                   {item.icon
-                    ? <span className="ab-mobile-home-icon"><HomeTwoToneIcon style={{ fontSize: 18 }} />{t(item.tKey)}</span>
+                    ? <span className="ab-mobile-home-icon">
+                        <HomeTwoToneIcon style={{ fontSize: 18 }} />{t(item.tKey)}
+                      </span>
                     : t(item.tKey)
                   }
                 </Link>
@@ -307,14 +340,31 @@ function Navebar() {
           ))}
         </ul>
 
+        {/* Mobile drawer footer — login or logout */}
         <div className="ab-mobile-footer">
-          <Link
-            className="ab-navbar-cta"
-            to="/auth"
-            style={{ display: 'inline-block', textAlign: 'center' }}
-          >
-            {t('nav.login')}
-          </Link>
+          {user ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <span style={{ fontSize: 14, color: '#374151', padding: '0 4px' }}>
+                👤 {user.full_name || user.email}
+              </span>
+              <button
+                className="ab-navbar-cta"
+                onClick={() => { handleLogout(); setMobileOpen(false); }}
+                style={{ display: 'inline-block', textAlign: 'center', cursor: 'pointer', border: 'none' }}
+              >
+                {t('nav.logout') || 'Logout'}
+              </button>
+            </div>
+          ) : (
+            <Link
+              className="ab-navbar-cta"
+              to="/auth"
+              style={{ display: 'inline-block', textAlign: 'center' }}
+              onClick={() => setMobileOpen(false)}
+            >
+              {t('nav.login')}
+            </Link>
+          )}
         </div>
       </div>
 

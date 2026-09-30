@@ -10,7 +10,8 @@
     "capabilities": "Capabilities",
     "resources": "Resources",
     "login": "Login",
-    "subtitle": "Wollo University Information Hub"
+    "subtitle": "Wollo University Information Hub",
+    "logout": "Logout"
   },
   "hero": {
     "eyebrow": "Ready when you are",
