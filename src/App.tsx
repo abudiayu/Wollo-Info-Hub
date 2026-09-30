@@ -3,6 +3,7 @@ import Layout         from './components/layout/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage       from './pages/home/HomePage';
 import Statistics     from './components/Statistics/Statistics.jsx';
+import Admin          from './pages/Admin/Admin.jsx';
 import Auth           from './pages/Auth/Auth';
 import NotFound       from './components/NotFoundPage/NotFound.jsx';
 
@@ -13,7 +14,7 @@ export default function App() {
         {/* ── Routes with shared Navbar + Footer ── */}
         <Route element={<Layout />}>
 
-          {/* Public — visible to everyone */}
+          {/* Public */}
           <Route path="/" element={<HomePage />} />
 
           {/* Protected — must be logged in */}
@@ -26,9 +27,19 @@ export default function App() {
             }
           />
 
+          {/* Admin only — redirect handled inside Admin.jsx */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+
         </Route>
 
-        {/* ── Standalone pages (no shared Navbar/Footer) ── */}
+        {/* ── Standalone pages ── */}
         <Route path="/auth" element={<Auth />} />
         <Route path="*"     element={<NotFound />} />
       </Routes>

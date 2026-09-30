@@ -213,8 +213,13 @@ function Navebar() {
         <div className="ab-navbar-right">
 
           {user ? (
-            /* ── Logged in: show name + logout ── */
+            /* ── Logged in: show name + (admin link) + logout ── */
             <>
+              {user.role === 'admin' && (
+                <Link className="ab-navlink" to="/admin" style={{ fontWeight: 600, color: '#6366f1' }}>
+                  Admin
+                </Link>
+              )}
               <span className="ab-navbar-username" title={user.email}>
                 {user.full_name?.split(' ')[0] || user.email}
               </span>
