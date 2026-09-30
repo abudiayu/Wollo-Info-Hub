@@ -5,7 +5,7 @@ import './Admin.css';
 
 /* ─── API layer (self-contained, no dependency on api/client) ─ */
 const API_BASE = (import.meta.env?.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
-const TOKEN_KEYS = ['token', 'authToken', 'accessToken', 'jwt', 'auth_token', 'wollo_token', 'wollo-token'];
+const TOKEN_KEYS = ['wou_token', 'token', 'authToken', 'accessToken', 'jwt', 'auth_token', 'wollo_token', 'wollo-token'];
 
 class ApiError extends Error {
   constructor(message, status = 0) {
@@ -262,7 +262,7 @@ function EditDrawer({ user, token, onClose, onSaved, pushToast }) {
     try {
       const body = { full_name: name.trim() };
       if (password) body.password = password;
-      const res = await request('PUT', `/api/admin/users/${user.role}/${user.id}`, body, token);
+      const res = await request('PUT', `/api/admin/users/${user.id}`, body, token);
       const returned = res?.user ?? res?.data ?? res ?? {};
       const merged = normalizeUser({
         ...user,
