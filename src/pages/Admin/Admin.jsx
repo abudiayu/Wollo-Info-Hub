@@ -1,164 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import {
+  API_BASE, request, normalizeList, normalizeUser, rowKey, formatDate,
+  pageList, passwordStrength, Icon, Avatar, RoleBadge,
+} from './AdminShared/AdminShared';
+import AdminSidebar from "./AdminSideBar/AdminSidebar";
+import { StatCards, SignupsChart, RoleDonut } from './AdminChart/AdminChart';
 import './Admin.css';
+import './AdminChart/AdminChart.css';
 
-/* ─── API layer (self-contained, no dependency on api/client) ─ */
-const API_BASE = (import.meta.env?.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
-const TOKEN_KEYS = ['wou_token', 'token', 'authToken', 'accessToken', 'jwt', 'auth_token', 'wollo_token', 'wollo-token'];
-
-class ApiError extends Error {
-  constructor(message, status = 0) {
-    super(message);
-    this.status = status;
-  }
-}
-
-function readToken(ctxToken) {
-  if (ctxToken) return ctxToken;
-  for (const store of [localStorage, sessionStorage]) {
-    for (const key of TOKEN_KEYS) {
-      let v = store.getItem(key);
-      if (!v) continue;
-      v = v.trim();
-      if (v.startsWith('{')) {
-        try {
-          const parsed = JSON.parse(v);
-          if (parsed.token) return parsed.token;
-        } catch { /* ignore */ }
-      }
-      return v.replace(/^"|"$/g, '');
-    }
-  }
-  return '';
-}
-
-async function request(method, path, body, ctxToken) {
-  const token = readToken(ctxToken);
-  let res;
-  try {
-    res = await fetch(`${API_BASE}${path}`, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  } catch {
-    throw new ApiError(`Cannot reach the server at ${API_BASE}. Is it running?`, 0);
-  }
-
-  const text = await res.text();
-  let data = null;
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch { /* not JSON */ }
-
-  if (!res.ok) {
-    throw new ApiError((data && (data.error || data.message)) || `Request failed (${res.status})`, res.status);
-  }
-  if (data === null && text) {
-    throw new ApiError('The server did not return JSON. Check that VITE_API_URL points to your backend.', res.status);
-  }
-  return data;
-}
-
-/* Accept any common response shape and always return a clean array */
-function normalizeList(payload) {
-  const list = Array.isArray(payload)
-    ? payload
-    : payload?.data ?? payload?.users ?? payload?.accounts ?? payload?.rows ?? [];
-  if (!Array.isArray(list)) return [];
-  return list.map(normalizeUser);
-}
-
-function normalizeUser(u = {}) {
-  return {
-    ...u,
-    id: u.id ?? u.user_id ?? u.admin_id ?? u.staff_id,
-    full_name: u.full_name ?? u.name ?? u.fullName ?? '',
-    email: u.email ?? '',
-    avatar_url: u.avatar_url ?? u.avatar ?? u.profile ?? null,
-    role: String(u.role ?? u.source ?? 'user').toLowerCase().replace(/s$/, ''),
-    created_at: u.created_at ?? u.createdAt ?? null,
-  };
-}
-
-/* ─── constants ────────────────────────────────────────────── */
 const PAGE_SIZE = 10;
 
-const AVATAR_COLORS = [
-  '#1f5d50', '#b4532a', '#35566f', '#9a7419',
-  '#5a6b2f', '#9b3b32', '#2f6b73', '#6f4b3e',
-];
-
-/* ─── helpers ──────────────────────────────────────────────── */
-function initials(name = '') {
-  return name.split(' ').filter(Boolean).slice(0, 2)
-    .map((w) => w[0].toUpperCase()).join('');
-}
-function avatarColor(id) {
-  return AVATAR_COLORS[(Number(id) || 0) % AVATAR_COLORS.length];
-}
-function formatDate(str) {
-  if (!str) return '—';
-  const d = new Date(str);
-  if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-}
-function passwordStrength(pw) {
-  let s = 0;
-  if (pw.length >= 6) s++;
-  if (pw.length >= 10) s++;
-  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) s++;
-  if (/\d/.test(pw) || /[^A-Za-z0-9]/.test(pw)) s++;
-  return Math.min(s, 3);
-}
-function pageList(total, cur) {
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-  const pages = [1];
-  const start = Math.max(2, cur - 1);
-  const end = Math.min(total - 1, cur + 1);
-  if (start > 2) pages.push('…');
-  for (let i = start; i <= end; i++) pages.push(i);
-  if (end < total - 1) pages.push('…');
-  pages.push(total);
-  return pages;
-}
-/* Composite key so IDs from different tables never clash */
-const rowKey = (u) => `${u.role}-${u.id}`;
-
-/* ─── icons ────────────────────────────────────────────────── */
-const ICONS = {
-  search:   <><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></>,
-  edit:     <><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></>,
-  close:    <path d="M18 6 6 18M6 6l12 12"/>,
-  eye:      <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>,
-  eyeOff:   <><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="m1 1 22 22"/></>,
-  refresh:  <><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></>,
-  users:    <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>,
-  shield:   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
-  check:    <path d="M20 6 9 17l-5-5"/>,
-  alert:    <><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></>,
-  left:     <path d="m15 18-6-6 6-6"/>,
-  right:    <path d="m9 18 6-6-6-6"/>,
-  user:     <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
-  lock:     <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
-  staff:    <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>,
-};
-
-function Icon({ name, size = 18 }) {
-  return (
-    <svg className="adm-icon" width={size} height={size} viewBox="0 0 24 24"
-      fill="none" stroke="currentColor" strokeWidth="1.8"
-      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {ICONS[name]}
-    </svg>
-  );
-}
-
-/* ─── toast ────────────────────────────────────────────────── */
+/* ─── toast ─── */
 function useToast() {
   const [toasts, setToasts] = useState([]);
   const ctr = useRef(0);
@@ -183,24 +37,6 @@ function Toast({ toasts }) {
   );
 }
 
-/* ─── sub-components ───────────────────────────────────────── */
-function Avatar({ user, large = false }) {
-  const cls = `adm-avatar${large ? ' adm-avatar--lg' : ''}`;
-  return user.avatar_url
-    ? <img src={user.avatar_url} alt={user.full_name} className={`${cls} adm-avatar--img`} />
-    : <span className={`${cls} adm-avatar--initials`} style={{ background: avatarColor(user.id) }} aria-hidden="true">
-        {initials(user.full_name)}
-      </span>;
-}
-
-function RoleBadge({ role }) {
-  return (
-    <span className={`adm-badge adm-badge--${role}`}>
-      <span className="adm-badge-dot" />{role}
-    </span>
-  );
-}
-
 function SkeletonRow() {
   return (
     <tr className="adm-skeleton-row">
@@ -220,7 +56,7 @@ function SkeletonRow() {
   );
 }
 
-/* ─── edit drawer ──────────────────────────────────────────── */
+/* ─── edit drawer ─── */
 function EditDrawer({ user, token, onClose, onSaved, pushToast }) {
   const [name, setName] = useState(user.full_name);
   const [password, setPassword] = useState('');
@@ -297,7 +133,7 @@ function EditDrawer({ user, token, onClose, onSaved, pushToast }) {
 
         <div className="adm-drawer-profile">
           <Avatar user={user} large />
-          <div>
+          <div className="adm-drawer-profile-info">
             <p className="adm-drawer-name">{user.full_name}</p>
             <p className="adm-drawer-email">{user.email}</p>
             <div className="adm-drawer-meta">
@@ -371,24 +207,24 @@ function EditDrawer({ user, token, onClose, onSaved, pushToast }) {
   );
 }
 
-/* ─── main page ────────────────────────────────────────────── */
+/* ─── main page ─── */
 export default function Admin() {
-  const { user: me, token: ctxToken, loading: authLoading } = useAuth();
+  const { user: me, token: ctxToken, loading: authLoading, logout } = useAuth();
   const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
   const [fetching, setFetching] = useState(true);
-  const [fetchErr, setFetchErr] = useState(null); // { message, status }
+  const [fetchErr, setFetchErr] = useState(null);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('newest');
   const [roleTab, setRoleTab] = useState('all');
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [view, setView] = useState('dashboard'); // 'dashboard' | 'users'
   const { toasts, push: pushToast } = useToast();
 
   const myRole = me?.role ? String(me.role).toLowerCase() : '';
-  /* Only block when we positively know the role is not admin.
-     If the role is missing from AuthContext, let the server decide. */
   const canTry = !!me && (!myRole || myRole === 'admin');
 
   /* guard */
@@ -398,7 +234,7 @@ export default function Admin() {
     if (myRole && myRole !== 'admin') navigate('/', { replace: true });
   }, [me, myRole, authLoading, navigate]);
 
-  /* fetch */
+  /* fetch (real data from the API) */
   const fetchUsers = useCallback(async () => {
     setFetching(true);
     setFetchErr(null);
@@ -419,10 +255,12 @@ export default function Admin() {
 
   /* derived */
   const countOf = (role) => users.filter((u) => u.role === role).length;
-  const allCount = users.length;
-  const userCount = countOf('user');
-  const staffCount = countOf('staff');
-  const adminCount = countOf('admin');
+  const counts = {
+    all: users.length,
+    user: countOf('user'),
+    staff: countOf('staff'),
+    admin: countOf('admin'),
+  };
 
   const filtered = users
     .filter((u) => roleTab === 'all' || u.role === roleTab)
@@ -447,28 +285,36 @@ export default function Admin() {
   const rangeStart = filtered.length ? (safePage - 1) * PAGE_SIZE + 1 : 0;
   const rangeEnd = Math.min(safePage * PAGE_SIZE, filtered.length);
 
+  const recent = [...users]
+    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+    .slice(0, 4);
+
   function handleSaved(updated) {
-    setUsers((prev) =>
-      prev.map((u) => (rowKey(u) === rowKey(updated) ? { ...u, ...updated } : u))
-    );
+    setUsers((prev) => prev.map((u) => (rowKey(u) === rowKey(updated) ? { ...u, ...updated } : u)));
+  }
+
+  function pickRole(key) {
+    setRoleTab(key);
+    setPage(1);
+    setMenuOpen(false);
   }
 
   const isMe = (u) => me && String(me.id) === String(u.id) && (!myRole || myRole === u.role);
 
   if (authLoading) return null;
 
-  /* error state */
+  const myName = me?.full_name || me?.name || me?.fullName || 'Admin';
+
   const renderError = () => {
     const status = fetchErr.status;
     const title = status === 403 ? "You don't have admin access" : "Couldn't load users";
-    const text =
-      status === 401 ? 'Your session expired. Please log in again.' : fetchErr.message;
+    const text = status === 401 ? 'Your session expired. Please log in again.' : fetchErr.message;
     return (
       <div className="adm-error-state">
         <span className="adm-state-icon adm-state-icon--danger"><Icon name="alert" size={22} /></span>
         <p className="adm-state-title">{title}</p>
         <p className="adm-state-text">{text}</p>
-        <p className="adm-state-text" style={{ fontFamily: 'monospace', fontSize: 12, marginTop: -8 }}>
+        <p className="adm-state-code">
           GET {API_BASE}/api/admin/users{status ? ` · HTTP ${status}` : ''}
         </p>
         {status === 401
@@ -479,223 +325,344 @@ export default function Admin() {
   };
 
   const tabs = [
-    { key: 'all', label: 'All', count: allCount },
-    { key: 'user', label: 'Users', count: userCount },
-    { key: 'staff', label: 'Staff', count: staffCount },
-    { key: 'admin', label: 'Admins', count: adminCount },
+    { key: 'all', label: 'All', count: counts.all },
+    { key: 'user', label: 'Users', count: counts.user },
+    { key: 'staff', label: 'Staff', count: counts.staff },
+    { key: 'admin', label: 'Admins', count: counts.admin },
   ];
 
   const emptyText = `No accounts found${search ? ` for “${search}”` : ''}.`;
 
   return (
-    <div className="adm-page">
+    <div className="adm-app">
       <Toast toasts={toasts} />
 
-      <div className="adm-shell">
-        <header className="adm-header">
-          <div>
-            <p className="adm-eyebrow">Admin console</p>
-            <h1 className="adm-title">User management</h1>
-            <p className="adm-subtitle">View and manage everyone registered on Wollo-Info Hub.</p>
-          </div>
-          <button className="adm-btn adm-btn--ghost" onClick={fetchUsers} disabled={fetching}>
-            <Icon name="refresh" size={16} />Refresh
+      <AdminSidebar
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        view={view}
+        onView={(v) => { setView(v); }}
+        roleTab={roleTab}
+        onPick={pickRole}
+        counts={counts}
+        loading={fetching}
+        name={myName}
+        role={myRole}
+        onHome={() => navigate('/')}
+        onLogout={typeof logout === 'function' ? () => logout() : undefined}
+      />
+
+      <div className="adm-main">
+        {/* ── Sticky top bar ── */}
+        <header className="adm-topbar">
+          <button className="adm-menu-btn" onClick={() => setMenuOpen(true)} aria-label="Open menu">
+            <Icon name="menu" size={20} />
           </button>
+          <div className="adm-search-wrap adm-search-wrap--top">
+            <Icon name="search" size={16} />
+            <input type="search" className="adm-search"
+              placeholder="Search by name, email or ID"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              aria-label="Search users" />
+          </div>
+          <div className="adm-topbar-actions">
+            <button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={() => navigate('/')}>
+              <Icon name="arrowLeft" size={15} /><span className="adm-hide-sm">Back to site</span>
+            </button>
+            <button className="adm-btn adm-btn--primary adm-btn--sm" onClick={fetchUsers} disabled={fetching}>
+              <span className={fetching ? 'adm-spin' : ''}><Icon name="refresh" size={15} /></span>
+              <span className="adm-hide-sm">Refresh</span>
+            </button>
+          </div>
         </header>
 
-        <section className="adm-stats" aria-label="Summary">
-          <div className="adm-stat">
-            <span className="adm-stat-icon adm-stat-icon--green"><Icon name="users" /></span>
-            <div>
-              <span className="adm-stat-label">Total accounts</span>
-              <span className="adm-stat-value">{fetching ? '–' : allCount}</span>
-            </div>
-          </div>
-          <div className="adm-stat">
-            <span className="adm-stat-icon adm-stat-icon--amber"><Icon name="user" /></span>
-            <div>
-              <span className="adm-stat-label">Users</span>
-              <span className="adm-stat-value">{fetching ? '–' : userCount}</span>
-            </div>
-          </div>
-          <div className="adm-stat">
-            <span className="adm-stat-icon adm-stat-icon--amber"><Icon name="staff" /></span>
-            <div>
-              <span className="adm-stat-label">Staff</span>
-              <span className="adm-stat-value">{fetching ? '–' : staffCount}</span>
-            </div>
-          </div>
-          <div className="adm-stat">
-            <span className="adm-stat-icon adm-stat-icon--slate"><Icon name="shield" /></span>
-            <div>
-              <span className="adm-stat-label">Admins</span>
-              <span className="adm-stat-value">{fetching ? '–' : adminCount}</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="adm-card">
-          <div className="adm-tabs" role="tablist" aria-label="Filter by role">
-            {tabs.map((t) => (
-              <button
-                key={t.key}
-                role="tab"
-                aria-selected={roleTab === t.key}
-                className={`adm-tab ${roleTab === t.key ? 'is-active' : ''}`}
-                onClick={() => { setRoleTab(t.key); setPage(1); }}
-              >
-                {t.label}
-                <span className="adm-tab-count">{fetching ? '…' : t.count}</span>
-              </button>
-            ))}
+        <main className="adm-content">
+          {/* ── Page heading ── */}
+          <div className="adm-header">
+            <p className="adm-eyebrow">Admin console</p>
+            <h1 className="adm-title">
+              {view === 'dashboard' ? 'Dashboard' : 'User management'}
+            </h1>
+            <p className="adm-subtitle">
+              {view === 'dashboard'
+                ? 'Overview of all registered accounts and activity.'
+                : 'View and manage everyone registered on Wollo-Info Hub.'}
+            </p>
           </div>
 
-          <div className="adm-toolbar">
-            <div className="adm-search-wrap">
-              <Icon name="search" size={16} />
-              <input type="search" className="adm-search"
-                placeholder="Search by name, email or ID"
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                aria-label="Search users" />
-            </div>
-            <select className="adm-sort" value={sort}
-              onChange={(e) => { setSort(e.target.value); setPage(1); }}
-              aria-label="Sort users">
-              <option value="newest">Newest first</option>
-              <option value="oldest">Oldest first</option>
-              <option value="name">Name A to Z</option>
-            </select>
-          </div>
-
-          {fetchErr ? renderError() : (
+          {/* ════════════════════════════════════════
+              DASHBOARD VIEW
+              Stat cards + area chart + donut + recent
+              ════════════════════════════════════════ */}
+          {view === 'dashboard' && (
             <>
-              <div className="adm-table-wrap">
-                <table className="adm-table" aria-label="Users">
-                  <thead>
-                    <tr>
-                      <th>User</th><th>ID</th><th>Role</th><th>Joined</th>
-                      <th aria-label="Actions" />
-                    </tr>
-                  </thead>
-                  <tbody>
+              <StatCards users={users} loading={fetching} />
+
+              <div className="ch-row">
+                <SignupsChart users={users} loading={fetching} />
+                <RoleDonut users={users} loading={fetching} />
+              </div>
+
+              <div className="adm-grid" style={{ marginTop: 16 }}>
+                {/* Recently joined */}
+                <section className="adm-card adm-card--pad">
+                  <h2 className="adm-card-title">Recently joined</h2>
+                  <p className="adm-card-sub">Latest accounts created</p>
+                  <ul className="adm-recent">
                     {fetching
-                      ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)
-                      : pageUsers.length === 0
-                        ? (
-                          <tr><td colSpan={5}>
-                            <div className="adm-empty">
-                              <span className="adm-state-icon"><Icon name="users" size={22} /></span>
-                              <p className="adm-state-title">{emptyText}</p>
+                      ? Array.from({ length: 4 }).map((_, i) => (
+                          <li key={i}>
+                            <span className="adm-skeleton adm-skeleton--avatar" />
+                            <div style={{ flex: 1 }}>
+                              <span className="adm-skeleton" style={{ width: '60%' }} />
+                              <span className="adm-skeleton" style={{ width: '40%', marginTop: 6 }} />
                             </div>
-                          </td></tr>
-                        )
-                        : pageUsers.map((u) => (
-                          <tr key={rowKey(u)} className="adm-row">
-                            <td>
-                              <div className="adm-user-cell">
-                                <Avatar user={u} />
-                                <div className="adm-user-info">
-                                  <span className="adm-user-name">
-                                    {u.full_name}
-                                    {isMe(u) && <span className="adm-you">You</span>}
-                                  </span>
-                                  <span className="adm-user-email">{u.email}</span>
-                                </div>
+                          </li>
+                        ))
+                      : recent.length === 0
+                        ? <li className="adm-recent-empty">No accounts yet.</li>
+                        : recent.map((u) => (
+                            <li key={rowKey(u)}>
+                              <Avatar user={u} />
+                              <div className="adm-recent-info">
+                                <span className="adm-user-name">{u.full_name}</span>
+                                <span className="adm-user-email">{formatDate(u.created_at)}</span>
                               </div>
-                            </td>
-                            <td className="adm-id">#{u.id}</td>
-                            <td><RoleBadge role={u.role} /></td>
-                            <td className="adm-date">{formatDate(u.created_at)}</td>
-                            <td className="adm-actions-cell">
-                              <button className="adm-icon-btn adm-icon-btn--bordered"
-                                onClick={() => setEditing(u)}
-                                aria-label={`Edit ${u.full_name}`} title="Edit">
-                                <Icon name="edit" size={16} />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="adm-mobile-list">
-                {fetching
-                  ? Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="adm-mobile-card">
-                      <span className="adm-skeleton adm-skeleton--avatar" />
-                      <div style={{ flex: 1 }}>
-                        <span className="adm-skeleton" style={{ width: '55%' }} />
-                        <span className="adm-skeleton" style={{ width: '80%', marginTop: 8 }} />
-                      </div>
-                    </div>
-                  ))
-                  : pageUsers.length === 0
-                    ? (
-                      <div className="adm-empty">
-                        <span className="adm-state-icon"><Icon name="users" size={22} /></span>
-                        <p className="adm-state-title">{emptyText}</p>
-                      </div>
-                    )
-                    : pageUsers.map((u) => (
-                      <div key={rowKey(u)} className="adm-mobile-card">
-                        <Avatar user={u} />
-                        <div className="adm-mobile-body">
-                          <div className="adm-mobile-top">
-                            <span className="adm-user-name">
-                              {u.full_name}
-                              {isMe(u) && <span className="adm-you">You</span>}
-                            </span>
-                            <RoleBadge role={u.role} />
-                          </div>
-                          <span className="adm-user-email">{u.email}</span>
-                          <div className="adm-mobile-meta">
-                            <span className="adm-id">#{u.id}</span>
-                            <span className="adm-date">{formatDate(u.created_at)}</span>
-                          </div>
-                        </div>
-                        <button className="adm-icon-btn adm-icon-btn--bordered"
-                          onClick={() => setEditing(u)} aria-label={`Edit ${u.full_name}`}>
-                          <Icon name="edit" size={16} />
-                        </button>
-                      </div>
-                    ))}
-              </div>
-
-              {!fetching && filtered.length > 0 && (
-                <footer className="adm-pagination">
-                  <span className="adm-page-info">
-                    Showing {rangeStart}–{rangeEnd} of {filtered.length}
-                  </span>
-                  {totalPages > 1 && (
-                    <nav className="adm-page-nav" aria-label="Pagination">
-                      <button className="adm-page-btn" disabled={safePage === 1}
-                        onClick={() => setPage(safePage - 1)} aria-label="Previous page">
-                        <Icon name="left" size={16} />
-                      </button>
-                      {pageList(totalPages, safePage).map((p, i) =>
-                        p === '…'
-                          ? <span key={`g${i}`} className="adm-page-gap">…</span>
-                          : (
-                            <button key={p}
-                              className={`adm-page-btn ${p === safePage ? 'is-active' : ''}`}
-                              onClick={() => setPage(p)}
-                              aria-current={p === safePage ? 'page' : undefined}>
-                              {p}
-                            </button>
+                              <RoleBadge role={u.role} />
+                            </li>
                           ))}
-                      <button className="adm-page-btn" disabled={safePage === totalPages}
-                        onClick={() => setPage(safePage + 1)} aria-label="Next page">
-                        <Icon name="right" size={16} />
-                      </button>
-                    </nav>
-                  )}
-                </footer>
-              )}
+                  </ul>
+                </section>
+
+                {/* Quick access */}
+                <div className="adm-side">
+                  <section className="adm-card adm-card--pad">
+                    <h2 className="adm-card-title">Quick access</h2>
+                    <p className="adm-card-sub">Jump to account sections</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
+                      {[
+                        { key: 'all',   label: 'All accounts', count: counts.all,   icon: 'users'  },
+                        { key: 'user',  label: 'Users',        count: counts.user,  icon: 'user'   },
+                        { key: 'staff', label: 'Staff',        count: counts.staff, icon: 'staff'  },
+                        { key: 'admin', label: 'Admins',       count: counts.admin, icon: 'shield' },
+                      ].map((item) => (
+                        <button key={item.key}
+                          className="adm-btn adm-btn--ghost"
+                          style={{ justifyContent: 'space-between', width: '100%' }}
+                          onClick={() => { setView('users'); pickRole(item.key); }}
+                        >
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Icon name={item.icon} size={15} />{item.label}
+                          </span>
+                          <span className="adm-tab-count">{fetching ? '…' : item.count}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              </div>
             </>
           )}
-        </section>
+
+          {/* ════════════════════════════════════════
+              USERS VIEW
+              Full table with tabs, search, pagination
+              ════════════════════════════════════════ */}
+          {view === 'users' && (
+            <div className="adm-grid">
+              <section className="adm-card">
+                <div className="adm-card-head">
+                  <div>
+                    <h2 className="adm-card-title">All accounts</h2>
+                    <p className="adm-card-sub">Manage names and passwords across every role</p>
+                  </div>
+                  <select className="adm-sort" value={sort}
+                    onChange={(e) => { setSort(e.target.value); setPage(1); }}
+                    aria-label="Sort users">
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="name">Name A to Z</option>
+                  </select>
+                </div>
+
+                <div className="adm-tabs" role="tablist" aria-label="Filter by role">
+                  {tabs.map((t) => (
+                    <button key={t.key} role="tab" aria-selected={roleTab === t.key}
+                      className={`adm-tab ${roleTab === t.key ? 'is-active' : ''}`}
+                      onClick={() => { setRoleTab(t.key); setPage(1); }}>
+                      {t.label}
+                      <span className="adm-tab-count">{fetching ? '…' : t.count}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {fetchErr ? renderError() : (
+                  <>
+                    {/* Desktop table */}
+                    <div className="adm-table-wrap">
+                      <table className="adm-table" aria-label="Users">
+                        <thead>
+                          <tr>
+                            <th>User</th><th>ID</th><th>Role</th><th>Joined</th>
+                            <th aria-label="Actions" />
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {fetching
+                            ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)
+                            : pageUsers.length === 0
+                              ? (
+                                  <tr><td colSpan={5}>
+                                    <div className="adm-empty">
+                                      <span className="adm-state-icon"><Icon name="users" size={22} /></span>
+                                      <p className="adm-state-title">{emptyText}</p>
+                                    </div>
+                                  </td></tr>
+                                )
+                              : pageUsers.map((u) => (
+                                  <tr key={rowKey(u)} className="adm-row">
+                                    <td>
+                                      <div className="adm-user-cell">
+                                        <Avatar user={u} />
+                                        <div className="adm-user-info">
+                                          <span className="adm-user-name">
+                                            {u.full_name}
+                                            {isMe(u) && <span className="adm-you">You</span>}
+                                          </span>
+                                          <span className="adm-user-email">{u.email}</span>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td className="adm-id">#{u.id}</td>
+                                    <td><RoleBadge role={u.role} /></td>
+                                    <td className="adm-date">{formatDate(u.created_at)}</td>
+                                    <td className="adm-actions-cell">
+                                      <button className="adm-icon-btn adm-icon-btn--bordered"
+                                        onClick={() => setEditing(u)}
+                                        aria-label={`Edit ${u.full_name}`} title="Edit">
+                                        <Icon name="edit" size={16} />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile cards */}
+                    <div className="adm-mobile-list">
+                      {fetching
+                        ? Array.from({ length: 4 }).map((_, i) => (
+                            <div key={i} className="adm-mobile-card">
+                              <span className="adm-skeleton adm-skeleton--avatar" />
+                              <div style={{ flex: 1 }}>
+                                <span className="adm-skeleton" style={{ width: '55%' }} />
+                                <span className="adm-skeleton" style={{ width: '80%', marginTop: 8 }} />
+                              </div>
+                            </div>
+                          ))
+                        : pageUsers.length === 0
+                          ? (
+                              <div className="adm-empty">
+                                <span className="adm-state-icon"><Icon name="users" size={22} /></span>
+                                <p className="adm-state-title">{emptyText}</p>
+                              </div>
+                            )
+                          : pageUsers.map((u) => (
+                              <div key={rowKey(u)} className="adm-mobile-card">
+                                <Avatar user={u} />
+                                <div className="adm-mobile-body">
+                                  <div className="adm-mobile-top">
+                                    <span className="adm-user-name">
+                                      {u.full_name}
+                                      {isMe(u) && <span className="adm-you">You</span>}
+                                    </span>
+                                    <RoleBadge role={u.role} />
+                                  </div>
+                                  <span className="adm-user-email">{u.email}</span>
+                                  <div className="adm-mobile-meta">
+                                    <span className="adm-id">#{u.id}</span>
+                                    <span className="adm-date">{formatDate(u.created_at)}</span>
+                                  </div>
+                                </div>
+                                <button className="adm-icon-btn adm-icon-btn--bordered"
+                                  onClick={() => setEditing(u)} aria-label={`Edit ${u.full_name}`}>
+                                  <Icon name="edit" size={16} />
+                                </button>
+                              </div>
+                            ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {!fetching && filtered.length > 0 && (
+                      <footer className="adm-pagination">
+                        <span className="adm-page-info">
+                          Showing {rangeStart}–{rangeEnd} of {filtered.length}
+                        </span>
+                        {totalPages > 1 && (
+                          <nav className="adm-page-nav" aria-label="Pagination">
+                            <button className="adm-page-btn" disabled={safePage === 1}
+                              onClick={() => setPage(safePage - 1)} aria-label="Previous page">
+                              <Icon name="left" size={16} />
+                            </button>
+                            {pageList(totalPages, safePage).map((p, i) =>
+                              p === '…'
+                                ? <span key={`g${i}`} className="adm-page-gap">…</span>
+                                : (
+                                    <button key={p}
+                                      className={`adm-page-btn ${p === safePage ? 'is-active' : ''}`}
+                                      onClick={() => setPage(p)}
+                                      aria-current={p === safePage ? 'page' : undefined}>
+                                      {p}
+                                    </button>
+                                  ))}
+                            <button className="adm-page-btn" disabled={safePage === totalPages}
+                              onClick={() => setPage(safePage + 1)} aria-label="Next page">
+                              <Icon name="right" size={16} />
+                            </button>
+                          </nav>
+                        )}
+                      </footer>
+                    )}
+                  </>
+                )}
+              </section>
+
+              {/* Recently joined side panel */}
+              <div className="adm-side">
+                <section className="adm-card adm-card--pad">
+                  <h2 className="adm-card-title">Recently joined</h2>
+                  <p className="adm-card-sub">Latest accounts created</p>
+                  <ul className="adm-recent">
+                    {fetching
+                      ? Array.from({ length: 3 }).map((_, i) => (
+                          <li key={i}>
+                            <span className="adm-skeleton adm-skeleton--avatar" />
+                            <div style={{ flex: 1 }}>
+                              <span className="adm-skeleton" style={{ width: '60%' }} />
+                              <span className="adm-skeleton" style={{ width: '40%', marginTop: 6 }} />
+                            </div>
+                          </li>
+                        ))
+                      : recent.length === 0
+                        ? <li className="adm-recent-empty">No accounts yet.</li>
+                        : recent.map((u) => (
+                            <li key={rowKey(u)}>
+                              <Avatar user={u} />
+                              <div className="adm-recent-info">
+                                <span className="adm-user-name">{u.full_name}</span>
+                                <span className="adm-user-email">{formatDate(u.created_at)}</span>
+                              </div>
+                              <RoleBadge role={u.role} />
+                            </li>
+                          ))}
+                  </ul>
+                </section>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
 
       {editing && (

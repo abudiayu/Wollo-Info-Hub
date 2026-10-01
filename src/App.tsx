@@ -13,7 +13,6 @@ export default function App() {
       <Routes>
         {/* ── Routes with shared Navbar + Footer ── */}
         <Route element={<Layout />}>
-
           {/* Public */}
           <Route path="/" element={<HomePage />} />
 
@@ -26,20 +25,17 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* Admin only — redirect handled inside Admin.jsx */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <Admin />
-              </ProtectedRoute>
-            }
-          />
-
         </Route>
 
-        {/* ── Standalone pages ── */}
+        {/* ── Standalone pages — no shared Navbar/Footer ── */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/auth" element={<Auth />} />
         <Route path="*"     element={<NotFound />} />
       </Routes>
