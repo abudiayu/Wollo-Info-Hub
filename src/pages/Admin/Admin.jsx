@@ -5,8 +5,10 @@ import {
   API_BASE, request, normalizeList, normalizeUser, rowKey, formatDate,
   pageList, passwordStrength, Icon, Avatar, RoleBadge,
 } from './AdminShared/AdminShared';
-import AdminSidebar from "./AdminSideBar/AdminSidebar";
+import AdminSidebar    from "./AdminSideBar/AdminSidebar";
 import { StatCards, SignupsChart, RoleDonut } from './AdminChart/AdminChart';
+import ContentManager  from './ContentManager/ContentManager';
+import MediaLibrary    from './ContentManager/MediaLibrary';
 import './Admin.css';
 import './AdminChart/AdminChart.css';
 
@@ -221,7 +223,8 @@ export default function Admin() {
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [view, setView] = useState('dashboard'); // 'dashboard' | 'users'
+  const [view, setView] = useState('dashboard'); // 'dashboard' | 'users' | 'content' | 'media'
+  const [contentSlug, setContentSlug] = useState(null);
   const { toasts, push: pushToast } = useToast();
 
   const myRole = me?.role ? String(me.role).toLowerCase() : '';
@@ -350,6 +353,8 @@ export default function Admin() {
         role={myRole}
         onHome={() => navigate('/')}
         onLogout={typeof logout === 'function' ? () => logout() : undefined}
+        contentSlug={contentSlug}
+        onContentSlug={setContentSlug}
       />
 
       <div className="adm-main">
@@ -378,8 +383,266 @@ export default function Admin() {
         </header>
 
         <main className="adm-content">
-          {/* ── Page heading ── */}
-          <div className="adm-header">
+
+          {/* ── Content Manager ── */}
+          {view === 'content' && (
+            <ContentManager
+              token={ctxToken}
+              section={contentSlug}
+              onView={(v) => setView(v)}
+            />
+          )}
+
+          {/* ── Media Library ── */}
+          {view === 'media' && (
+            <MediaLibrary
+              token={ctxToken}
+              onClose={() => setView('dashboard')}
+            />
+          )}
+
+          {/* ── Dashboard ── */}
+          {view === 'dashboard' && (
+            <>
+              <div className="adm-header">
+                <p className="adm-eyebrow">Admin console</p>
+                <h1 className="adm-title">Dashboard</h1>
+                <p className="adm-subtitle">Overview of all registered accounts and activity.</p>
+              </div>
+              <StatCards users={users} loading={fetching} />
+              <div className="ch-row">
+                <SignupsChart users={users} loading={fetching} />
+                <RoleDonut users={users} loading={fetching} />
+              </div>
+              <div className="adm-grid" style={{ marginTop: 16 }}>
+                <section className="adm-card adm-card--pad">
+                  <h2 className="adm-card-title">Recently joined</h2>
+                  <p className="adm-card-sub">Latest accounts created</p>
+                  <ul className="adm-recent">
+                    {fetching
+                      ? Array.from({ length: 4 }).map((_, i) => (
+                          <li key={i}>
+                            <span className="adm-skeleton adm-skeleton--avatar" />
+                            <div style={{ flex: 1 }}>
+                              <span className="adm-skeleton" style={{ width: '60%' }} />
+                              <span className="adm-skeleton" style={{ width: '40%', marginTop: 6 }} />
+                            </div>
+                          </li>
+                        ))
+                      : recent.length === 0
+                        ? <li className="adm-recent-empty">No accounts yet.</li>
+                        : recent.map((u) => (
+                            <li key={rowKey(u)}>
+                              <Avatar user={u} />
+                              <div className="adm-recent-info">
+                                <span className="adm-user-name">{u.full_name}</span>
+                                <span className="adm-user-email">{formatDate(u.created_at)}</span>
+                              </div>
+                              <RoleBadge role={u.role} />
+                            </li>
+                          ))}
+                  </ul>
+                </section>
+                <div className="adm-side">
+                  <section className="adm-card adm-card--pad">
+                    <h2 className="adm-card-title">Quick access</h2>
+                    <p className="adm-card-sub">Jump to account sections</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
+                      {[
+                        { key: 'all',   label: 'All accounts', count: counts.all,   icon: 'users'  },
+                        { key: 'user',  label: 'Users',        count: counts.user,  icon: 'user'   },
+                        { key: 'staff', label: 'Staff',        count: counts.staff, icon: 'staff'  },
+                        { key: 'admin', label: 'Admins',       count: counts.admin, icon: 'shield' },
+                      ].map((item) => (
+                        <button key={item.key}
+                          className="adm-btn adm-btn--ghost"
+                          style={{ justifyContent: 'space-between', width: '100%' }}
+                          onClick={() => { setView('users'); pickRole(item.key); }}
+                        >
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Icon name={item.icon} size={15} />{item.label}
+                          </span>
+                          <span className="adm-tab-count">{fetching ? '…' : item.count}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── Users ── */}
+          {view === 'users' && (
+            <>
+              <div className="adm-header">
+                <p className="adm-eyebrow">Admin console</p>
+                <h1 className="adm-title">User management</h1>
+                <p className="adm-subtitle">View and manage everyone registered on Wollo-Info Hub.</p>
+              </div>
+              <div className="adm-grid">
+                <section className="adm-card">
+                  <div className="adm-card-head">
+                    <div>
+                      <h2 className="adm-card-title">All accounts</h2>
+                      <p className="adm-card-sub">Manage names and passwords across every role</p>
+                    </div>
+                    <select className="adm-sort" value={sort}
+                      onChange={(e) => { setSort(e.target.value); setPage(1); }}
+                      aria-label="Sort users">
+                      <option value="newest">Newest first</option>
+                      <option value="oldest">Oldest first</option>
+                      <option value="name">Name A to Z</option>
+                    </select>
+                  </div>
+                  <div className="adm-tabs" role="tablist" aria-label="Filter by role">
+                    {tabs.map((t) => (
+                      <button key={t.key} role="tab" aria-selected={roleTab === t.key}
+                        className={`adm-tab ${roleTab === t.key ? 'is-active' : ''}`}
+                        onClick={() => { setRoleTab(t.key); setPage(1); }}>
+                        {t.label}
+                        <span className="adm-tab-count">{fetching ? '…' : t.count}</span>
+                      </button>
+                    ))}
+                  </div>
+                  {fetchErr ? renderError() : (
+                    <>
+                      <div className="adm-table-wrap">
+                        <table className="adm-table" aria-label="Users">
+                          <thead>
+                            <tr><th>User</th><th>ID</th><th>Role</th><th>Joined</th><th aria-label="Actions" /></tr>
+                          </thead>
+                          <tbody>
+                            {fetching
+                              ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)
+                              : pageUsers.length === 0
+                                ? <tr><td colSpan={5}><div className="adm-empty"><span className="adm-state-icon"><Icon name="users" size={22} /></span><p className="adm-state-title">{emptyText}</p></div></td></tr>
+                                : pageUsers.map((u) => (
+                                    <tr key={rowKey(u)} className="adm-row">
+                                      <td>
+                                        <div className="adm-user-cell">
+                                          <Avatar user={u} />
+                                          <div className="adm-user-info">
+                                            <span className="adm-user-name">{u.full_name}{isMe(u) && <span className="adm-you">You</span>}</span>
+                                            <span className="adm-user-email">{u.email}</span>
+                                          </div>
+                                        </div>
+                                      </td>
+                                      <td className="adm-id">#{u.id}</td>
+                                      <td><RoleBadge role={u.role} /></td>
+                                      <td className="adm-date">{formatDate(u.created_at)}</td>
+                                      <td className="adm-actions-cell">
+                                        <button className="adm-icon-btn adm-icon-btn--bordered"
+                                          onClick={() => setEditing(u)} aria-label={`Edit ${u.full_name}`} title="Edit">
+                                          <Icon name="edit" size={16} />
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="adm-mobile-list">
+                        {fetching
+                          ? Array.from({ length: 4 }).map((_, i) => (
+                              <div key={i} className="adm-mobile-card">
+                                <span className="adm-skeleton adm-skeleton--avatar" />
+                                <div style={{ flex: 1 }}>
+                                  <span className="adm-skeleton" style={{ width: '55%' }} />
+                                  <span className="adm-skeleton" style={{ width: '80%', marginTop: 8 }} />
+                                </div>
+                              </div>
+                            ))
+                          : pageUsers.length === 0
+                            ? <div className="adm-empty"><span className="adm-state-icon"><Icon name="users" size={22} /></span><p className="adm-state-title">{emptyText}</p></div>
+                            : pageUsers.map((u) => (
+                                <div key={rowKey(u)} className="adm-mobile-card">
+                                  <Avatar user={u} />
+                                  <div className="adm-mobile-body">
+                                    <div className="adm-mobile-top">
+                                      <span className="adm-user-name">{u.full_name}{isMe(u) && <span className="adm-you">You</span>}</span>
+                                      <RoleBadge role={u.role} />
+                                    </div>
+                                    <span className="adm-user-email">{u.email}</span>
+                                    <div className="adm-mobile-meta">
+                                      <span className="adm-id">#{u.id}</span>
+                                      <span className="adm-date">{formatDate(u.created_at)}</span>
+                                    </div>
+                                  </div>
+                                  <button className="adm-icon-btn adm-icon-btn--bordered"
+                                    onClick={() => setEditing(u)} aria-label={`Edit ${u.full_name}`}>
+                                    <Icon name="edit" size={16} />
+                                  </button>
+                                </div>
+                              ))}
+                      </div>
+                      {!fetching && filtered.length > 0 && (
+                        <footer className="adm-pagination">
+                          <span className="adm-page-info">Showing {rangeStart}–{rangeEnd} of {filtered.length}</span>
+                          {totalPages > 1 && (
+                            <nav className="adm-page-nav" aria-label="Pagination">
+                              <button className="adm-page-btn" disabled={safePage === 1} onClick={() => setPage(safePage - 1)} aria-label="Previous page"><Icon name="left" size={16} /></button>
+                              {pageList(totalPages, safePage).map((p, i) =>
+                                p === '…' ? <span key={`g${i}`} className="adm-page-gap">…</span>
+                                  : <button key={p} className={`adm-page-btn ${p === safePage ? 'is-active' : ''}`} onClick={() => setPage(p)} aria-current={p === safePage ? 'page' : undefined}>{p}</button>
+                              )}
+                              <button className="adm-page-btn" disabled={safePage === totalPages} onClick={() => setPage(safePage + 1)} aria-label="Next page"><Icon name="right" size={16} /></button>
+                            </nav>
+                          )}
+                        </footer>
+                      )}
+                    </>
+                  )}
+                </section>
+                <div className="adm-side">
+                  <section className="adm-card adm-card--pad">
+                    <h2 className="adm-card-title">Recently joined</h2>
+                    <p className="adm-card-sub">Latest accounts created</p>
+                    <ul className="adm-recent">
+                      {fetching
+                        ? Array.from({ length: 3 }).map((_, i) => (
+                            <li key={i}>
+                              <span className="adm-skeleton adm-skeleton--avatar" />
+                              <div style={{ flex: 1 }}>
+                                <span className="adm-skeleton" style={{ width: '60%' }} />
+                                <span className="adm-skeleton" style={{ width: '40%', marginTop: 6 }} />
+                              </div>
+                            </li>
+                          ))
+                        : recent.length === 0
+                          ? <li className="adm-recent-empty">No accounts yet.</li>
+                          : recent.map((u) => (
+                              <li key={rowKey(u)}>
+                                <Avatar user={u} />
+                                <div className="adm-recent-info">
+                                  <span className="adm-user-name">{u.full_name}</span>
+                                  <span className="adm-user-email">{formatDate(u.created_at)}</span>
+                                </div>
+                                <RoleBadge role={u.role} />
+                              </li>
+                            ))}
+                    </ul>
+                  </section>
+                </div>
+              </div>
+            </>
+          )}
+
+        </main>
+      </div>
+
+      {editing && (
+        <EditDrawer
+          user={editing}
+          token={ctxToken}
+          onClose={() => setEditing(null)}
+          onSaved={handleSaved}
+          pushToast={pushToast}
+        />
+      )}
+    </div>
+  );
+}
             <p className="adm-eyebrow">Admin console</p>
             <h1 className="adm-title">
               {view === 'dashboard' ? 'Dashboard' : 'User management'}
@@ -662,6 +925,7 @@ export default function Admin() {
               </div>
             </div>
           )}
+
         </main>
       </div>
 
