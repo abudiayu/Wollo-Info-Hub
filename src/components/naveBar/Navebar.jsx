@@ -35,11 +35,11 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Departments',
         links: [
-          { label: 'Medicine',          to: '/departments' },
-          { label: 'Pharmacy',          to: '/departments' },
-          { label: 'Nursing',           to: '/departments' },
-          { label: 'Midwifery',         to: '/departments' },
-          { label: 'Veterinary Medicine', to: '/departments' },
+          { label: 'Medicine',            to: '/department/medicine/md' },
+          { label: 'Pharmacy',            to: '/department/medicine/pharmacy' },
+          { label: 'Nursing',             to: '/department/medicine/nursing' },
+          { label: 'Midwifery',           to: '/department/medicine/midwifery' },
+          { label: 'Veterinary Medicine', to: '/department/medicine/veterinary' },
         ],
       },
       {
@@ -69,11 +69,11 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Departments',
         links: [
-          { label: 'Computer Science',    to: '/departments' },
-          { label: 'Information Technology', to: '/departments' },
-          { label: 'Information Systems', to: '/departments' },
-          { label: 'Software Engineering',to: '/departments' },
-          { label: 'Data Science',        to: '/departments' },
+          { label: 'Computer Science',    to: '/department/computer-science/cs' },
+          { label: 'Information Technology', to: '/department/computer-science/it' },
+          { label: 'Information Systems', to: '/department/computer-science/information-systems' },
+          { label: 'Software Engineering',to: '/department/computer-science/software-engineering' },
+          { label: 'Data Science',        to: '/department/computer-science/cs' },
         ],
       },
       {
@@ -103,11 +103,11 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Departments',
         links: [
-          { label: 'Civil Engineering',      to: '/departments' },
-          { label: 'Electrical Engineering', to: '/departments' },
-          { label: 'Mechanical Engineering', to: '/departments' },
-          { label: 'Chemical Engineering',   to: '/departments' },
-          { label: 'Water Resources Engineering', to: '/departments' },
+          { label: 'Civil Engineering',      to: '/department/engineering/civil' },
+          { label: 'Electrical Engineering', to: '/department/engineering/electrical' },
+          { label: 'Mechanical Engineering', to: '/department/engineering/mechanical' },
+          { label: 'Chemical Engineering',   to: '/department/engineering/chemical' },
+          { label: 'Water Resources Engineering', to: '/department/engineering/water-resources' },
         ],
       },
       {
@@ -137,14 +137,14 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Departments',
         links: [
-          { label: 'Law',              to: '/departments' },
-          { label: 'Accounting',       to: '/departments' },
-          { label: 'Management',       to: '/departments' },
-          { label: 'Journalism',       to: '/departments' },
-          { label: 'Economics',        to: '/departments' },
-          { label: 'Sociology',        to: '/departments' },
-          { label: 'Psychology',       to: '/departments' },
-          { label: 'Sports Science',   to: '/departments' },
+          { label: 'Law',              to: '/department/social-science/law' },
+          { label: 'Accounting',       to: '/department/social-science/accounting' },
+          { label: 'Management',       to: '/department/social-science/management' },
+          { label: 'Journalism',       to: '/department/social-science/journalism' },
+          { label: 'Economics',        to: '/department/social-science/economics' },
+          { label: 'Sociology',        to: '/department/social-science/sociology' },
+          { label: 'Psychology',       to: '/department/social-science/psychology' },
+          { label: 'Sports Science',   to: '/department/sport/sports-science' },
         ],
       },
       {

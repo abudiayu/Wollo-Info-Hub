@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import MotivationCard from './MotivationCard';
+import StudentTips    from './StudentTips';
 import './MotivationPage.css';
 
 import socialImg      from '../../assets/social.png';
@@ -30,57 +31,62 @@ export default function MotivationPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Show CMS content if available, otherwise fall back to static cards
   const hasCms = !loading && items.length > 0;
 
   return (
-    <section className="motiv-section" aria-label="Motivation">
-      <div className="motiv-inner">
-        <h2 className="motiv-heading">{t('motivation.heading')}</h2>
-        <hr className="motiv-rule" />
+    <>
+      {/* ── Existing motivation cards (CMS or fallback) ── */}
+      <section className="motiv-section" aria-label="Motivation">
+        <div className="motiv-inner">
+          <h2 className="motiv-heading">{t('motivation.heading')}</h2>
+          <hr className="motiv-rule" />
 
-        {hasCms ? (
-          <div className="motiv-grid">
-            {items.map((item) => (
-              <article key={item.id} className="motiv-cms-card">
-                {item.cover_url && (
-                  <div className="motiv-cms-cover">
-                    <img src={item.cover_url} alt={item.title} loading="lazy" />
-                  </div>
-                )}
-                <div className="motiv-cms-body">
-                  <h3 className="motiv-cms-title">{item.title}</h3>
-                  <div
-                    className="motiv-cms-text"
-                    dangerouslySetInnerHTML={{ __html: item.body || '' }}
-                  />
-                  {item.gallery?.length > 0 && (
-                    <div className="motiv-cms-gallery">
-                      {item.gallery.map(m => (
-                        m.type === 'image'
-                          ? <img key={m.id} src={m.url} alt={m.original_name} loading="lazy" />
-                          : <a key={m.id} href={m.url} download={m.original_name} className="motiv-cms-file">
-                              📎 {m.original_name}
-                            </a>
-                      ))}
+          {hasCms ? (
+            <div className="motiv-grid">
+              {items.map((item) => (
+                <article key={item.id} className="motiv-cms-card">
+                  {item.cover_url && (
+                    <div className="motiv-cms-cover">
+                      <img src={item.cover_url} alt={item.title} loading="lazy" />
                     </div>
                   )}
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="motiv-grid">
-            {FALLBACK_CARDS.map((c) => (
-              <MotivationCard
-                key={c.cardKey}
-                cardKey={c.cardKey}
-                image={c.image}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+                  <div className="motiv-cms-body">
+                    <h3 className="motiv-cms-title">{item.title}</h3>
+                    <div
+                      className="motiv-cms-text"
+                      dangerouslySetInnerHTML={{ __html: item.body || '' }}
+                    />
+                    {item.gallery?.length > 0 && (
+                      <div className="motiv-cms-gallery">
+                        {item.gallery.map(m => (
+                          m.type === 'image'
+                            ? <img key={m.id} src={m.url} alt={m.original_name} loading="lazy" />
+                            : <a key={m.id} href={m.url} download={m.original_name} className="motiv-cms-file">
+                                📎 {m.original_name}
+                              </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="motiv-grid">
+              {FALLBACK_CARDS.map((c) => (
+                <MotivationCard
+                  key={c.cardKey}
+                  cardKey={c.cardKey}
+                  image={c.image}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── NEW: 5 Things Every Student Must Know ── */}
+      <StudentTips />
+    </>
   );
 }

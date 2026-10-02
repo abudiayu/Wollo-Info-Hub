@@ -1,0 +1,204 @@
+/* =====================================================
+   StudentTips.css
+   "5 Things Every Student Must Know" section
+   Dark background, numbered card list, accent bars
+   ===================================================== */
+
+.stip-section {
+  width: 100%;
+  background: #0d1420;
+  padding: clamp(64px, 8vw, 110px) clamp(20px, 5.6vw, 56px);
+}
+
+.stip-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.stip-header {
+  margin-bottom: clamp(40px, 5vw, 64px);
+  max-width: 560px;
+}
+
+.stip-eyebrow {
+  display: inline-block;
+  margin-bottom: 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--stip-accent, #2563eb);
+  color: rgba(255,255,255,0.45);
+}
+
+.stip-heading {
+  margin: 0 0 16px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(26px, 3.6vw, 44px);
+  font-weight: 700;
+  line-height: 1.12;
+  color: #fff;
+}
+
+.stip-sub {
+  margin: 0;
+  font-size: clamp(14px, 1.5vw, 16.5px);
+  line-height: 1.6;
+  color: rgba(255,255,255,0.52);
+}
+
+/* ── Card list ── */
+.stip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Individual card ── */
+.stip-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 28px 32px;
+  border-radius: 16px;
+  background: #131d30;
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  cursor: default;
+
+  /* entrance state */
+  opacity: 0;
+  transform: translateX(-18px);
+  animation: stip-enter 0.55s cubic-bezier(0.22,0.65,0.28,1) forwards;
+}
+
+.stip-card:nth-child(1) { animation-delay: 0.05s; }
+.stip-card:nth-child(2) { animation-delay: 0.13s; }
+.stip-card:nth-child(3) { animation-delay: 0.21s; }
+.stip-card:nth-child(4) { animation-delay: 0.29s; }
+.stip-card:nth-child(5) { animation-delay: 0.37s; }
+
+@keyframes stip-enter {
+  to { opacity: 1; transform: none; }
+}
+
+/* Hover lift */
+.stip-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid var(--stip-accent, #2563eb);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.stip-card:hover::before { opacity: 1; }
+
+.stip-card:hover {
+  background: #162038;
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ── Left column: icon + number ── */
+.stip-card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  width: 52px;
+}
+
+.stip-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--stip-accent, #2563eb);
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.stip-card:hover .stip-icon-wrap {
+  background: var(--stip-accent, #2563eb);
+  color: #fff;
+}
+
+.stip-icon-wrap svg {
+  width: 24px;
+  height: 24px;
+}
+
+.stip-number {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--stip-accent, #2563eb);
+  opacity: 0.65;
+}
+
+/* ── Right column: text ── */
+.stip-card-right {
+  flex: 1;
+  min-width: 0;
+}
+
+.stip-card-title {
+  margin: 0 0 10px;
+  font-size: clamp(16px, 1.8vw, 19px);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.stip-card-desc {
+  margin: 0;
+  font-size: clamp(13.5px, 1.4vw, 15px);
+  line-height: 1.65;
+  color: rgba(255,255,255,0.58);
+}
+
+/* ── Left accent bar ── */
+.stip-card-accent-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 16px 0 0 16px;
+  background: var(--stip-accent, #2563eb);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.stip-card:hover .stip-card-accent-bar { opacity: 1; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .stip-card {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 20px 18px 20px 20px;
+    gap: 16px;
+  }
+  .stip-card-left { width: 40px; }
+  .stip-icon-wrap { width: 40px; height: 40px; border-radius: 10px; }
+  .stip-icon-wrap svg { width: 20px; height: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stip-card { animation: none; opacity: 1; transform: none; }
+  .stip-card:hover { transform: none; }
+}

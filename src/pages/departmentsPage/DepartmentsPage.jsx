@@ -6,16 +6,18 @@ import engineering  from '../../assets/engineering.png';
 import health       from '../../assets/health.png';
 import informatics  from '../../assets/informatics.png';
 import social       from '../../assets/social.png';
+import sportImg     from '../../assets/Sport.png';
 
 const API = (import.meta.env?.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
-/* Static department data — used as fallback and structure reference */
+/* Each entry maps to a department sub-page route */
 const DEPARTMENTS = [
   {
     id:       'health',
     faculty:  'College of Health Sciences',
     color:    '#e63946',
     image:    health,
+    route:    '/department/medicine',
     programs: ['Medicine', 'Pharmacy', 'Nursing', 'Midwifery', 'Veterinary Medicine'],
     description:
       'Training compassionate, competent health professionals to serve communities across Ethiopia and beyond.',
@@ -25,6 +27,7 @@ const DEPARTMENTS = [
     faculty:  'College of Informatics',
     color:    '#2563eb',
     image:    informatics,
+    route:    '/department/computer-science',
     programs: ['Computer Science', 'Information Technology', 'Information Systems', 'Software Engineering'],
     description:
       'Bridging technology and society through rigorous study of computing, data, and software systems.',
@@ -34,6 +37,7 @@ const DEPARTMENTS = [
     faculty:  'Institute of Technology',
     color:    '#f59e0b',
     image:    engineering,
+    route:    '/department/engineering',
     programs: ['Civil Engineering', 'Electrical Engineering', 'Mechanical Engineering', 'Chemical Engineering', 'Water Resources Engineering'],
     description:
       'Building the infrastructure of tomorrow — from roads and bridges to energy systems and water networks.',
@@ -43,9 +47,20 @@ const DEPARTMENTS = [
     faculty:  'College of Social Sciences & Humanities',
     color:    '#10b981',
     image:    social,
-    programs: ['Law', 'Accounting', 'Management', 'Journalism', 'Political Science', 'Economics', 'Sociology', 'Psychology', 'Sports Science'],
+    route:    '/department/social-science',
+    programs: ['Law', 'Accounting', 'Management', 'Journalism', 'Political Science', 'Economics', 'Sociology', 'Psychology'],
     description:
       'Understanding human societies and economies to address the challenges of a rapidly changing world.',
+  },
+  {
+    id:       'sport',
+    faculty:  'Sport & Physical Education',
+    color:    '#f97316',
+    image:    sportImg,
+    route:    '/department/sport',
+    programs: ['Sports Science (BSc)', 'Football', 'Athletics', 'Basketball', 'Volleyball', 'Martial Arts'],
+    description:
+      'Compete, grow, lead — the sports programme develops athletes and future physical education professionals.',
   },
 ];
 
@@ -96,7 +111,7 @@ export default function DepartmentsPage() {
           <h1 className="dept-hero-title">Academic Departments</h1>
           <p className="dept-hero-sub">
             Explore the colleges, institutes, and departments that make up Wollo University —
-            from health sciences and engineering to social sciences and informatics.
+            from health sciences and engineering to social sciences, informatics, and sport.
           </p>
         </div>
       </header>
@@ -136,7 +151,7 @@ export default function DepartmentsPage() {
               ))}
             </div>
           ) : (
-            /* Static fallback cards */
+            /* Static cards — each has an Explore button linking to its own page */
             <div className="dept-grid">
               {DEPARTMENTS.map((d, i) => (
                 <article
@@ -161,6 +176,20 @@ export default function DepartmentsPage() {
                         ))}
                       </ul>
                     </div>
+
+                    {/* ── Explore button ── */}
+                    <Link
+                      to={d.route}
+                      className="dept-explore-btn"
+                      style={{ '--dept-color': d.color }}
+                      aria-label={`Explore ${d.faculty}`}
+                    >
+                      Explore
+                      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
+                        <path d="M3 8h9M8 3l5 5-5 5" stroke="currentColor" strokeWidth="1.8"
+                          strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </Link>
                   </div>
                 </article>
               ))}

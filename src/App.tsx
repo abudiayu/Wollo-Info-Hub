@@ -12,6 +12,52 @@ import MotivationStandalonePage    from './pages/motivationPage/MotivationStanda
 import OpportunitiesStandalonePage from './pages/opportunitiesPage/OpportunitiesStandalonePage.jsx';
 import SearchPage                  from './pages/SearchPage/SearchPage.jsx';
 
+/* ── Faculty overview pages ── */
+import Medicine        from './pages/departments/Medicine/Medicine.jsx';
+import ComputerScience from './pages/departments/ComputerScience/ComputerScience.jsx';
+import Engineering     from './pages/departments/Engineering/Engineering.jsx';
+import SocialScience   from './pages/departments/SocialScience/SocialScience.jsx';
+import Sport           from './pages/departments/Sport/Sport.jsx';
+
+/* ── Health Sciences individual programs ── */
+import MedicinePage   from './pages/departments/health/MedicinePage.jsx';
+import PharmacyPage   from './pages/departments/health/PharmacyPage.jsx';
+import NursingPage    from './pages/departments/health/NursingPage.jsx';
+import MidwiferyPage  from './pages/departments/health/MidwiferyPage.jsx';
+import VeterinaryPage from './pages/departments/health/VeterinaryPage.jsx';
+
+/* ── Informatics individual programs ── */
+import CSPage          from './pages/departments/informatics/CSPage.jsx';
+import ITPage          from './pages/departments/informatics/ITPage.jsx';
+import InfoSystemsPage from './pages/departments/informatics/InfoSystemsPage.jsx';
+import SoftwareEngPage from './pages/departments/informatics/SoftwareEngPage.jsx';
+
+/* ── Engineering individual programs ── */
+import CivilEngPage       from './pages/departments/engineering/CivilEngPage.jsx';
+import ElectricalEngPage  from './pages/departments/engineering/ElectricalEngPage.jsx';
+import MechanicalEngPage  from './pages/departments/engineering/MechanicalEngPage.jsx';
+import ChemicalEngPage    from './pages/departments/engineering/ChemicalEngPage.jsx';
+import WaterResourcesPage from './pages/departments/engineering/WaterResourcesPage.jsx';
+
+/* ── Social Sciences individual programs ── */
+import LawPage            from './pages/departments/social/LawPage.jsx';
+import AccountingPage     from './pages/departments/social/AccountingPage.jsx';
+import ManagementPage     from './pages/departments/social/ManagementPage.jsx';
+import JournalismPage     from './pages/departments/social/JournalismPage.jsx';
+import EconomicsPage      from './pages/departments/social/EconomicsPage.jsx';
+import SociologyPage      from './pages/departments/social/SociologyPage.jsx';
+import PsychologyPage     from './pages/departments/social/PsychologyPage.jsx';
+import PoliticalSciencePage from './pages/departments/social/PoliticalSciencePage.jsx';
+
+/* ── Sport individual programs ── */
+import SportSciencePage from './pages/departments/sport/SportSciencePage.jsx';
+import FootballPage     from './pages/departments/sport/FootballPage.jsx';
+import AthleticsPage    from './pages/departments/sport/AthleticsPage.jsx';
+import BasketballPage   from './pages/departments/sport/BasketballPage.jsx';
+import VolleyballPage   from './pages/departments/sport/VolleyballPage.jsx';
+import TableTennisPage  from './pages/departments/sport/TableTennisPage.jsx';
+import MartialArtsPage  from './pages/departments/sport/MartialArtsPage.jsx';
+
 export default function App() {
   return (
     <Router>
@@ -25,6 +71,52 @@ export default function App() {
           <Route path="/opportunities" element={<OpportunitiesStandalonePage />} />
           <Route path="/statistics"    element={<Statistics />} />
           <Route path="/search"        element={<SearchPage />} />
+
+          {/* ── Faculty overview pages ── */}
+          <Route path="/department/medicine"         element={<Medicine />} />
+          <Route path="/department/computer-science" element={<ComputerScience />} />
+          <Route path="/department/engineering"      element={<Engineering />} />
+          <Route path="/department/social-science"   element={<SocialScience />} />
+          <Route path="/department/sport"            element={<Sport />} />
+
+          {/* ── Health Sciences ── */}
+          <Route path="/department/medicine/md"        element={<MedicinePage />} />
+          <Route path="/department/medicine/pharmacy"  element={<PharmacyPage />} />
+          <Route path="/department/medicine/nursing"   element={<NursingPage />} />
+          <Route path="/department/medicine/midwifery" element={<MidwiferyPage />} />
+          <Route path="/department/medicine/veterinary" element={<VeterinaryPage />} />
+
+          {/* ── Informatics ── */}
+          <Route path="/department/computer-science/cs"               element={<CSPage />} />
+          <Route path="/department/computer-science/it"               element={<ITPage />} />
+          <Route path="/department/computer-science/information-systems" element={<InfoSystemsPage />} />
+          <Route path="/department/computer-science/software-engineering" element={<SoftwareEngPage />} />
+
+          {/* ── Engineering ── */}
+          <Route path="/department/engineering/civil"         element={<CivilEngPage />} />
+          <Route path="/department/engineering/electrical"    element={<ElectricalEngPage />} />
+          <Route path="/department/engineering/mechanical"    element={<MechanicalEngPage />} />
+          <Route path="/department/engineering/chemical"      element={<ChemicalEngPage />} />
+          <Route path="/department/engineering/water-resources" element={<WaterResourcesPage />} />
+
+          {/* ── Social Sciences ── */}
+          <Route path="/department/social-science/law"               element={<LawPage />} />
+          <Route path="/department/social-science/accounting"        element={<AccountingPage />} />
+          <Route path="/department/social-science/management"        element={<ManagementPage />} />
+          <Route path="/department/social-science/journalism"        element={<JournalismPage />} />
+          <Route path="/department/social-science/economics"         element={<EconomicsPage />} />
+          <Route path="/department/social-science/sociology"         element={<SociologyPage />} />
+          <Route path="/department/social-science/psychology"        element={<PsychologyPage />} />
+          <Route path="/department/social-science/political-science" element={<PoliticalSciencePage />} />
+
+          {/* ── Sport ── */}
+          <Route path="/department/sport/sports-science" element={<SportSciencePage />} />
+          <Route path="/department/sport/football"       element={<FootballPage />} />
+          <Route path="/department/sport/athletics"      element={<AthleticsPage />} />
+          <Route path="/department/sport/basketball"     element={<BasketballPage />} />
+          <Route path="/department/sport/volleyball"     element={<VolleyballPage />} />
+          <Route path="/department/sport/table-tennis"   element={<TableTennisPage />} />
+          <Route path="/department/sport/martial-arts"   element={<MartialArtsPage />} />
         </Route>
 
         {/* ── Standalone pages — no shared Navbar/Footer ── */}
