@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import './NexeusFooter.css';
 import Logo from '../../assets/wolloLogo.png';
 
@@ -88,30 +89,30 @@ export default function NexeusFooter() {
           {/* Nav columns */}
           <nav className="nx-nav" aria-label="Footer navigation">
             <div className="nx-col">
-              <h3>{t('footer.solutions.heading')}</h3>
+              <h3>{t('footer.academics.heading')}</h3>
               <ul>
-                <li><a href="/">{t('footer.solutions.revenue')}</a></li>
-                <li><a href="/">{t('footer.solutions.search')}</a></li>
-                <li><a href="/">{t('footer.solutions.conversion')}</a></li>
-                <li><a href="/">{t('footer.solutions.customer')}</a></li>
+                <li><Link to="/departments">{t('footer.academics.departments')}</Link></li>
+                <li><Link to="/departments">{t('footer.academics.programs')}</Link></li>
+                <li><a href="/">{t('footer.academics.research')}</a></li>
+                <li><a href="/">{t('footer.academics.library')}</a></li>
               </ul>
             </div>
             <div className="nx-col">
-              <h3>{t('footer.capabilities.heading')}</h3>
+              <h3>{t('footer.campusLife.heading')}</h3>
               <ul>
-                <li><a href="/">{t('footer.capabilities.web')}</a></li>
-                <li><a href="/">{t('footer.capabilities.brand')}</a></li>
-                <li><a href="/">{t('footer.capabilities.growth')}</a></li>
-                <li><a href="/">{t('footer.capabilities.ecommerce')}</a></li>
+                <li><Link to="/opportunities">{t('footer.campusLife.clubs')}</Link></li>
+                <li><Link to="/opportunities">{t('footer.campusLife.sports')}</Link></li>
+                <li><a href="/">{t('footer.campusLife.accommodation')}</a></li>
+                <li><a href="/">{t('footer.campusLife.cafeteria')}</a></li>
               </ul>
             </div>
             <div className="nx-col">
               <h3>{t('footer.resources.heading')}</h3>
               <ul>
-                <li><a href="/">{t('footer.resources.case')}</a></li>
-                <li><a href="/">{t('footer.resources.insights')}</a></li>
-                <li><a href="/">{t('footer.resources.playbooks')}</a></li>
-                <li><a href="/">{t('footer.resources.reports')}</a></li>
+                <li><a href="/">{t('footer.resources.elearning')}</a></li>
+                <li><Link to="/alumni">{t('footer.resources.alumni')}</Link></li>
+                <li><Link to="/opportunities">{t('footer.resources.opportunities')}</Link></li>
+                <li><Link to="/statistics">{t('footer.resources.statistics')}</Link></li>
               </ul>
             </div>
           </nav>

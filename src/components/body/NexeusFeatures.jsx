@@ -17,6 +17,7 @@ const STATS = [
     title:    'WOU Notable Alumni',
     desc:     'Our university has produced numerous notable alumni who lead across every sector.',
     ctaLabel: 'View List ↗',
+    ctaTo:    '/alumni',
   },
   {
     variant: 'default',
@@ -60,11 +61,11 @@ const STATS = [
 ];
 
 const QUICK_LINKS = [
-  { label: 'Library',       href: '#' },
-  { label: 'E-Learning',    href: '#' },
-  { label: 'Campus Life',   href: '#' },
-  { label: 'Alumni',        href: '#' },
-  { label: 'Meet Our Staff',href: '#' },
+  { label: 'Library',       to: '/'              },
+  { label: 'E-Learning',    to: '/'              },
+  { label: 'Campus Life',   to: '/opportunities' },
+  { label: 'Alumni',        to: '/alumni'        },
+  { label: 'Departments',   to: '/departments'   },
 ];
 
 /* ── Arrow icon ───────────────────────────────────────────── */
@@ -81,7 +82,7 @@ export default function NexeusFeatures() {
   const { t } = useTranslation();
 
   return (
-    <section className="nf-section" aria-label="Impact statistics">
+    <section className="nf-section" aria-label="Impact statistics" id="features-section">
       <div className="nf-inner">
 
         {/* ── Header row ── */}
@@ -105,7 +106,7 @@ export default function NexeusFeatures() {
                 <div className="nf-col-icon">{s.icon}</div>
                 <h3 className="nf-col-title">{s.title}</h3>
                 <p  className="nf-col-desc">{s.desc}</p>
-                <a  className="nf-cta-btn" href="/">{s.ctaLabel}</a>
+                <Link className="nf-cta-btn" to={s.ctaTo}>{s.ctaLabel}</Link>
               </div>
             ) : (
               <div key={i} className="nf-col nf-col--stat">
@@ -126,9 +127,9 @@ export default function NexeusFeatures() {
           <span className="nf-ql-label">{t('features.quickLinks')}</span>
           <div className="nf-ql-pills">
             {QUICK_LINKS.map((ql) => (
-              <a key={ql.label} className="nf-ql-pill" href={ql.href}>
+              <Link key={ql.label} className="nf-ql-pill" to={ql.to}>
                 {ql.label} <Arrow />
-              </a>
+              </Link>
             ))}
           </div>
         </div>

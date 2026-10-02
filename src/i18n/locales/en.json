@@ -6,23 +6,23 @@
     "Engineering": "Engineering",
     "Social": "Social Science",
     "Sports": "Sports",
-    "solutions": "Solutions",
-    "capabilities": "Capabilities",
+    "solutions": "Academics",
+    "capabilities": "Campus Life",
     "resources": "Resources",
     "login": "Login",
     "subtitle": "Wollo University Information Hub",
     "logout": "Logout"
   },
   "hero": {
-    "eyebrow": "Ready when you are",
-    "headline": "Build your future now",
-    "lede": "From branding and websites to marketing and growth systems, everything you need to move forward starts right here.",
-    "cta": "Explore more"
+    "eyebrow": "Wollo University — Est. 1985",
+    "headline": "Knowledge, Innovation, Excellence",
+    "lede": "Your gateway to everything Wollo University offers — academics, research, campus life, and the opportunities that will shape your future.",
+    "cta": "Explore now"
   },
   "features": {
-    "eyebrow": "Statistics",
+    "eyebrow": "By the Numbers",
     "heading": "Our Impact in Numbers",
-    "viewAll": "View all",
+    "viewAll": "View statistics",
     "quickLinks": "QUICK LINKS:",
     "departments": {
       "title": "Departments",
@@ -38,7 +38,7 @@
     },
     "opportunities": {
       "title": "Opportunities",
-      "desc": "Internships, research, hackathons, and jobs — open doors, updated as they arrive."
+      "desc": "Internships, research, hackathons, and clubs — open doors, updated as they arrive."
     },
     "stats": {
       "students": "Students",
@@ -99,28 +99,28 @@
     }
   },
   "footer": {
-    "tagline": "Change your future today using marketing and growth systems everything you need starts here.",
-    "legal": "® 2025 Nexeus all rights reserved.",
-    "solutions": {
-      "heading": "Solutions",
-      "revenue": "Revenue Acceleration",
-      "search": "Search Visibility",
-      "conversion": "Conversion Optimization",
-      "customer": "Customer Automation"
+    "tagline": "Empowering students, staff, and alumni of Wollo University with information, opportunities, and connection.",
+    "legal": "© 2025 Wollo University Information Hub. All rights reserved.",
+    "academics": {
+      "heading": "Academics",
+      "departments": "Departments",
+      "programs": "Programs & Courses",
+      "research": "Research Centers",
+      "library": "University Library"
     },
-    "capabilities": {
-      "heading": "Capabilities",
-      "web": "Web Architecture",
-      "brand": "Brand Systems",
-      "growth": "Growth Marketing",
-      "ecommerce": "E-commerce Infrastructure"
+    "campusLife": {
+      "heading": "Campus Life",
+      "clubs": "Student Clubs",
+      "sports": "Sports & Recreation",
+      "accommodation": "Accommodation",
+      "cafeteria": "Cafeteria & Services"
     },
     "resources": {
       "heading": "Resources",
-      "case": "Case Studies",
-      "insights": "Growth Insights",
-      "playbooks": "Playbooks",
-      "reports": "Industry Reports"
+      "elearning": "E-Learning Portal",
+      "alumni": "Alumni Network",
+      "opportunities": "Opportunities",
+      "statistics": "Statistics & Rankings"
     }
   }
 }

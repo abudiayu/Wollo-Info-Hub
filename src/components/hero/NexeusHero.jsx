@@ -32,7 +32,7 @@ export default function NexeusHero() {
 
       <p className="nx-lede">{t('hero.lede')}</p>
 
-      <a className="nx-cta" href="/">
+      <a className="nx-cta" href="#features-section">
         <span>{t('hero.cta')}</span>
       </a>
 

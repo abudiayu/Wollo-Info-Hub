@@ -24,54 +24,171 @@ const SearchIcon = () => (
   </svg>
 );
 
+/*
+ * Each mega-menu link has:
+ *   label   — display text
+ *   to      — React Router path  (null = not yet a real page, falls back to /departments)
+ */
 const MEGA_MENU_DATA = {
   Health: {
     columns: [
-      { heading: 'Departments', links: ['Medicine', 'Pharmacy', 'Nurses', 'Midwifery', 'Veternary Medicine'] },
-      { heading: 'Quick Links', links: ['Course Catalog', 'Admission Requirements', 'Lab Facilities', 'Research Groups', 'Student Projects'] },
-      { heading: 'Resources',   links: ['Faculty Directory', 'Academic Calendar', 'Internship Opportunities', 'Alumni Network', 'Career Services'] },
+      {
+        heading: 'Departments',
+        links: [
+          { label: 'Medicine',          to: '/departments' },
+          { label: 'Pharmacy',          to: '/departments' },
+          { label: 'Nursing',           to: '/departments' },
+          { label: 'Midwifery',         to: '/departments' },
+          { label: 'Veterinary Medicine', to: '/departments' },
+        ],
+      },
+      {
+        heading: 'Quick Links',
+        links: [
+          { label: 'Course Catalog',          to: '/departments' },
+          { label: 'Admission Requirements',  to: '/departments' },
+          { label: 'Lab Facilities',          to: '/departments' },
+          { label: 'Research Groups',         to: '/departments' },
+          { label: 'Student Projects',        to: '/opportunities' },
+        ],
+      },
+      {
+        heading: 'Resources',
+        links: [
+          { label: 'Faculty Directory',       to: '/departments' },
+          { label: 'Academic Calendar',       to: '/departments' },
+          { label: 'Internship Opportunities',to: '/opportunities' },
+          { label: 'Alumni Network',          to: '/alumni' },
+          { label: 'Statistics & Rankings',   to: '/statistics' },
+        ],
+      },
     ],
   },
   informatics: {
     columns: [
-      { heading: 'Departments', links: ['Computer Science', 'Information Technology', 'Information Systems', 'Software Engineering', 'Data Science'] },
-      { heading: 'Quick Links', links: ['Course Catalog', 'Admission Requirements', 'Lab Facilities', 'Research Groups', 'Student Projects'] },
-      { heading: 'Resources',   links: ['Faculty Directory', 'Academic Calendar', 'Internship Opportunities', 'Alumni Network', 'Career Services'] },
+      {
+        heading: 'Departments',
+        links: [
+          { label: 'Computer Science',    to: '/departments' },
+          { label: 'Information Technology', to: '/departments' },
+          { label: 'Information Systems', to: '/departments' },
+          { label: 'Software Engineering',to: '/departments' },
+          { label: 'Data Science',        to: '/departments' },
+        ],
+      },
+      {
+        heading: 'Quick Links',
+        links: [
+          { label: 'Course Catalog',          to: '/departments' },
+          { label: 'Admission Requirements',  to: '/departments' },
+          { label: 'Lab Facilities',          to: '/departments' },
+          { label: 'Research Groups',         to: '/departments' },
+          { label: 'Student Projects',        to: '/opportunities' },
+        ],
+      },
+      {
+        heading: 'Resources',
+        links: [
+          { label: 'Faculty Directory',       to: '/departments' },
+          { label: 'Academic Calendar',       to: '/departments' },
+          { label: 'Internship Opportunities',to: '/opportunities' },
+          { label: 'Alumni Network',          to: '/alumni' },
+          { label: 'Statistics & Rankings',   to: '/statistics' },
+        ],
+      },
     ],
   },
   engineering: {
     columns: [
-      { heading: 'Departments', links: ['Civil Engineering', 'Electrical Engineering', 'Mechanical Engineering', 'Chemical Engineering', 'Water Resources Engineering'] },
-      { heading: 'Quick Links', links: ['Course Catalog', 'Admission Requirements', 'Engineering Labs', 'Research Projects', 'Industrial Attachment'] },
-      { heading: 'Resources',   links: ['Faculty Directory', 'Academic Calendar', 'Scholarships', 'Alumni Network', 'Career Services'] },
+      {
+        heading: 'Departments',
+        links: [
+          { label: 'Civil Engineering',      to: '/departments' },
+          { label: 'Electrical Engineering', to: '/departments' },
+          { label: 'Mechanical Engineering', to: '/departments' },
+          { label: 'Chemical Engineering',   to: '/departments' },
+          { label: 'Water Resources Engineering', to: '/departments' },
+        ],
+      },
+      {
+        heading: 'Quick Links',
+        links: [
+          { label: 'Course Catalog',        to: '/departments' },
+          { label: 'Admission Requirements',to: '/departments' },
+          { label: 'Engineering Labs',      to: '/departments' },
+          { label: 'Research Projects',     to: '/departments' },
+          { label: 'Industrial Attachment', to: '/opportunities' },
+        ],
+      },
+      {
+        heading: 'Resources',
+        links: [
+          { label: 'Faculty Directory',     to: '/departments' },
+          { label: 'Academic Calendar',     to: '/departments' },
+          { label: 'Scholarships',          to: '/opportunities' },
+          { label: 'Alumni Network',        to: '/alumni' },
+          { label: 'Statistics & Rankings', to: '/statistics' },
+        ],
+      },
     ],
   },
   Social: {
     columns: [
-      { heading: 'Departments', links: ['Low Income', 'Accounting', 'Management', 'Journalism', 'Arts and Culture', 'Political Science', 'Economics', 'Sociology', 'Psychology', 'Sports'] },
-      { heading: 'Quick Links', links: ['Course Catalog', 'Admission Requirements', 'Engineering Labs', 'Research Projects', 'Industrial Attachment'] },
-      { heading: 'Resources',   links: ['Faculty Directory', 'Academic Calendar', 'Scholarships', 'Alumni Network', 'Career Services'] },
+      {
+        heading: 'Departments',
+        links: [
+          { label: 'Law',              to: '/departments' },
+          { label: 'Accounting',       to: '/departments' },
+          { label: 'Management',       to: '/departments' },
+          { label: 'Journalism',       to: '/departments' },
+          { label: 'Economics',        to: '/departments' },
+          { label: 'Sociology',        to: '/departments' },
+          { label: 'Psychology',       to: '/departments' },
+          { label: 'Sports Science',   to: '/departments' },
+        ],
+      },
+      {
+        heading: 'Quick Links',
+        links: [
+          { label: 'Course Catalog',        to: '/departments' },
+          { label: 'Admission Requirements',to: '/departments' },
+          { label: 'Research Projects',     to: '/departments' },
+          { label: 'Student Projects',      to: '/opportunities' },
+          { label: 'Industrial Attachment', to: '/opportunities' },
+        ],
+      },
+      {
+        heading: 'Resources',
+        links: [
+          { label: 'Faculty Directory',     to: '/departments' },
+          { label: 'Academic Calendar',     to: '/departments' },
+          { label: 'Scholarships',          to: '/opportunities' },
+          { label: 'Alumni Network',        to: '/alumni' },
+          { label: 'Statistics & Rankings', to: '/statistics' },
+        ],
+      },
     ],
   },
 };
 
 const NAV_ITEMS = [
-  { key: 'Home',        icon: true,  tKey: 'nav.Home',        menu: null        },
-  { key: 'Health',      icon: false, tKey: 'nav.Medicine',    menu: 'Health'    },
+  { key: 'Home',        icon: true,  tKey: 'nav.Home',        menu: null          },
+  { key: 'Health',      icon: false, tKey: 'nav.Medicine',    menu: 'Health'      },
   { key: 'informatics', icon: false, tKey: 'nav.Informatics', menu: 'informatics' },
   { key: 'engineering', icon: false, tKey: 'nav.Engineering', menu: 'engineering' },
-  { key: 'Social',      icon: false, tKey: 'nav.Social',      menu: 'Social'    },
+  { key: 'Social',      icon: false, tKey: 'nav.Social',      menu: 'Social'      },
 ];
 
 function Navebar() {
-  const { t }             = useTranslation();
-  const { user, logout }  = useAuth();
-  const navigate          = useNavigate();
+  const { t }            = useTranslation();
+  const { user, logout } = useAuth();
+  const navigate         = useNavigate();
 
   const [openMenu,       setOpenMenu]       = useState(null);
   const [mobileOpen,     setMobileOpen]     = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(null);
   const [searchOpen,     setSearchOpen]     = useState(false);
+  const [searchQuery,    setSearchQuery]    = useState('');
   const searchInputRef = useRef(null);
   const closeTimer     = useRef(null);
   const navRef         = useRef(null);
@@ -80,14 +197,6 @@ function Navebar() {
   const openWithHover  = (key) => { clearTimeout(closeTimer.current); setOpenMenu(key); };
   const closeWithDelay = ()    => { closeTimer.current = setTimeout(() => setOpenMenu(null), 150); };
   const toggleOnClick  = (key) => { clearTimeout(closeTimer.current); setOpenMenu(p => p === key ? null : key); };
-
-  /* ── If user is not logged in, intercept nav link clicks → /auth ── */
-  const handleProtectedClick = (e) => {
-    if (!user) {
-      e.preventDefault();
-      navigate('/auth');
-    }
-  };
 
   /* ── Close on outside click ── */
   useEffect(() => {
@@ -120,6 +229,25 @@ function Navebar() {
     navigate('/');
   };
 
+  /* ── Search submit: go to /departments or /opportunities depending on query ── */
+  function handleSearchSubmit(e) {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    // Navigate to the search results page — for now route to departments with ?q= param
+    navigate(`/search?q=${encodeURIComponent(q)}`);
+    setSearchOpen(false);
+    setSearchQuery('');
+  }
+
+  /* ── Navigate to a mega-menu link ── */
+  function handleMegaLinkClick(e, to) {
+    e.preventDefault();
+    if (!user) { navigate('/auth'); return; }
+    setOpenMenu(null);
+    navigate(to);
+  }
+
   return (
     <div className="ab-navbar-container" ref={navRef}>
 
@@ -150,12 +278,9 @@ function Navebar() {
                 onMouseEnter={() => openWithHover(item.menu)}
                 onMouseLeave={closeWithDelay}
               >
-                {/* Trigger — clicks redirect to /auth if not logged in */}
-                <a
-                  href="/"
-                  className={`ab-navlink ${openMenu === item.menu ? 'ab-navlink-active' : ''}`}
-                  onClick={(e) => {
-                    e.preventDefault();
+                <button
+                  className={`ab-navlink ab-navlink--btn ${openMenu === item.menu ? 'ab-navlink-active' : ''}`}
+                  onClick={() => {
                     if (!user) { navigate('/auth'); return; }
                     toggleOnClick(item.menu);
                   }}
@@ -164,7 +289,7 @@ function Navebar() {
                 >
                   {t(item.tKey)}
                   <ChevronDown />
-                </a>
+                </button>
 
                 {/* Dropdown panel */}
                 {(() => {
@@ -178,8 +303,13 @@ function Navebar() {
                             <h4 className="ab-dropdown-heading">{col.heading}</h4>
                             <ul>
                               {col.links.map((link) => (
-                                <li key={link}>
-                                  <a href="/" onClick={handleProtectedClick}>{link}</a>
+                                <li key={link.label}>
+                                  <a
+                                    href={link.to}
+                                    onClick={(e) => handleMegaLinkClick(e, link.to)}
+                                  >
+                                    {link.label}
+                                  </a>
                                 </li>
                               ))}
                             </ul>
@@ -191,9 +321,9 @@ function Navebar() {
                 })()}
               </div>
             ) : (
-              <a key={item.key} href="/" className="ab-navlink" onClick={handleProtectedClick}>
+              <Link key={item.key} to="/" className="ab-navlink">
                 {t(item.tKey)}
-              </a>
+              </Link>
             )
           )}
 
@@ -213,7 +343,6 @@ function Navebar() {
         <div className="ab-navbar-right">
 
           {user ? (
-            /* ── Logged in: show name + (admin link) + logout ── */
             <>
               {user.role === 'admin' && (
                 <Link className="ab-navlink" to="/admin" style={{ fontWeight: 600, color: '#6366f1' }}>
@@ -228,7 +357,6 @@ function Navebar() {
               </button>
             </>
           ) : (
-            /* ── Logged out: show login button ── */
             <Link className="ab-navbar-cta" to="/auth">{t('nav.login')}</Link>
           )}
 
@@ -263,21 +391,34 @@ function Navebar() {
         role="search"
         aria-hidden={!searchOpen}
       >
-        <div className="ab-search-field">
+        <form className="ab-search-field" onSubmit={handleSearchSubmit}>
           <span className="ab-search-field-icon" aria-hidden="true"><SearchIcon /></span>
           <input
             ref={searchInputRef}
             type="search"
             className="ab-search-input"
-            placeholder="Search here...."
+            placeholder="Search departments, motivation, opportunities…"
             aria-label="Search"
             tabIndex={searchOpen ? 0 : -1}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
+          {searchQuery && (
+            <button
+              type="submit"
+              className="ab-search-go"
+              tabIndex={searchOpen ? 0 : -1}
+              aria-label="Search"
+            >
+              Go
+            </button>
+          )}
           <button
+            type="button"
             className="ab-search-close"
             aria-label="Close search"
             tabIndex={searchOpen ? 0 : -1}
-            onClick={() => setSearchOpen(false)}
+            onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
           >
             <svg viewBox="0 0 14 14" width="14" height="14" fill="none" aria-hidden="true"
               stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -285,7 +426,7 @@ function Navebar() {
               <line x1="13" y1="1" x2="1" y2="13"/>
             </svg>
           </button>
-        </div>
+        </form>
       </div>
 
       {/* ── Mobile drawer ── */}
@@ -319,14 +460,14 @@ function Navebar() {
                   <div className={`ab-mobile-sub ${mobileExpanded === item.menu ? 'ab-mobile-sub--open' : ''}`}>
                     <div style={{ overflow: 'hidden' }}>
                       {MEGA_MENU_DATA[item.menu].columns[0].links.map((link) => (
-                        <a
-                          key={link}
-                          href="/"
+                        <Link
+                          key={link.label}
+                          to={link.to}
                           className="ab-mobile-sub-link"
-                          onClick={handleProtectedClick}
+                          onClick={() => setMobileOpen(false)}
                         >
-                          {link}
-                        </a>
+                          {link.label}
+                        </Link>
                       ))}
                     </div>
                   </div>
@@ -345,7 +486,7 @@ function Navebar() {
           ))}
         </ul>
 
-        {/* Mobile drawer footer — login or logout */}
+        {/* Mobile drawer footer */}
         <div className="ab-mobile-footer">
           {user ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
