@@ -1,17 +1,22 @@
-/* ───────── Tokens ───────── */
-*{
-  font-family: 'Inter', sans-serif;
-}
-.ddp-page {
-  --ddp-nav-h: 80px;              /* ← set to your navbar height (0 if not fixed) */
-  --ddp-ink: #0f172a;
-  --ddp-muted: #64748b;
-  --ddp-line: #dbe6fb;
-  --ddp-bg-soft: #f4f8ff;
-  --ddp-card: rgba(255, 255, 255, 0.85);
-  --ddp-radius: 20px;
-  --ddp-shadow: 0 10px 30px rgba(30, 58, 138, 0.08);
+/* ═══════════════════════════════════════
+   DepartmentDetailPage.css
+   Scope: .ddp-page and all .ddp-* rules.
+   BUG 6 FIX: global * { font-family } removed — was overriding
+   the whole app. Font is now set only on .ddp-page.
+═══════════════════════════════════════ */
 
+/* ── Tokens ── */
+.ddp-page {
+  --ddp-nav-h:    68px;           /* match fixed navbar height */
+  --ddp-ink:      #0f172a;
+  --ddp-muted:    #64748b;
+  --ddp-line:     #dbe6fb;
+  --ddp-bg-soft:  #f4f8ff;
+  --ddp-card:     rgba(255, 255, 255, 0.85);
+  --ddp-radius:   20px;
+  --ddp-shadow:   0 10px 30px rgba(30, 58, 138, 0.08);
+
+  font-family: 'Inter', system-ui, sans-serif;   /* scoped, not global */
   color: var(--ddp-ink);
   background: #fff;
   overflow-x: hidden;
@@ -28,7 +33,7 @@
   padding: 0 24px;
 }
 
-/* ───────── Buttons ───────── */
+/* ── Buttons ── */
 .ddp-btn {
   display: inline-flex;
   align-items: center;
@@ -43,13 +48,15 @@
   cursor: pointer;
   border: 2px solid transparent;
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  min-height: 44px;            /* accessible tap target */
 }
-.ddp-btn:hover { transform: translateY(-2px); }
+.ddp-btn:hover  { transform: translateY(-2px); }
 .ddp-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 .ddp-btn--primary {
   background: var(--ddp-accent);
   color: #fff;
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--ddp-accent) 35%, transparent);
+  /* BUG 5 FIX: replaced color-mix() with a static rgba fallback */
+  box-shadow: 0 8px 20px rgba(30, 58, 138, 0.25);
 }
 .ddp-btn--outline {
   background: #fff;
@@ -59,7 +66,7 @@
 .ddp-play {
   width: 20px; height: 20px; border-radius: 50%;
   background: var(--ddp-accent);
-  position: relative;
+  position: relative; flex: none;
 }
 .ddp-play::after {
   content: '';
@@ -70,12 +77,20 @@
   border-bottom: 4px solid transparent;
 }
 
-/* ═════════ HERO ═════════ */
+/* focus-visible for all interactive elements */
+.ddp-page a:focus-visible,
+.ddp-page button:focus-visible {
+  outline: 3px solid var(--ddp-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ═══════ HERO ═══════ */
 .ddp-hero {
   position: relative;
   padding: calc(var(--ddp-nav-h) + 40px) 0 0;
   background:
-    radial-gradient(900px 500px at 85% 20%, color-mix(in srgb, var(--ddp-accent) 18%, transparent), transparent 70%),
+    radial-gradient(900px 500px at 85% 20%, rgba(37, 99, 235, 0.18), transparent 70%),
     linear-gradient(180deg, #ffffff 0%, var(--ddp-bg-soft) 100%);
   overflow: hidden;
 }
@@ -97,11 +112,10 @@
 
 .ddp-breadcrumb {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
-  font-size: 0.85rem; color: var(--ddp-muted);
-  margin-bottom: 20px;
+  font-size: 0.85rem; color: var(--ddp-muted); margin-bottom: 20px;
 }
 .ddp-breadcrumb a { color: var(--ddp-muted); text-decoration: none; }
-.ddp-breadcrumb a:hover { color: var(--ddp-accent); }
+.ddp-breadcrumb a:hover { color: var(--ddp-accent); text-decoration: underline; }
 .ddp-breadcrumb span:last-child { color: var(--ddp-ink); font-weight: 600; }
 
 .ddp-eyebrow {
@@ -116,11 +130,12 @@
 }
 .ddp-name {
   margin: 0 0 18px;
-  font-size: clamp(2.4rem, 5.4vw, 4.4rem);
+  font-size: clamp(2rem, 5.4vw, 4.4rem);
   line-height: 1.05;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--ddp-ink);
+  overflow-wrap: break-word;
 }
 .ddp-lead {
   max-width: 520px;
@@ -133,7 +148,7 @@
 
 .ddp-proof { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
 .ddp-proof-avatars { display: flex; }
-.ddp-proof-avatars .ddp-avatar { margin-left: -10px; border: 2px solid var(--ddp-accent); width: 38px; height: 38px; }
+.ddp-proof-avatars .ddp-avatar { margin-left: -10px; border: 2px solid #fff; width: 38px; height: 38px; }
 .ddp-proof-avatars .ddp-avatar:first-child { margin-left: 0; }
 .ddp-proof-text { font-size: 0.9rem; font-weight: 600; }
 
@@ -145,7 +160,7 @@
   background: #fff;
   border: 1px solid var(--ddp-line);
   font-size: 0.85rem; font-weight: 500;
-  color: var(--ddp-accent-dark);
+  color: #1e3a8a;
 }
 .ddp-chip svg { color: var(--ddp-accent); }
 
@@ -190,7 +205,7 @@
 }
 @keyframes ddp-spin { to { transform: rotate(360deg); } }
 
-/* ═════════ Sections ═════════ */
+/* ═══════ Sections ═══════ */
 .ddp-section { padding: 88px 0; }
 .ddp-section--tint { background: var(--ddp-bg-soft); }
 
@@ -198,7 +213,7 @@
 .ddp-pill {
   display: inline-block; margin-bottom: 14px;
   padding: 6px 16px; border-radius: 999px;
-  background: color-mix(in srgb, var(--ddp-accent) 10%, #fff);
+  background: rgba(37, 99, 235, 0.10);
   color: var(--ddp-accent);
   font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
 }
@@ -206,10 +221,11 @@
   margin: 0 0 12px;
   font-size: clamp(1.7rem, 3.4vw, 2.5rem);
   line-height: 1.15; font-weight: 600; letter-spacing: -0.01em;
+  overflow-wrap: break-word;
 }
 .ddp-section-sub { margin: 0; color: var(--ddp-muted); line-height: 1.6; }
 
-/* ═════════ Duration cards ═════════ */
+/* ═══════ Duration cards ═══════ */
 .ddp-duration-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
 .ddp-card {
   padding: 32px;
@@ -223,7 +239,7 @@
 .ddp-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .ddp-card-icon {
   width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
-  background: color-mix(in srgb, var(--ddp-accent) 12%, #fff); color: var(--ddp-accent);
+  background: rgba(37, 99, 235, 0.12); color: var(--ddp-accent);
 }
 .ddp-card-tag {
   padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700;
@@ -254,7 +270,7 @@
 .ddp-card--featured .ddp-card-tag { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.5); color: #fff; }
 .ddp-card--featured .ddp-tick { background: #fff; color: var(--ddp-accent); }
 
-/* ═════════ Prerequisites ═════════ */
+/* ═══════ Prerequisites ═══════ */
 .ddp-req-grid {
   list-style: none; margin: 0; padding: 0;
   display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px;
@@ -269,11 +285,11 @@
 .ddp-req-num {
   display: inline-block; margin-bottom: 12px;
   font-size: 2rem; font-weight: 700; line-height: 1;
-  color: color-mix(in srgb, var(--ddp-accent) 35%, #fff);
+  color: rgba(37, 99, 235, 0.35);
 }
 .ddp-req-card p { margin: 0; line-height: 1.55; font-size: 0.97rem; }
 
-/* ═════════ Avatar ═════════ */
+/* ═══════ Avatar ═══════ */
 .ddp-avatar {
   width: 44px; height: 44px; border-radius: 50%; object-fit: cover;
   display: inline-block; flex: none;
@@ -286,59 +302,7 @@
 }
 .ddp-avatar--xl.ddp-avatar--fallback { font-size: 1.9rem; }
 
-/* ═════════ Graduates (profile cards) ═════════ */
-.ddp-grad-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 26px;
-}
-.ddp-grad-card {
-  overflow: hidden;
-  border-radius: var(--ddp-radius);
-  background: #fff;
-  border: 1px solid var(--ddp-line);
-  box-shadow: var(--ddp-shadow);
-  transition: transform 0.25s, box-shadow 0.25s;
-}
-.ddp-grad-card:hover { transform: translateY(-8px); box-shadow: 0 20px 44px rgba(30, 58, 138, 0.16); }
-
-.ddp-grad-cover {
-  height: 92px;
-  background:
-    radial-gradient(120px 80px at 85% 0%, rgba(255, 255, 255, 0.35), transparent 70%),
-    linear-gradient(135deg, var(--ddp-accent), var(--ddp-accent-dark));
-}
-.ddp-grad-body {
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 0 20px 22px;
-}
-.ddp-grad-avatar { margin-top: -52px; margin-bottom: 14px; }
-.ddp-grad-name { margin: 0 0 4px; font-size: 1.1rem; font-weight: 600; }
-.ddp-grad-role { margin: 0 0 2px; color: var(--ddp-accent); font-weight: 600; font-size: 0.9rem; }
-.ddp-grad-work { margin: 0; color: var(--ddp-muted); font-size: 0.85rem; }
-.ddp-grad-loc {
-  display: inline-flex; align-items: center; gap: 4px;
-  margin: 8px 0 0; color: var(--ddp-muted); font-size: 0.8rem;
-}
-.ddp-grad-foot {
-  width: 100%; margin-top: 18px; padding-top: 16px;
-  border-top: 1px dashed var(--ddp-line);
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-}
-.ddp-grad-year {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 12px; border-radius: 999px;
-  background: color-mix(in srgb, var(--ddp-accent) 10%, #fff);
-  color: var(--ddp-accent-dark); font-size: 0.78rem; font-weight: 600;
-}
-.ddp-grad-go {
-  margin-left: auto;
-  width: 34px; height: 34px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: var(--ddp-accent); color: #fff; text-decoration: none;
-}
-.ddp-grad-go.is-link { transition: transform 0.2s; }
-.ddp-grad-go.is-link:hover { transform: rotate(45deg) scale(1.08); }
-
-/* ═════════ Ratings ═════════ */
+/* ═══════ Ratings ═══════ */
 .ddp-stars { display: inline-flex; gap: 2px; }
 .ddp-stars svg { fill: #d7e0f0; }
 .ddp-stars svg.is-on { fill: #f59e0b; }
@@ -404,7 +368,7 @@
   background: #fff; border: 1px solid var(--ddp-line);
   border-radius: var(--ddp-radius); box-shadow: var(--ddp-shadow);
 }
-.ddp-review-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ddp-review-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .ddp-role {
   padding: 4px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 700;
   letter-spacing: 0.03em; text-transform: uppercase;
@@ -417,7 +381,7 @@
 .ddp-review-name { margin: 0; font-weight: 600; font-size: 0.95rem; }
 .ddp-review-meta { margin: 2px 0 0; color: var(--ddp-muted); font-size: 0.8rem; }
 
-/* ───────── Rate form ───────── */
+/* ── Rate form ── */
 .ddp-rate-form {
   max-width: 760px; margin: 56px auto 0; padding: 34px;
   background: #fff; border: 1px solid var(--ddp-line);
@@ -428,15 +392,25 @@
 .ddp-rate-head h3 { margin: 0 0 6px; font-size: 1.5rem; font-weight: 600; }
 .ddp-rate-head p { margin: 0; color: var(--ddp-muted); font-size: 0.95rem; }
 
-.ddp-star-picker { display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; }
-.ddp-star-picker button {
-  padding: 2px; border: 0; background: none; cursor: pointer; line-height: 0;
-  transition: transform 0.15s;
+.ddp-star-picker {
+  display: flex; align-items: center; justify-content: center;
+  gap: 4px; flex-wrap: wrap;
 }
-.ddp-star-picker button:hover { transform: scale(1.18); }
+.ddp-star-picker button {
+  padding: 4px; border: 0; background: none; cursor: pointer;
+  line-height: 0; border-radius: 4px;
+  transition: transform 0.15s;
+  min-width: 44px; min-height: 44px;  /* touch target */
+  display: grid; place-items: center;
+}
+.ddp-star-picker button:hover  { transform: scale(1.18); }
 .ddp-star-picker svg { fill: #d7e0f0; transition: fill 0.15s; }
 .ddp-star-picker button.is-on svg { fill: #f59e0b; }
-.ddp-star-hint { width: 100%; text-align: center; margin-top: 4px; font-size: 0.85rem; color: var(--ddp-muted); font-weight: 500; }
+.ddp-star-hint {
+  width: 100%; text-align: center; margin-top: 4px;
+  font-size: 0.85rem; color: var(--ddp-muted); font-weight: 500;
+  min-height: 1.4em;
+}
 
 .ddp-form-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
 .ddp-field { display: grid; gap: 6px; }
@@ -451,38 +425,46 @@
   border: 1px solid var(--ddp-line); border-radius: 14px;
   outline: none; resize: vertical;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  min-height: 44px;   /* touch target for inputs */
 }
 .ddp-field input:focus,
 .ddp-field select:focus,
 .ddp-field textarea:focus {
   background: #fff; border-color: var(--ddp-accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ddp-accent) 15%, transparent);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
 }
 .ddp-form-msg { margin: 0; padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; font-weight: 500; }
 .ddp-form-msg--error { background: #fef2f2; color: #b91c1c; }
-.ddp-form-msg--ok { background: #f0fdf4; color: #15803d; }
+.ddp-form-msg--ok    { background: #f0fdf4; color: #15803d; }
 .ddp-submit { justify-self: center; min-width: 220px; }
 
-/* ═════════ Responsive ═════════ */
+/* ═══════ Responsive ═══════ */
 @media (max-width: 960px) {
-  .ddp-hero-grid { grid-template-columns: 1fr; min-height: 0; }
-  .ddp-hero-copy { padding-bottom: 8px; }
-  .ddp-hero-img { height: 440px; max-width: 420px; }
-  .ddp-duration-grid { grid-template-columns: 1fr; }
-  .ddp-rating-layout { grid-template-columns: 1fr; }
-  .ddp-section { padding: 64px 0; }
+  .ddp-hero-grid          { grid-template-columns: 1fr; min-height: 0; }
+  .ddp-hero-copy          { padding-bottom: 8px; }
+  .ddp-hero-img           { height: 440px; max-width: 420px; }
+  .ddp-duration-grid      { grid-template-columns: 1fr; }
+  .ddp-rating-layout      { grid-template-columns: 1fr; }
+  .ddp-section            { padding: 64px 0; }
 }
 @media (max-width: 600px) {
-  .ddp-container { padding: 0 18px; }
-  .ddp-mini-cards { grid-template-columns: 1fr; }
-  .ddp-course-list { grid-template-columns: 1fr; }
-  .ddp-card { padding: 24px; }
-  .ddp-scroll-btns { display: none; }
-  .ddp-form-row { grid-template-columns: 1fr; }
-  .ddp-rate-form { padding: 24px 18px; }
+  .ddp-container          { padding: 0 18px; }
+  .ddp-mini-cards         { grid-template-columns: 1fr; }
+  .ddp-course-list        { grid-template-columns: 1fr; }
+  .ddp-card               { padding: 24px; }
+  .ddp-scroll-btns        { display: none; }
+  .ddp-form-row           { grid-template-columns: 1fr; }
+  .ddp-rate-form          { padding: 24px 18px; }
+  .ddp-hero-img           { max-width: 100%; height: 300px; }
 }
+@media (max-width: 380px) {
+  .ddp-name               { font-size: clamp(1.8rem, 8vw, 2.4rem); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ddp-burst { animation: none; }
-  .ddp-card, .ddp-mini-card, .ddp-req-card, .ddp-grad-card, .ddp-btn,
-  .ddp-star-picker button, .ddp-bar-fill { transition: none; }
+  .ddp-burst                        { animation: none; }
+  .ddp-card, .ddp-mini-card,
+  .ddp-req-card, .ddp-btn,
+  .ddp-star-picker button,
+  .ddp-bar-fill                     { transition: none; }
 }

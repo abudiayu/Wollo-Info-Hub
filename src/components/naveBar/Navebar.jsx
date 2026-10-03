@@ -179,6 +179,9 @@ const NAV_ITEMS = [
   { key: 'Social',      icon: false, tKey: 'nav.Social',      menu: 'Social'      },
 ];
 
+/* Must match the CSS breakpoint where the hamburger appears */
+const MOBILE_BREAKPOINT = 860;
+
 function Navebar() {
   const { t }            = useTranslation();
   const { user, logout } = useAuth();
@@ -193,6 +196,24 @@ function Navebar() {
   const closeTimer     = useRef(null);
   const navRef         = useRef(null);
 
+  /* ── Mobile drawer helpers ── */
+  const closeMobile = () => {
+    setMobileOpen(false);
+    setMobileExpanded(null);
+  };
+
+  const toggleMobile = () => {
+    setSearchOpen(false);          // never show search + drawer together
+    setOpenMenu(null);
+    if (mobileOpen) closeMobile();
+    else setMobileOpen(true);
+  };
+
+  const toggleSearch = () => {
+    closeMobile();                 // never show search + drawer together
+    setSearchOpen(v => !v);
+  };
+
   /* ── Desktop hover helpers ── */
   const openWithHover  = (key) => { clearTimeout(closeTimer.current); setOpenMenu(key); };
   const closeWithDelay = ()    => { closeTimer.current = setTimeout(() => setOpenMenu(null), 150); };
@@ -204,11 +225,36 @@ function Navebar() {
       if (navRef.current && !navRef.current.contains(e.target)) {
         setOpenMenu(null);
         setMobileOpen(false);
+        setMobileExpanded(null);
         setSearchOpen(false);
       }
     }
     document.addEventListener('mousedown', handle);
     return () => document.removeEventListener('mousedown', handle);
+  }, []);
+
+  /* ── Close on Escape + close drawer when resized to desktop ── */
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === 'Escape') {
+        setOpenMenu(null);
+        setMobileOpen(false);
+        setMobileExpanded(null);
+        setSearchOpen(false);
+      }
+    }
+    function onResize() {
+      if (window.innerWidth > MOBILE_BREAKPOINT) {
+        setMobileOpen(false);
+        setMobileExpanded(null);
+      }
+    }
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('resize', onResize);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
   /* ── Auto-focus search input when panel opens ── */
@@ -254,7 +300,7 @@ function Navebar() {
       <nav className="ab-navbar" aria-label="Primary">
 
         {/* LEFT — logo + two-line title block */}
-        <Link className="ab-navbar-brand" to="/">
+        <Link className="ab-navbar-brand" to="/" onClick={closeMobile}>
           <img src={Logo} alt="Wollo University Logo" className="ab-navbar-logo" />
           <div className="ab-navbar-title-block">
             <span className="ab-navbar-title">Wollo-Info</span>
@@ -333,7 +379,7 @@ function Navebar() {
             className={`ab-nav-search ${searchOpen ? 'ab-nav-search--active' : ''}`}
             aria-label={searchOpen ? 'Close search' : 'Open search'}
             aria-expanded={searchOpen}
-            onClick={() => setSearchOpen(v => !v)}
+            onClick={toggleSearch}
           >
             <SearchIcon />
           </button>
@@ -345,7 +391,7 @@ function Navebar() {
           {user ? (
             <>
               {user.role === 'admin' && (
-                <Link className="ab-navlink" to="/admin" style={{ fontWeight: 600, color: '#6366f1' }}>
+                <Link className="ab-navlink ab-navbar-admin" to="/admin" style={{ fontWeight: 600, color: '#6366f1' }}>
                   Admin
                 </Link>
               )}
@@ -367,16 +413,18 @@ function Navebar() {
             className={`ab-nav-search ab-nav-search--mobile ${searchOpen ? 'ab-nav-search--active' : ''}`}
             aria-label={searchOpen ? 'Close search' : 'Open search'}
             aria-expanded={searchOpen}
-            onClick={() => setSearchOpen(v => !v)}
+            onClick={toggleSearch}
           >
             <SearchIcon />
           </button>
 
           <button
+            type="button"
             className={`ab-hamburger ${mobileOpen ? 'ab-hamburger--open' : ''}`}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
-            onClick={() => setMobileOpen(v => !v)}
+            aria-controls="ab-mobile-drawer"
+            onClick={toggleMobile}
           >
             <span className="ab-hamburger-bar" />
             <span className="ab-hamburger-bar" />
@@ -431,6 +479,7 @@ function Navebar() {
 
       {/* ── Mobile drawer ── */}
       <div
+        id="ab-mobile-drawer"
         className={`ab-mobile-drawer ${mobileOpen ? 'ab-mobile-drawer--open' : ''}`}
         aria-hidden={!mobileOpen}
       >
@@ -442,7 +491,7 @@ function Navebar() {
                   <button
                     className="ab-mobile-nav-btn"
                     onClick={() => {
-                      if (!user) { navigate('/auth'); setMobileOpen(false); return; }
+                      if (!user) { navigate('/auth'); closeMobile(); return; }
                       setMobileExpanded(p => p === item.menu ? null : item.menu);
                     }}
                     aria-expanded={mobileExpanded === item.menu}
@@ -464,7 +513,7 @@ function Navebar() {
                           key={link.label}
                           to={link.to}
                           className="ab-mobile-sub-link"
-                          onClick={() => setMobileOpen(false)}
+                          onClick={closeMobile}
                         >
                           {link.label}
                         </Link>
@@ -473,7 +522,12 @@ function Navebar() {
                   </div>
                 </>
               ) : (
-                <Link to="/" className="ab-mobile-nav-link" aria-label={t(item.tKey)}>
+                <Link
+                  to="/"
+                  className="ab-mobile-nav-link"
+                  aria-label={t(item.tKey)}
+                  onClick={closeMobile}
+                >
                   {item.icon
                     ? <span className="ab-mobile-home-icon">
                         <HomeTwoToneIcon style={{ fontSize: 18 }} />{t(item.tKey)}
@@ -493,9 +547,19 @@ function Navebar() {
               <span style={{ fontSize: 14, color: '#374151', padding: '0 4px' }}>
                 👤 {user.full_name || user.email}
               </span>
+              {user.role === 'admin' && (
+                <Link
+                  className="ab-navbar-cta"
+                  to="/admin"
+                  style={{ display: 'inline-block', textAlign: 'center' }}
+                  onClick={closeMobile}
+                >
+                  Admin
+                </Link>
+              )}
               <button
                 className="ab-navbar-cta"
-                onClick={() => { handleLogout(); setMobileOpen(false); }}
+                onClick={() => { handleLogout(); closeMobile(); }}
                 style={{ display: 'inline-block', textAlign: 'center', cursor: 'pointer', border: 'none' }}
               >
                 {t('nav.logout') || 'Logout'}
@@ -506,7 +570,7 @@ function Navebar() {
               className="ab-navbar-cta"
               to="/auth"
               style={{ display: 'inline-block', textAlign: 'center' }}
-              onClick={() => setMobileOpen(false)}
+              onClick={closeMobile}
             >
               {t('nav.login')}
             </Link>

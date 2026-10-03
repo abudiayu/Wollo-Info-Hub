@@ -5,6 +5,10 @@
    2. Dropdown: position:absolute on parent, width:max-content panel
    3. Sticky: container is sticky top:0 z-index:200, NO overflow:hidden
               so absolute-positioned dropdowns are never clipped
+   4. Hamburger: 44px tap target, drawer hidden from keyboard when
+              closed, username/logout/admin hidden in the top bar on
+              mobile (they live in the drawer) so the hamburger is
+              never pushed off-screen
    ================================================================ */
 
 /* ─────────────────────────────────────────────────────────────────
@@ -158,6 +162,9 @@
   cursor: pointer;
   font-family: inherit;
 }
+
+/* Vertical divider between links and search icon */
+.ab-nav-divider {
   display: inline-block;
   width: 1px;
   height: 22px;
@@ -188,7 +195,7 @@
   color: #111827;
 }
 
-/* ── Right group — login + language + hamburger (UNTOUCHED) ──── */
+/* ── Right group — login + language + hamburger ──── */
 .ab-navbar-right {
   display: flex;
   align-items: center;
@@ -256,32 +263,40 @@
   justify-content: center;
   align-items: center;
   gap: 5px;
-  width: 36px;
-  height: 36px;
+  width: 44px;               /* 44px minimum tap target */
+  height: 44px;
   padding: 0;
   background: #f3f4f6;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   cursor: pointer;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
   transition: background 0.2s ease;
 }
 
 .ab-hamburger:hover { background: #e5e7eb; }
 
+.ab-hamburger:focus-visible {
+  outline: 3px solid rgba(26, 60, 110, 0.35);
+  outline-offset: 2px;
+}
+
 .ab-hamburger-bar {
   display: block;
-  width: 17px;
-  height: 1.8px;
+  flex: none;                /* bars must never shrink or stretch */
+  width: 18px;
+  height: 2px;
   border-radius: 2px;
   background: #374151;
   transition: transform 0.28s ease, opacity 0.28s ease, width 0.28s ease;
   transform-origin: center;
 }
 
-.ab-hamburger--open .ab-hamburger-bar:nth-child(1) { transform: translateY(6.8px) rotate(45deg); }
+/* bar height 2px + gap 5px = 7px travel to meet in the centre */
+.ab-hamburger--open .ab-hamburger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .ab-hamburger--open .ab-hamburger-bar:nth-child(2) { opacity: 0; width: 0; }
-.ab-hamburger--open .ab-hamburger-bar:nth-child(3) { transform: translateY(-6.8px) rotate(-45deg); }
+.ab-hamburger--open .ab-hamburger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* ─────────────────────────────────────────────────────────────────
    FIX 2 — Dropdown panel: content-hugging width
@@ -392,15 +407,20 @@
   padding: 8px 0 24px;
   overflow-y: auto;
   max-height: calc(100vh - 69px);
+  max-height: calc(100dvh - 69px);   /* mobile browsers with a moving address bar */
+  overscroll-behavior: contain;
 
+  /* visibility:hidden also removes closed-drawer links from tab order */
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   transform: translateY(-6px);
-  transition: opacity 0.22s ease, transform 0.22s ease;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
 }
 
 .ab-mobile-drawer--open {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
   pointer-events: auto;
 }
@@ -516,10 +536,15 @@
   /* Show the search icon in the mobile bar, left of the hamburger */
   .ab-nav-search--mobile { display: flex; }
 
-  /* Hide login button and language switcher —
-     mobile bar becomes: logo/title ··· search | hamburger */
-  .ab-navbar-cta { display: none; }
-  .ls-root       { display: none; }
+  /* Hide login, language switcher, username, logout and admin link —
+     they are available in the drawer, and keeping them here pushed the
+     hamburger off-screen for logged-in users.
+     Mobile bar becomes: logo/title ··· search | hamburger */
+  .ab-navbar-cta,
+  .ab-navbar-username,
+  .ab-navbar-logout,
+  .ab-navbar-admin { display: none; }
+  .ls-root         { display: none; }
 
   /* Make search icon visually consistent with hamburger on mobile:
      same plain style (no box background), same color, same size */
@@ -529,8 +554,8 @@
     border: none;
     border-radius: 8px;
     color: #374151;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
   }
 
   .ab-nav-search--mobile:hover,
@@ -539,7 +564,6 @@
     color: #1a3c6e;
   }
 
-  /* Scale the hamburger bars to match the search SVG weight */
   .ab-hamburger {
     background: none;
     border: none;
@@ -549,12 +573,16 @@
   .ab-hamburger:hover {
     background: #f3f4f6;
   }
+
+  /* CTA buttons inside the drawer must stay visible */
+  .ab-mobile-footer .ab-navbar-cta { display: inline-block; }
 }
 
 @media (max-width: 600px) {
   .ab-navbar-logo     { width: 36px; height: 36px; }
   .ab-navbar-title    { font-size: 15px; }
   .ab-navbar-subtitle { display: none; }
+  .ab-navbar-brand    { margin-right: 12px; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -631,6 +659,7 @@
 /* The input itself — no default browser styles */
 .ab-search-input {
   flex: 1;
+  min-width: 0;
   border: none;
   background: transparent;
   outline: none;
