@@ -3,9 +3,7 @@
    All lengths in calc(N * var(--u)) — unit defined on .nx-viewport
    ============================================================ */
 
-/* ── Hero section — reduced height, normal flow ────────────
-   Minimized from full 100dvh down to a shorter, more compact
-   band so the body/features section is visible sooner.       */
+/* ── Hero section ── */
 .nx-hero {
   position: relative;
   width: 100%;
@@ -16,7 +14,7 @@
   background: #1d8fb8;
 }
 
-/* ── Background video — contained inside .nx-hero ─────────── */
+/* ── Background video ── */
 .nx-bg {
   position: absolute;
   inset: 0;
@@ -93,16 +91,16 @@
   }
 }
 
-/* ── Nav bar — sits on top of the hero video ───────────────── */
-/*  */
+/* ── Hero copy ── */
 
-/* ── Hero copy — absolute positions inside .nx-hero ──────── */
+/* Eyebrow: "Wollo University — Est. 1985" */
 .nx-eyebrow {
   position: absolute;
   left:           calc(46.6 * var(--u));
   top:            calc(128.2 * var(--u));
+  font-family:    inherit;
   font-size:      calc(15.0 * var(--u));
-  font-weight:    500;
+  font-weight:    700;
   line-height:    1;
   letter-spacing: calc(0.2163 * var(--u));
   color:          #fff;
@@ -118,27 +116,30 @@
   overflow: hidden;
 }
 
+/* Headline: "Knowledge, Innovation, Excellence" */
 .nx-headline {
-  font-family:    var(--font-display);
-  font-weight:    400;
-  font-size:      calc(71.2 * var(--u));
+  font-family:    inherit;
+  font-weight:    700;
+  font-size:      calc(65 * var(--u));
   line-height:    1;
   letter-spacing: calc(0.5696 * var(--u));
-  color:          #fff;
-  white-space:    nowrap;
-  margin: 0;
+  color:          #01477a;
+  /* text-shadow:    0 0 24px rgba(255,255,255,0.60); */
+  margin:7px 0 7px 0;
+  padding: 0 0 7px 0;
 }
 
+/* Lede: "Your gateway to everything…" */
 .nx-lede {
   position: absolute;
   left:           calc(46.4 * var(--u));
   top:            calc(245.2 * var(--u));
   width:          calc(432 * var(--u));
+  font-family:    inherit;
   font-size:      calc(17.0 * var(--u));
-  font-weight:    500;
-  line-height:    calc(22.9 * var(--u));
+  font-weight:    400;
   letter-spacing: calc(-0.15232 * var(--u));
-  color:          #fff;
+  color:          #e9e5cd;
   margin: 0;
 }
 
@@ -169,18 +170,16 @@
   font-weight:    400;
   line-height:    1;
   letter-spacing: calc(0.057828 * var(--u));
-  color:          #000;
+  color:          #004f87;
   white-space:    nowrap;
 }
 
-/* ── Wave divider — bridges hero into the body section ─────
-   Sits at the very bottom of .nx-hero, above the video/scrim,
-   color matches the features section background (#0d1420).  */
+/* ── Wave divider ── */
 .nx-hero-wave {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -1px; /* avoids a hairline gap at some zoom levels */
+  bottom: -1px;
   z-index: 3;
   line-height: 0;
   pointer-events: none;
@@ -196,12 +195,12 @@
   fill: #f6f8fb;
 }
 
-/* ── Portrait / narrow responsive ────────────────────────── */
+/* ── Portrait / narrow responsive ── */
 @media (max-aspect-ratio: 5/4) {
   .nx-hero {
     height: auto;
     min-height: unset;
-    padding-top: clamp(64px, 12vh, 92px); /* room for the nav */
+    padding-top: clamp(64px, 12vh, 92px);
     padding-bottom: clamp(40px, 6vh, 64px);
   }
 
@@ -216,7 +215,7 @@
   }
 
   .nx-scrim {
-    position: absolute; /* not fixed — contained inside .nx-hero */
+    position: absolute;
     height: min(56vh, calc(560 * var(--u)));
     background: linear-gradient(
       180deg,
@@ -235,7 +234,9 @@
     display: block;
     margin-top: clamp(12px, 3vh, 28px);
     font-size:      clamp(10.5px, 2.9vw, 15px);
+    font-weight:    700;
     letter-spacing: 0.09em;
+    color:          #fff;
     padding: 0 var(--pad);
   }
 
@@ -249,6 +250,9 @@
     white-space: normal;
     font-size:   clamp(34px, 9.4vw, 72px);
     line-height: 1.04;
+    font-weight: 800;
+    color:       #0b2a5b;
+    text-shadow: 0 0 22px rgba(255,255,255,0.60);
   }
 
   .nx-lede {
@@ -258,7 +262,9 @@
     padding: 0 var(--pad);
     margin-top: calc(16 * var(--u));
     font-size:   clamp(14.5px, 3.9vw, 18px);
+    font-weight: 400;
     line-height: 1.42;
+    color:       #fff;
   }
 
   .nx-cta {
@@ -303,16 +309,16 @@
   }
 }
 
-/* ── Mobile phones — always show text regardless of orientation ── */
+/* ── Mobile ≤ 768px ── */
 @media (max-width: 768px) {
   .nx-hero {
+    /* Let the hero be tall enough to fit all the text comfortably */
     height: 100svh;
-    min-height: 600px;
+    min-height: 580px;
     padding-top: 0;
     padding-bottom: 0;
   }
 
-  /* Reset video to fill the hero fully and center the boy */
   .nx-bg {
     position: absolute;
     inset: 0;
@@ -329,83 +335,122 @@
     min-width: unset !important;
     min-height: unset !important;
     object-fit: cover !important;
-    /* shift slightly right-center to keep the boy visible */
     object-position: 60% center !important;
     filter: saturate(0.86);
   }
 
-  /* Stronger bottom gradient so text stays readable over the landscape */
+  /* Stronger scrim so white text is readable at all scroll positions */
   .nx-scrim {
     position: absolute !important;
     inset: 0 !important;
     height: 100% !important;
     background: linear-gradient(
       to bottom,
-      rgba(4, 18, 30, 0.52) 0%,
-      rgba(4, 18, 30, 0.30) 35%,
-      rgba(4, 18, 30, 0.08) 60%,
-      rgba(4, 18, 30, 0.0) 100%
+      rgba(4, 18, 30, 0.68) 0%,
+      rgba(4, 18, 30, 0.50) 40%,
+      rgba(4, 18, 30, 0.20) 70%,
+      rgba(4, 18, 30, 0.00) 100%
     ) !important;
   }
 
-  /* Stack text at top-left, absolutely positioned within the hero */
+  /* ── Eyebrow: "Wollo University — Est. 1985" ── */
   .nx-eyebrow {
     position: absolute !important;
-    left: 24px !important;
-    top: clamp(90px, 14vh, 120px) !important;
-    font-size: 11px !important;
-    letter-spacing: 0.12em !important;
-    color: #fff;
-    white-space: nowrap;
+    left:   20px !important;
+    right:  20px !important;
+    top:    clamp(72px, 12vh, 110px) !important;
+    /* clear fixed top so it uses the clamp above */
+    font-size:      clamp(10px, 2.8vw, 13px) !important;
+    font-weight:    700 !important;
+    letter-spacing: 0.13em !important;
+    color:          #fff !important;
+    text-shadow:    none !important;
+    white-space:    nowrap;
+    overflow:       hidden;
+    text-overflow:  ellipsis;
   }
 
+  /* ── Headline: "Knowledge, Innovation, Excellence" ── */
   .nx-headline-mask {
     position: absolute !important;
-    left: 22px !important;
-    top: calc(clamp(90px, 14vh, 120px) + 28px) !important;
+    left:  20px !important;
+    right: 20px !important;
+    top:   calc(clamp(72px, 12vh, 110px) + clamp(26px, 5vh, 36px)) !important;
     overflow: visible !important;
-    width: calc(100% - 44px) !important;
+    width: auto !important;
   }
 
   .nx-headline {
-    white-space: normal !important;
-    font-size: clamp(32px, 9.5vw, 52px) !important;
-    line-height: 1.06 !important;
-    color: #fff;
+    white-space:    normal !important;
+    font-size:      clamp(30px, 9vw, 50px) !important;
+    font-weight:    800 !important;
+    line-height:    1.08 !important;
+    color:          #0b2a5b !important;
+    text-shadow:    0 0 20px rgba(255,255,255,0.60) !important;
+    text-wrap:      balance;
+    overflow-wrap:  break-word;
+    max-width:      100%;
   }
 
+  /* ── Lede: "Your gateway to everything…" ── */
   .nx-lede {
     position: absolute !important;
-    left: 24px !important;
-    top: calc(clamp(90px, 14vh, 120px) + 28px + clamp(80px, 22vw, 130px)) !important;
-    width: calc(100% - 48px) !important;
-    font-size: clamp(13.5px, 3.8vw, 16px) !important;
-    line-height: 1.48 !important;
-    color: rgba(255,255,255,0.92);
+    left:   20px !important;
+    right:  20px !important;
+    width:  auto !important;
+    top:    calc(
+              clamp(72px, 12vh, 110px)
+              + clamp(26px, 5vh, 36px)
+              + clamp(72px, 19vw, 110px)
+            ) !important;
+    font-size:      clamp(13px, 3.8vw, 15.5px) !important;
+    font-weight:    400 !important;
+    line-height:    1.55 !important;
+    color:          #fff !important;
+    text-shadow:    none !important;
     letter-spacing: 0 !important;
+    overflow-wrap:  break-word;
   }
 
+  /* ── CTA button ── */
   .nx-cta {
     position: absolute !important;
-    left: 24px !important;
-    top: calc(clamp(90px, 14vh, 120px) + 28px + clamp(80px, 22vw, 130px) + clamp(90px, 20vw, 120px)) !important;
-    width: auto !important;
-    height: 44px !important;
-    min-width: 140px !important;
-    padding: 0 24px !important;
+    left:   20px !important;
+    width:  auto !important;
+    top:    calc(
+              clamp(72px, 12vh, 110px)
+              + clamp(26px, 5vh, 36px)
+              + clamp(72px, 19vw, 110px)
+              + clamp(80px, 18vw, 108px)
+            ) !important;
+    height:        44px !important;
+    min-width:     130px !important;
+    padding:       0 22px !important;
     border-radius: 4px !important;
-    display: inline-flex !important;
-    align-items: center !important;
+    display:       inline-flex !important;
+    align-items:   center !important;
     justify-content: center !important;
   }
 
   .nx-cta span {
-    position: static !important;
+    position:  static !important;
     font-size: 14px !important;
-    color: #000;
+    font-weight: 500 !important;
+    color:     #000;
   }
 
   .nx-hero-wave-svg {
-    height: clamp(30px, 6vw, 50px) !important;
+    height: clamp(28px, 6vw, 48px) !important;
+  }
+}
+
+/* ── Small mobile ≤ 400px — tighten headline so it never wraps awkwardly ── */
+@media (max-width: 400px) {
+  .nx-headline {
+    font-size: clamp(27px, 8.5vw, 36px) !important;
+  }
+
+  .nx-lede {
+    font-size: clamp(12px, 3.6vw, 14px) !important;
   }
 }
