@@ -30,7 +30,6 @@
 .stip-section {
   width: 100%;
   background: var(--paper);
-  /* Prevent children from causing horizontal scroll */
   overflow-x: hidden;
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
@@ -58,7 +57,7 @@
 
 /* Left column wrapper (eyebrow + title) */
 .stip-header-left {
-  min-width: 0; /* prevent grid blowout */
+  min-width: 0;
 }
 
 /* Eyebrow */
@@ -94,26 +93,23 @@
   line-height: 1.62;
   letter-spacing: -.017em;
   color: var(--copy);
-  /* Tablet: constrain; mobile: full width (overridden below) */
   max-width: 56ch;
-  min-width: 0; /* prevent grid blowout */
+  min-width: 0;
   word-break: break-word;
   overflow-wrap: break-word;
 }
 
 /* ─────────────────────────────────────────
-   CARDS GRID
+   CARDS GRID — DESKTOP (6-col, spans 2 or 3)
 ───────────────────────────────────────── */
 .stip-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  /* 6 fractional columns */
   grid-template-columns: repeat(6, 1fr);
   gap: var(--gap);
   align-items: stretch;
-  /* Safety: never wider than its container */
   width: 100%;
 }
 
@@ -132,7 +128,7 @@
 
 /* ─────────────────────────────────────────
    CARD COLORWAYS — :nth-child, no JSX changes
-   1 Rose, 2 Violet, 3 Orange, 4 Violet, 5 Rose
+   1 Rose, 2 Violet (darkened top), 3 Orange, 4 Violet, 5 Rose
 ───────────────────────────────────────── */
 
 /* Rose */
@@ -192,14 +188,12 @@
   border-radius: var(--card-radius);
   color: #fff;
   cursor: default;
-  width: 100%; /* never overflow the grid cell */
+  width: 100%;
 
   animation-fill-mode: both;
   animation-duration: .76s;
   animation-timing-function: var(--ease);
   animation-name: stip-card-in;
-
-  /* No transition declared here — hover declared below under @media (hover:hover) */
 }
 
 /* Staggered entrance delays */
@@ -209,7 +203,7 @@
 .stip-list > .stip-card:nth-child(4) { animation-delay: .40s; }
 .stip-list > .stip-card:nth-child(5) { animation-delay: .50s; }
 
-/* Hover lift — only on true pointer/mouse devices (not touch) */
+/* Hover lift — pointer devices only (not touch) */
 @media (hover: hover) {
   .stip-card {
     transition: transform .18s ease, box-shadow .18s ease;
@@ -279,7 +273,7 @@
    CARD CONTENT
 ───────────────────────────────────────── */
 
-/* Left column: icon + number — stays at top on all sizes */
+/* Left column: icon + number */
 .stip-card-left {
   display: flex;
   flex-direction: row;
@@ -300,7 +294,6 @@
   align-items: center;
   justify-content: center;
   color: rgba(255, 255, 255, .90);
-  /* transition declared only under hover:hover above */
 }
 
 .stip-icon-wrap svg {
@@ -332,7 +325,7 @@
 /* Right column */
 .stip-card-right {
   flex: 1;
-  min-width: 0; /* prevent text from overflowing the flex item */
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -376,7 +369,6 @@
   outline: 3px solid rgba(255, 255, 255, .78);
   outline-offset: 3px;
   border-radius: 3px;
-  /* 44px touch target floor */
   min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -411,10 +403,9 @@
 }
 
 /* ─────────────────────────────────────────
-   RESPONSIVE BREAKPOINTS
+   TABLET  601px – 1023px
+   (desktop/tablet styles — not modified)
 ───────────────────────────────────────── */
-
-/* Tablet: 601px – 1023px */
 @media (max-width: 1023px) {
   /* Header: collapse to one column */
   .stip-header {
@@ -424,7 +415,6 @@
 
   .stip-sub {
     margin-top: 14px;
-    /* Tablet: constrain but not too narrow */
     max-width: 56ch;
   }
 
@@ -441,76 +431,168 @@
     grid-column: span 1;
   }
 
-  /* 5th card spans both columns on tablet */
   .stip-list > li:nth-child(5) {
     grid-column: span 2;
   }
 }
 
-/* Below 760px — already handled by 1023px rule above but make explicit */
 @media (max-width: 760px) {
   .stip-heading {
-    /* Remove ch-based max-width so it doesn't cause narrow breaks */
     max-width: 100%;
   }
 }
 
-/* Mobile: 600px and below */
+/* ─────────────────────────────────────────
+   MOBILE  ≤ 600px
+───────────────────────────────────────── */
 @media (max-width: 600px) {
+  /* Container: 16px sides, 48px vertical */
   .stip-inner {
-    padding: 48px 20px;
+    padding-top:    48px;
+    padding-bottom: 48px;
+    padding-left:   16px;
+    padding-right:  16px;
   }
 
+  /* Header: single column, tighter spacing */
   .stip-header {
-    margin-bottom: 32px;
+    grid-template-columns: 1fr;
+    margin-bottom: 28px;
+    /* Keep animation */
   }
 
-  .stip-sub {
-    /* Full width on mobile */
+  /* Title: smaller, balanced */
+  .stip-heading {
+    font-size: clamp(1.4rem, 6vw, 1.75rem);
+    line-height: 1.2;
+    text-wrap: balance;
     max-width: 100%;
   }
 
+  /* Subtitle: smaller, full width */
+  .stip-sub {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    max-width: 100%;
+    margin-top: 12px;
+    letter-spacing: 0; /* reset tight tracking that can hurt small text */
+  }
+
+  /* Cards: 2 columns, 12px gap */
+  .stip-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  /* Cards 1–4: one column each (2 per row) */
+  .stip-list > li:nth-child(1),
+  .stip-list > li:nth-child(2),
+  .stip-list > li:nth-child(3),
+  .stip-list > li:nth-child(4) {
+    grid-column: span 1;
+  }
+
+  /* 5th card: spans both columns — fills the last row */
+  .stip-list > li:nth-child(5) {
+    grid-column: 1 / -1;
+  }
+
+  /* Card sizing: content-driven height, compact padding */
+  .stip-card {
+    padding:    14px;
+    gap:         8px;
+    min-height:  0; /* height follows content; equal per row via align-items:stretch */
+  }
+
+  /* Left row: tighten gap */
+  .stip-card-left {
+    gap: 8px;
+  }
+
+  /* Icon box: shrink to 22×22px */
+  .stip-icon-wrap {
+    width:  22px;
+    height: 22px;
+    border-radius: 5px;
+  }
+
+  .stip-icon-wrap svg {
+    width:  12px;
+    height: 12px;
+  }
+
+  /* Number: smaller */
+  .stip-number {
+    font-size: 0.75rem;
+  }
+
+  /* Accent line: keep exactly as-is (24×2px) */
+  .stip-number::after {
+    width:      20px; /* slight shrink to match scaled number */
+    margin-top:  4px;
+  }
+
+  /* Card right column */
+  .stip-card-right {
+    gap: 6px;
+  }
+
+  /* Item title */
+  .stip-card-title {
+    font-size:   clamp(0.85rem, 3.6vw, 1rem);
+    line-height: 1.3;
+    overflow-wrap: break-word;
+  }
+
+  /* Item description */
+  .stip-card-desc {
+    font-size:   0.72rem;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    max-width: 100%; /* no ch cap inside a small card */
+  }
+}
+
+/* ─────────────────────────────────────────
+   SMALL MOBILE  ≤ 340px  — 1 column
+───────────────────────────────────────── */
+@media (max-width: 340px) {
+  .stip-inner {
+    padding-left:  16px;
+    padding-right: 16px;
+  }
+
+  /* Switch to single column */
   .stip-list {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 12px;
   }
 
-  /* All cards single column — override any span rules */
-  .stip-list > li {
-    grid-column: span 1 !important;
+  /* All cards, including 5th, span normally in 1-col grid */
+  .stip-list > li:nth-child(1),
+  .stip-list > li:nth-child(2),
+  .stip-list > li:nth-child(3),
+  .stip-list > li:nth-child(4),
+  .stip-list > li:nth-child(5) {
+    grid-column: span 1;
   }
 
-  .stip-card {
-    /* Reduce min-height so short descriptions aren't clipped */
-    min-height: 200px;
-    padding: 20px;
-  }
-}
-
-/* Small mobile: 380px and below */
-@media (max-width: 380px) {
-  .stip-inner {
-    padding: 40px 16px;
-  }
-
-  .stip-card {
-    padding: 18px;
-    min-height: 180px;
-  }
-
+  /* Slightly larger text now that full width is available */
   .stip-card-title {
-    font-size: 1.05rem;
+    font-size: 0.9375rem;
   }
 
   .stip-card-desc {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
   }
 }
 
-/* Landscape phones */
+/* ─────────────────────────────────────────
+   LANDSCAPE PHONES
+───────────────────────────────────────── */
 @media (max-height: 500px) and (orientation: landscape) {
   .stip-inner {
-    padding-top: 36px;
+    padding-top:    36px;
     padding-bottom: 36px;
   }
 
@@ -519,7 +601,9 @@
   }
 }
 
-/* Large screens: content stays centered */
+/* ─────────────────────────────────────────
+   LARGE SCREENS
+───────────────────────────────────────── */
 @media (min-width: 1920px) {
   .stip-inner {
     max-width: 1200px;

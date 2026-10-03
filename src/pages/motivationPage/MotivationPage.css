@@ -29,10 +29,8 @@
 .motiv-section {
   width: 100%;
   background: var(--motiv-bg);
-  /* 1px hairlines at top and bottom edges of the section */
   border-top:    1px solid var(--motiv-hairline);
   border-bottom: 1px solid var(--motiv-hairline);
-  /* Prevent any child from causing horizontal scroll */
   overflow-x: hidden;
 }
 
@@ -40,7 +38,6 @@
 .motiv-inner {
   max-width: 1200px;
   margin: 0 auto;
-  /* clamp() horizontal padding: 16px mobile → 24px desktop */
   padding: 56px clamp(16px, 4vw, 24px);
 }
 
@@ -53,7 +50,6 @@
   line-height: 1.1;
   color: var(--motiv-navy);
   letter-spacing: -0.01em;
-  /* Prevent heading from overflowing narrow viewports */
   word-break: break-word;
   overflow-wrap: break-word;
 }
@@ -67,20 +63,15 @@
   height: 12px;
   background: var(--motiv-navy);
   margin: 0 0 40px;
-  /* Stretch edge-to-edge within the container — no overflow */
   max-width: 100%;
 }
 
-/* ── Card grid ──
-   auto-fit so columns naturally wrap; minmax ensures 1 col on
-   320px (min(100%,260px) is 100% there) and 3 on wide screens.
-── */
+/* ── Card grid ── */
 .motiv-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 24px;
   align-items: stretch;
-  /* Prevent grid bleed */
   width: 100%;
 }
 
@@ -95,7 +86,6 @@
   flex-direction: column;
   height:         100%;
   position:       relative;
-  /* Images inside must never overflow */
   overflow: hidden;
   width: 100%;
 }
@@ -116,7 +106,6 @@
   display:         block;
   width:           100%;
   height:          100%;
-  /* Safety net: never let an image overflow its container */
   max-width:       100%;
   object-fit:      cover;
   object-position: center top;
@@ -147,7 +136,6 @@
   margin:        0;
   font-family:   inherit;
   font-weight:   700;
-  /* Minimum 1.25rem (20px) — readable on a 320px screen */
   font-size:     clamp(1.25rem, 2.4vw, 2rem);
   line-height:   1.1;
   color:         var(--motiv-navy);
@@ -159,7 +147,6 @@
 /* ── Body text ── */
 .motiv-cms-text {
   margin:      0;
-  /* 0.875rem = 14px — spec minimum for mobile body text */
   font-size:   clamp(0.875rem, 1.1vw, 0.9rem);
   line-height: 1.6;
   color:       var(--motiv-body);
@@ -187,7 +174,6 @@
 .motiv-cms-file {
   display:         inline-flex;
   align-items:     center;
-  /* 44px min touch target height */
   min-height:      44px;
   gap:             8px;
   font-size:       0.8125rem;
@@ -195,7 +181,6 @@
   color:           var(--motiv-navy);
   text-decoration: none;
   line-height:     1.4;
-  /* Long filenames must wrap, never stretch the card */
   overflow-wrap:   anywhere;
   word-break:      break-all;
   transition:      color 200ms ease;
@@ -214,7 +199,6 @@
 
 /* ── Thumbnail image inside gallery ── */
 .motiv-cms-gallery img {
-  /* Fixed size thumbnail — flex-shrink:0 keeps it from collapsing */
   width:        72px;
   height:       72px;
   object-fit:   cover;
@@ -222,7 +206,7 @@
   border:       1px solid var(--motiv-hairline);
   flex-shrink:  0;
   display:      block;
-  max-width:    72px; /* safety: never grows wider than its fixed size */
+  max-width:    72px;
   transition:   filter 200ms ease;
 }
 
@@ -234,7 +218,8 @@
 }
 
 /* ─────────────────────────────────────────
-   RESPONSIVE BREAKPOINTS
+   RESPONSIVE BREAKPOINTS — DESKTOP → TABLET
+   (unchanged from before — desktop/tablet not modified)
 ───────────────────────────────────────── */
 
 /* Tablet: 601px – 1023px */
@@ -244,50 +229,134 @@
   }
 }
 
-/* Mobile: 600px and below */
+/* ─────────────────────────────────────────
+   MOBILE  ≤ 600px
+───────────────────────────────────────── */
 @media (max-width: 600px) {
+  /* Container: 16px horizontal padding, reduced vertical */
   .motiv-inner {
-    padding: 40px clamp(16px, 4vw, 24px);
+    padding-top:    40px;
+    padding-bottom: 40px;
+    padding-left:   16px;
+    padding-right:  16px;
   }
 
+  /* Bar: tighter bottom margin */
   .motiv-rule {
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
 
+  /* Grid: 2 equal columns, 16px column gap, 24px row gap */
   .motiv-grid {
-    gap: 16px;
-    /* Force single column on mobile */
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Small mobile: 380px and below */
-@media (max-width: 380px) {
-  .motiv-inner {
-    padding: 32px 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap:    24px;
+    /* Remove the gap shorthand set at tablet so column/row are explicit */
+    gap: unset;
+    column-gap: 16px;
+    row-gap:    24px;
   }
 
+  /* Card: pure flex column, no box decorations (already transparent/borderless) */
+  .motiv-cms-card {
+    height: 100%; /* stretch to row height for equal image baseline */
+  }
+
+  /* Image: same aspect-ratio in every card, no extra gap below it */
+  .motiv-cms-cover {
+    aspect-ratio: 16 / 10;
+    border-radius: 0;
+  }
+
+  .motiv-cms-cover img {
+    border-radius: 0;
+    /* Grayscale maintained — already set globally */
+  }
+
+  /* Card body: tighter top pad so title is 10px from image */
+  .motiv-cms-body {
+    padding-top: 10px;
+    gap: 6px;
+  }
+
+  /* Title: mobile size spec */
   .motiv-cms-title {
-    font-size: 1.25rem;
+    font-size:   clamp(0.95rem, 4vw, 1.1rem);
+    line-height: 1.2;
+    margin-top:  0; /* gap on .motiv-cms-body handles spacing */
+  }
+
+  /* Paragraph: 12px, muted, tighter leading */
+  .motiv-cms-text {
+    font-size:   0.75rem;
+    line-height: 1.5;
+    margin-top:  0; /* gap handles it */
+  }
+
+  /* Attachment: pinned bottom, wrapping filename */
+  .motiv-cms-gallery {
+    padding-top: 10px;
+  }
+
+  .motiv-cms-file {
+    font-size:    0.75rem;
+    overflow-wrap: anywhere;
+    word-break:   break-all;
+    /* 44px touch target already set on desktop rule — inherited */
   }
 }
 
-/* Landscape phones: short viewports */
+/* ─────────────────────────────────────────
+   SMALL MOBILE  ≤ 340px  — 1 column
+───────────────────────────────────────── */
+@media (max-width: 340px) {
+  .motiv-inner {
+    padding-left:  16px;
+    padding-right: 16px;
+  }
+
+  /* Switch to 1 column so narrow text is readable */
+  .motiv-grid {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+    row-gap:    20px;
+    gap: unset;
+    column-gap: 0;
+    row-gap:    20px;
+  }
+
+  /* Restore slightly larger text when full width is available */
+  .motiv-cms-title {
+    font-size: 0.9375rem; /* ~15px */
+  }
+
+  .motiv-cms-text {
+    font-size: 0.8125rem; /* ~13px */
+  }
+}
+
+/* ─────────────────────────────────────────
+   LANDSCAPE PHONES
+───────────────────────────────────────── */
 @media (max-height: 500px) and (orientation: landscape) {
   .motiv-inner {
-    padding-top: 28px;
+    padding-top:    28px;
     padding-bottom: 28px;
   }
 }
 
-/* Large screens: content stays centered at max-width */
+/* ─────────────────────────────────────────
+   LARGE SCREENS
+───────────────────────────────────────── */
 @media (min-width: 1920px) {
   .motiv-inner {
     max-width: 1200px;
   }
 }
 
-/* ── Reduced motion ── */
+/* ─────────────────────────────────────────
+   REDUCED MOTION
+───────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .motiv-cms-cover img,
   .motiv-cms-file,
