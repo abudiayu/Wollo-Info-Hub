@@ -77,10 +77,14 @@ export default function StudentTips() {
       <div className="stip-inner">
 
         <div className="stip-header">
-          <span className="stip-eyebrow">Student Guide</span>
-          <h2 className="stip-heading">
-            5 Things Every Student<br />Must Know at Wollo University
-          </h2>
+          {/* stip-header-left: wrapper div added so eyebrow+title form the
+              left masthead column. Logic (no state/handlers) unchanged. */}
+          <div className="stip-header-left">
+            <span className="stip-eyebrow">Student Guide</span>
+            <h2 className="stip-heading">
+              5 Things Every Student<br />Must Know at Wollo University
+            </h2>
+          </div>
           <p className="stip-sub">
             Hard-won knowledge that turns a good student into a great one.
           </p>

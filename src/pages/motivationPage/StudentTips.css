@@ -1,204 +1,462 @@
 /* =====================================================
    StudentTips.css
-   "5 Things Every Student Must Know" section
-   Dark background, numbered card list, accent bars
+   Target: .stip-section and all .stip-* descendants only.
+   Reference: paper-gray stage, frosted gradient glass cards.
    ===================================================== */
 
+/* ── Design tokens (scoped strictly to this section) ── */
+.stip-section {
+  --paper:        #ececeb;
+  --ink:          #222222;
+  --copy:         #4a4a4a;
+  --glass-line:   rgba(255, 255, 255, .36);
+  --card-radius:  17px;
+  --gap:          clamp(8px, 1.5vw, 23px);
+  --gutter:       clamp(14px, 3.6vw, 54px);
+  --ease:         cubic-bezier(.16, 1, .3, 1);
+
+  /* SVG noise grain — pure CSS data-URI, no external file */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.54' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* ── Section shell ── */
 .stip-section {
   width: 100%;
-  background: #0d1420;
-  padding: clamp(64px, 8vw, 110px) clamp(20px, 5.6vw, 56px);
+  background: var(--paper);
+
+  /* Smooth text rendering */
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
 }
 
 .stip-inner {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 72px var(--gutter);
 }
 
-/* ── Header ── */
+@media (max-width: 600px) {
+  .stip-inner {
+    padding: 48px 20px;
+  }
+}
+
+/* ───────────────────────────────────────────
+   HEADER — two-column masthead
+─────────────────────────────────────────── */
 .stip-header {
-  margin-bottom: clamp(40px, 5vw, 64px);
-  max-width: 560px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  column-gap: 40px;
+  align-items: start;
+  margin-bottom: 48px;
+
+  /* Header fade-up entrance */
+  animation: stip-fade-up .72s var(--ease) both;
 }
 
+/* stip-header-left: the wrapper added in JSX for the two-column layout */
+.stip-header-left {
+  /* left column — eyebrow + title */
+}
+
+/* Eyebrow */
 .stip-eyebrow {
-  display: inline-block;
-  margin-bottom: 14px;
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--stip-accent, #2563eb);
-  color: rgba(255,255,255,0.45);
+  color: #ad314d;
+  /* No pill, no background, no badge */
 }
 
+/* Title */
 .stip-heading {
-  margin: 0 0 16px;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(26px, 3.6vw, 44px);
-  font-weight: 700;
-  line-height: 1.12;
-  color: #fff;
-}
-
-.stip-sub {
   margin: 0;
-  font-size: clamp(14px, 1.5vw, 16.5px);
-  line-height: 1.6;
-  color: rgba(255,255,255,0.52);
+  font-family: inherit;
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3.1vw, 2.9rem);
+  letter-spacing: .015em;
+  line-height: 1.2;
+  color: #202020;
+  max-width: 22ch;
+  text-wrap: balance;
 }
 
-/* ── Card list ── */
+/* Subtitle — right masthead column */
+.stip-sub {
+  margin: .34em 0 0;
+  font-size: clamp(0.9rem, 1.2vw, 1.15rem);
+  line-height: 1.62;
+  letter-spacing: -.017em;
+  color: var(--copy);
+}
+
+@media (max-width: 760px) {
+  .stip-header {
+    grid-template-columns: 1fr;
+  }
+  .stip-sub {
+    margin-top: 14px;
+  }
+}
+
+/* ───────────────────────────────────────────
+   CARDS GRID
+─────────────────────────────────────────── */
 .stip-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+
+  display: grid;
+  /* 6 fractional columns — items span 2 or 3 each */
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--gap);
+  align-items: stretch;
 }
 
-/* ── Individual card ── */
+/* Row 1: items 1-3 each span 2 cols → 2+2+2 = 6 */
+.stip-list > li:nth-child(1),
+.stip-list > li:nth-child(2),
+.stip-list > li:nth-child(3) {
+  grid-column: span 2;
+}
+
+/* Row 2: items 4-5 each span 3 cols → 3+3 = 6 */
+.stip-list > li:nth-child(4),
+.stip-list > li:nth-child(5) {
+  grid-column: span 3;
+}
+
+@media (max-width: 900px) {
+  .stip-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stip-list > li:nth-child(1),
+  .stip-list > li:nth-child(2),
+  .stip-list > li:nth-child(3),
+  .stip-list > li:nth-child(4) {
+    grid-column: span 1;
+  }
+  /* 5th item spans both columns on tablet */
+  .stip-list > li:nth-child(5) {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .stip-list {
+    grid-template-columns: 1fr;
+  }
+  .stip-list > li {
+    grid-column: span 1 !important;
+  }
+}
+
+/* ───────────────────────────────────────────
+   CARD COLORWAYS — :nth-child, no JSX changes
+   1 Rose, 2 Violet (darkened top for contrast),
+   3 Orange, 4 Violet, 5 Rose
+─────────────────────────────────────────── */
+
+/* Rose */
+.stip-list > .stip-card:nth-child(1),
+.stip-list > .stip-card:nth-child(5) {
+  background:
+    /* highlight glows on top of the gradient */
+    radial-gradient(ellipse 60% 30% at  8% 6%,  rgba(255,180,180,.28), transparent 70%),
+    radial-gradient(ellipse 55% 28% at 92% 4%,  rgba(255,160,170,.20), transparent 68%),
+    radial-gradient(ellipse 70% 30% at 50% 98%, rgba(80,0,20,.38),     transparent 72%),
+    /* base rose gradient */
+    linear-gradient(180deg, #bd4468 0%, #ad355b 38%, #a63b50 72%, #8c1320 100%);
+  background-origin: border-box;
+  box-shadow:
+    0 2px 4px rgba(50, 28, 39, .30),
+    inset 0 1px 0 rgba(255, 255, 255, .24);
+}
+
+/* Violet — top stop darkened from #c9b5e1 → #7a5a8a so white text passes 4.5:1 */
+.stip-list > .stip-card:nth-child(2),
+.stip-list > .stip-card:nth-child(4) {
+  background:
+    radial-gradient(ellipse 58% 30% at  9% 5%,  rgba(230,205,255,.22), transparent 70%),
+    radial-gradient(ellipse 52% 26% at 91% 5%,  rgba(210,180,255,.16), transparent 66%),
+    radial-gradient(ellipse 68% 28% at 50% 97%, rgba(60,20,55,.40),    transparent 72%),
+    /* violet gradient — top stop darkened to pass contrast */
+    linear-gradient(164deg, #7a5a8a 0%, #9d6aab 29%, #9d4f72 64%, #793246 100%);
+  background-origin: border-box;
+  box-shadow:
+    0 2px 4px rgba(45, 25, 55, .30),
+    inset 0 1px 0 rgba(255, 255, 255, .24);
+}
+
+/* Orange */
+.stip-list > .stip-card:nth-child(3) {
+  background:
+    radial-gradient(ellipse 62% 32% at  7% 5%,  rgba(255,200,150,.26), transparent 70%),
+    radial-gradient(ellipse 56% 28% at 93% 4%,  rgba(255,185,130,.18), transparent 66%),
+    radial-gradient(ellipse 70% 30% at 50% 98%, rgba(90,25,10,.36),    transparent 72%),
+    /* base orange gradient */
+    linear-gradient(177deg, #d84736 0%, #dd523c 24%, #e8703d 52%, #de5641 78%, #d34239 100%);
+  background-origin: border-box;
+  box-shadow:
+    0 2px 4px rgba(55, 24, 18, .30),
+    inset 0 1px 0 rgba(255, 255, 255, .24);
+}
+
+/* ───────────────────────────────────────────
+   CARD — shared shell
+─────────────────────────────────────────── */
 .stip-card {
   position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-  padding: 28px 32px;
-  border-radius: 16px;
-  background: #131d30;
-  border: 1px solid rgba(255,255,255,0.06);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(22px, 2.4vw, 32px);
+  min-height: 260px;
+
+  border: 1px solid var(--glass-line);
+  border-radius: var(--card-radius);
+  color: #fff;
   cursor: default;
 
-  /* entrance state */
-  opacity: 0;
-  transform: translateX(-18px);
-  animation: stip-enter 0.55s cubic-bezier(0.22,0.65,0.28,1) forwards;
+  /* Entrance animation — defined individually below */
+  animation-fill-mode: both;
+  animation-duration: .76s;
+  animation-timing-function: var(--ease);
+  animation-name: stip-card-in;
+
+  transition: transform .18s ease, box-shadow .18s ease;
 }
 
-.stip-card:nth-child(1) { animation-delay: 0.05s; }
-.stip-card:nth-child(2) { animation-delay: 0.13s; }
-.stip-card:nth-child(3) { animation-delay: 0.21s; }
-.stip-card:nth-child(4) { animation-delay: 0.29s; }
-.stip-card:nth-child(5) { animation-delay: 0.37s; }
+/* Staggered delays */
+.stip-list > .stip-card:nth-child(1) { animation-delay: .10s; }
+.stip-list > .stip-card:nth-child(2) { animation-delay: .20s; }
+.stip-list > .stip-card:nth-child(3) { animation-delay: .30s; }
+.stip-list > .stip-card:nth-child(4) { animation-delay: .40s; }
+.stip-list > .stip-card:nth-child(5) { animation-delay: .50s; }
 
-@keyframes stip-enter {
-  to { opacity: 1; transform: none; }
+.stip-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 20px rgba(58, 25, 39, .16),
+    inset 0 1px 0 rgba(255, 255, 255, .28);
 }
 
-/* Hover lift */
+/* ── ::before — top sheen overlay ── */
 .stip-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  border: 1px solid var(--stip-accent, #2563eb);
-  opacity: 0;
-  transition: opacity 0.25s ease;
   pointer-events: none;
+  border-radius: inherit;
+  mix-blend-mode: screen;
+  background:
+    linear-gradient(
+      102deg,
+      rgba(255, 255, 255, .10),
+      transparent 28%,
+      rgba(255, 255, 255, .08) 62%,
+      transparent 88%
+    ),
+    radial-gradient(
+      ellipse 85% 34% at 54% 7%,
+      rgba(255, 255, 255, .24),
+      transparent 72%
+    );
+  z-index: 1;
 }
 
-.stip-card:hover::before { opacity: 1; }
-
-.stip-card:hover {
-  background: #162038;
-  transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+/* ── ::after — CSS grain texture ── */
+.stip-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: .35;
+  mix-blend-mode: soft-light;
+  background-image: var(--grain);
+  background-size: 200px 200px;
+  background-repeat: repeat;
+  z-index: 1;
 }
 
-/* ── Left column: icon + number ── */
+/* All real content sits above the pseudo-element layers */
+.stip-card-left,
+.stip-card-right,
+.stip-card-accent-bar {
+  position: relative;
+  z-index: 2;
+}
+
+/* ───────────────────────────────────────────
+   CARD CONTENT
+─────────────────────────────────────────── */
+
+/* Left column: icon + number */
 .stip-card-left {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
-  width: 52px;
 }
 
+/* Icon */
 .stip-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.06);
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .14);
+  border: 1px solid rgba(255, 255, 255, .26);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--stip-accent, #2563eb);
-  transition: background 0.2s ease;
-  flex-shrink: 0;
+  color: rgba(255, 255, 255, .90);
+  transition: background 200ms ease, border-color 200ms ease;
 }
 
 .stip-card:hover .stip-icon-wrap {
-  background: var(--stip-accent, #2563eb);
-  color: #fff;
+  background: rgba(255, 255, 255, .22);
+  border-color: rgba(255, 255, 255, .40);
 }
 
 .stip-icon-wrap svg {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
 }
 
+/* Number */
 .stip-number {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--stip-accent, #2563eb);
-  opacity: 0.65;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, .95);
+  line-height: 1;
 }
 
-/* ── Right column: text ── */
+/* 24×2px accent line under the number */
+.stip-number::after {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 2px;
+  margin-top: 5px;
+  background: rgba(255, 255, 255, .70);
+  border-radius: 0;
+}
+
+/* Right column: title + description */
 .stip-card-right {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
+/* Title */
 .stip-card-title {
-  margin: 0 0 10px;
-  font-size: clamp(16px, 1.8vw, 19px);
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.3;
+  margin: 0;
+  font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, .96);
+  text-shadow: 0 1px 1px rgba(72, 28, 48, .14);
 }
 
+/* Description */
 .stip-card-desc {
   margin: 0;
-  font-size: clamp(13.5px, 1.4vw, 15px);
+  font-size: 0.95rem;
+  font-weight: 400;
   line-height: 1.65;
-  color: rgba(255,255,255,0.58);
+  letter-spacing: -.01em;
+  color: rgba(255, 255, 255, .92);
+  text-shadow: 0 1px 2px rgba(60, 21, 35, .16);
+  text-align: left;
+  max-width: 62ch;
 }
 
-/* ── Left accent bar ── */
+/* Accent bar — kept in layout (rendered by existing JSX, logic unchanged) */
 .stip-card-accent-bar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  border-radius: 16px 0 0 16px;
-  background: var(--stip-accent, #2563eb);
-  opacity: 0;
-  transition: opacity 0.25s ease;
+  /* Previous role: left-edge colored strip.
+     Now suppressed — the full-bleed gradient replaces the need for it.
+     Zero dimensions so it takes no space and affects nothing. */
+  display: none;
 }
 
-.stip-card:hover .stip-card-accent-bar { opacity: 1; }
+/* ───────────────────────────────────────────
+   ANIMATIONS
+─────────────────────────────────────────── */
 
-/* ── Responsive ── */
-@media (max-width: 640px) {
-  .stip-card {
-    flex-direction: row;
-    align-items: flex-start;
-    padding: 20px 18px 20px 20px;
-    gap: 16px;
+/* Card entrance */
+@keyframes stip-card-in {
+  from {
+    opacity: .52;
+    translate: 0 10px;
+    scale: .985;
   }
-  .stip-card-left { width: 40px; }
-  .stip-icon-wrap { width: 40px; height: 40px; border-radius: 10px; }
-  .stip-icon-wrap svg { width: 20px; height: 20px; }
+  to {
+    opacity: 1;
+    translate: none;
+    scale: none;
+  }
 }
 
+/* Header fade-up */
+@keyframes stip-fade-up {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+  to {
+    opacity: 1;
+    translate: none;
+  }
+}
+
+/* ── Focus-visible for any link or button inside a card ── */
+.stip-card a:focus-visible,
+.stip-card button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, .78);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ───────────────────────────────────────────
+   RESPONSIVE
+─────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .stip-card {
+    padding: 20px;
+  }
+}
+
+/* ───────────────────────────────────────────
+   REDUCED MOTION
+─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .stip-card { animation: none; opacity: 1; transform: none; }
-  .stip-card:hover { transform: none; }
+  .stip-header,
+  .stip-card {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    transition-duration: .01ms !important;
+  }
+  .stip-card:hover {
+    transform: none !important;
+  }
+  .stip-icon-wrap {
+    transition-duration: .01ms !important;
+  }
 }

@@ -1,85 +1,239 @@
 /* =====================================================
-   MotivationPage.css
-   Light-themed section — 4-col desktop, 2-col mobile
+   MotivationPage.css  —  "Motivation to keep going"
+   Scope: .motiv-section and all .motiv-* descendants only.
+   Does NOT affect .mcard-* (MotivationCard) or .stip-* (StudentTips).
+
+   Design tokens (scoped to .motiv-section):
+     --motiv-navy:      #0b2a5b
+     --motiv-body:      #4a5a73
+     --motiv-hairline:  #c9d3e0
+     --motiv-bg:        #ffffff
    ===================================================== */
 
+/* ── Design tokens ── */
+.motiv-section {
+  --motiv-navy:     #0b2a5b;
+  --motiv-body:     #4a5a73;
+  --motiv-hairline: #c9d3e0;
+  --motiv-bg:       #ffffff;
+}
+
+/* ── Section shell ── */
 .motiv-section {
   width: 100%;
-  background: #f4f4f5;
-  padding: clamp(56px, 7vw, 100px) clamp(20px, 5.6vw, 56px);
+  background: var(--motiv-bg);
+  /* 1px hairlines at top and bottom edges of the section */
+  border-top:    1px solid var(--motiv-hairline);
+  border-bottom: 1px solid var(--motiv-hairline);
 }
 
 .motiv-inner {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 56px 24px;
+}
+
+@media (max-width: 600px) {
+  .motiv-inner {
+    padding: 40px 16px;
+  }
 }
 
 /* ── Heading ── */
 .motiv-heading {
-  margin: 0 0 18px;
-  font-family: Georgia, 'Times New Roman', serif;
+  margin: 0 0 14px;
+  /* Keep the project's existing heading font — do not import new fonts */
+  font-family: inherit;
   font-weight: 700;
-  font-size: clamp(26px, 3.5vw, 42px);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
   line-height: 1.1;
-  color: #111;
-  max-width: 26ch;
+  color: var(--motiv-navy);
+  letter-spacing: -0.01em;
 }
 
-/* ── Thick rule ── */
+/* ── Thick navy bar — replaces the thin hairline divider ──
+   The <hr> element is already in the JSX as .motiv-rule.
+   CSS turns it into a solid 12px navy bar with no new markup.
+── */
 .motiv-rule {
+  appearance: none;
   border: none;
-  border-top: 3px solid #111;
-  margin: 0 0 clamp(32px, 4vw, 52px);
+  display: block;
+  width: 100%;
+  height: 12px;
+  background: var(--motiv-navy);
+  margin: 0 0 40px;
 }
 
-/* ── Grid — 4 columns desktop ── */
+/* ── Card grid — 3 fixed columns, generous gaps ── */
 .motiv-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 24px;
+  row-gap: 40px;
+  align-items: stretch;
 }
 
-/* 2-column on tablet */
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
   .motiv-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* 2-column on mobile too */
-@media (max-width: 800px) {
+@media (max-width: 600px) {
   .motiv-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: 1fr;
   }
 }
 
-/* ── CMS-sourced motivation cards ── */
+/* ── CMS card — editorial flat style, no box ── */
 .motiv-cms-card {
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,.07);
-  display: flex;
+  /* Remove white-box look */
+  background:    transparent;
+  border:        none;
+  box-shadow:    none;
+  border-radius: 0;
+  padding:       0;
+
+  display:        flex;
   flex-direction: column;
+  height:         100%;
+  position:       relative; /* for future label positioning if data ever exists */
+
+  /* No card-level hover — only the image desaturates */
+  transition: none;
 }
-.motiv-cms-cover img {
+
+/* ── Cover image wrapper ──
+   Eliminates the inline-block whitespace gap beneath the <img>.
+── */
+.motiv-cms-cover {
+  position: relative;  /* anchor for .motiv-cms-label if it ever exists */
   width: 100%;
-  height: 200px;
-  object-fit: cover;
-  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  flex-shrink: 0;
+  font-size: 0;
+  line-height: 0;
+  border-radius: 0 0 2px 2px; /* spec allows 0–2px; slight bottom rounding */
 }
-.motiv-cms-body { padding: 18px 20px 22px; }
-.motiv-cms-title { font-size: 1.1rem; font-weight: 700; margin: 0 0 10px; }
-.motiv-cms-text  { font-size: 0.9rem; line-height: 1.6; color: #374151; }
-.motiv-cms-text h2, .motiv-cms-text h3 { margin: .6em 0 .3em; }
+
+.motiv-cms-cover img {
+  display:         block;
+  width:           100%;
+  height:          100%;
+  object-fit:      cover;
+  object-position: center top; /* keep faces in frame */
+  border-radius:   0 0 2px 2px;
+
+  /* Grayscale by default; color on item hover only */
+  filter:     grayscale(100%);
+  transition: filter 200ms ease;
+}
+
+/* Desaturate → color on item hover */
+.motiv-cms-card:hover .motiv-cms-cover img {
+  filter: grayscale(0%);
+}
+
+/* ── Card body ── */
+.motiv-cms-body {
+  padding-top: 14px;
+  display:        flex;
+  flex-direction: column;
+  gap:            8px;
+  flex:           1;
+  min-height:     0;
+  /* No side padding — editorial style, text flush with image edges */
+}
+
+/* ── Card title ── */
+.motiv-cms-title {
+  margin:        0;
+  font-family:   inherit;
+  font-weight:   700;
+  font-size:     clamp(1.5rem, 2.4vw, 2rem);
+  line-height:   1.1;
+  color:         var(--motiv-navy);
+  letter-spacing: -0.01em;
+}
+
+/* ── Body text (dangerouslySetInnerHTML) ── */
+.motiv-cms-text {
+  margin:      0;
+  font-size:   0.9rem;
+  line-height: 1.6;
+  color:       var(--motiv-body);
+  text-align:  left;
+}
+
+/* Reset any inherited margins from injected HTML */
+.motiv-cms-text > * { margin: 0; }
+.motiv-cms-text p   { margin: 0; }
+.motiv-cms-text p + p { margin-top: 0.5em; }
+
+/* ── Attachment / gallery — pinned to the bottom of every card ──
+   margin-top: auto pushes it down regardless of text length.
+   The top border only appears when this element is rendered —
+   no empty space reserved in cards without attachments.
+── */
 .motiv-cms-gallery {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+  margin-top:  auto;
+  padding-top: 14px;
+  border-top:  1px solid var(--motiv-hairline);
+  display:     flex;
+  flex-wrap:   wrap;
+  align-items: flex-start;
+  gap:         10px;
 }
-.motiv-cms-gallery img {
-  width: 80px; height: 80px; object-fit: cover; border-radius: 8px;
-}
+
+/* ── Download link ── */
 .motiv-cms-file {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 0.82rem; color: #1a3c6e; text-decoration: underline;
+  display:         inline-flex;
+  align-items:     center;
+  gap:             8px;
+  font-size:       0.8125rem;
+  font-weight:     600;
+  color:           var(--motiv-navy);
+  text-decoration: none;
+  line-height:     1.4;
+  word-break:      break-all;
+  transition:      color 200ms ease;
+}
+
+.motiv-cms-file:hover {
+  text-decoration:        underline;
+  text-underline-offset:  2px;
+}
+
+.motiv-cms-file:focus-visible {
+  outline:        2px solid var(--motiv-navy);
+  outline-offset: 2px;
+  border-radius:  0; /* spec: radius 0 on interactive controls */
+}
+
+/* ── Thumbnail image inside gallery ── */
+.motiv-cms-gallery img {
+  width:        72px;
+  height:       72px;
+  object-fit:   cover;
+  border-radius: 2px;
+  border:       1px solid var(--motiv-hairline);
+  flex-shrink:  0;
+  display:      block;
+  transition:   filter 200ms ease;
+}
+
+.motiv-cms-gallery img:hover {
+  filter: brightness(0.92);
+  cursor: pointer;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .motiv-cms-cover img,
+  .motiv-cms-file,
+  .motiv-cms-gallery img {
+    transition: none !important;
+  }
 }
