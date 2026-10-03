@@ -1,0 +1,361 @@
+/* ===============================================================
+   MedicineHero.css
+   Light hero for the College of Health Sciences faculty page.
+   Class prefix: mh-
+   The navbar is position:fixed at 68px — all pages wrapped in
+   <Layout> must clear it with padding-top on the first element.
+   =============================================================== */
+
+.mh {
+  --mh-blue:      #2f6df6;
+  --mh-blue-dark: #1f56d6;
+  --mh-ink:       #111418;
+  --mh-copy:      #4b5563;
+  --mh-line:      #bcd0f5;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  /* Clear the fixed 68px navbar */
+  padding-top: 68px;
+
+  min-height: min(760px, 100svh);
+  display: flex;
+  align-items: center;
+
+  background:
+    radial-gradient(ellipse 55% 70% at 88% 55%, rgba(120, 165, 255, 0.28), transparent 70%),
+    linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%);
+  color: var(--mh-ink);
+  font-family: inherit;
+}
+
+.mh *,
+.mh *::before,
+.mh *::after {
+  box-sizing: border-box;
+}
+
+/* ── Faint vertical panel lines ── */
+.mh-stripes {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(110, 140, 200, 0.07) 0 1px,
+    transparent 1px 72px
+  );
+}
+
+/* ── Hero image (right side) ──
+   The image fades at its left and bottom edges.
+   We use a ::after pseudo overlay instead of mask-image/mask-composite
+   because the two-layer intersect mask has inconsistent browser support.
+   The overlay sits on top and creates the fade effect safely everywhere.
+── */
+.mh-media {
+  position: absolute;
+  top: 68px; /* start below the navbar */
+  right: 0;
+  bottom: 0;
+  width: 54%;
+  z-index: 1; /* above stripes, below content */
+  overflow: hidden;
+}
+
+/* Left fade + bottom fade via pseudo-element gradient overlay */
+.mh-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  /* Left edge: fade in from left (white → transparent) */
+  /* Bottom edge: fade out at bottom */
+  background:
+    linear-gradient(90deg,  rgba(248, 251, 255, 1) 0%, rgba(248, 251, 255, 0) 30%),
+    linear-gradient(180deg, rgba(248, 251, 255, 0) 70%, rgba(248, 251, 255, 1) 100%);
+  pointer-events: none;
+}
+
+.mh-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* ── Decorative burst ── */
+.mh-burst {
+  position: absolute;
+  left: 38%;
+  top: 41%;
+  width: clamp(150px, 19vw, 260px);
+  height: auto;
+  color: var(--mh-blue);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* ── Content layer ── */
+.mh-inner {
+  position: relative;
+  z-index: 3; /* above image overlay and stripes */
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: clamp(32px, 5vh, 64px) clamp(20px, 4vw, 56px);
+}
+
+.mh-copy {
+  max-width: 600px;
+}
+
+/* ── Breadcrumb ── */
+.mh-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-bottom: 20px;
+  font-size: 0.8125rem;
+  color: var(--mh-copy);
+}
+
+.mh-breadcrumb a {
+  color: var(--mh-copy);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.mh-breadcrumb a:hover {
+  color: var(--mh-blue);
+  text-decoration: underline;
+}
+
+/* ── Title ── */
+.mh-title {
+  margin: 0;
+  font-size: clamp(2rem, 4.6vw, 4rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--mh-ink);
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+/* ── Subtitle ── */
+.mh-sub {
+  max-width: 46ch;
+  margin: 22px 0 0;
+  font-size: clamp(0.95rem, 1.2vw, 1.0625rem);
+  line-height: 1.6;
+  color: var(--mh-copy);
+}
+
+/* ── CTA buttons ── */
+.mh-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.mh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.mh-btn--solid {
+  background: var(--mh-blue);
+  color: #fff;
+  border: 2px solid var(--mh-blue);
+}
+
+.mh-btn--solid:hover {
+  background: var(--mh-blue-dark);
+  border-color: var(--mh-blue-dark);
+}
+
+.mh-btn--outline {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--mh-ink);
+  border: 2px solid var(--mh-blue);
+}
+
+.mh-btn--outline:hover {
+  background: #fff;
+}
+
+.mh-btn:focus-visible {
+  outline: 3px solid var(--mh-blue);
+  outline-offset: 3px;
+}
+
+/* ── Info cards ── */
+.mh-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 520px;
+  margin-top: clamp(28px, 5vh, 52px);
+}
+
+.mh-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 116px;
+  padding: 16px 18px;
+  border: 1px solid var(--mh-line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(236, 244, 255, 0.88));
+  color: var(--mh-ink);
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+@media (hover: hover) {
+  .mh-card:hover {
+    border-color: var(--mh-blue);
+    box-shadow: 0 8px 20px rgba(47, 109, 246, 0.14);
+    transform: translateY(-2px);
+  }
+}
+
+.mh-card:focus-visible {
+  outline: 3px solid var(--mh-blue);
+  outline-offset: 3px;
+}
+
+.mh-card-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.mh-card-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mh-card-label {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--mh-copy);
+  overflow-wrap: anywhere;
+}
+
+.mh-card-arrow {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--mh-blue);
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+
+/* Tablet */
+@media (max-width: 1023px) {
+  .mh-media {
+    width: 58%;
+    opacity: 0.88;
+  }
+
+  .mh-burst {
+    left: 32%;
+  }
+}
+
+/* Mobile — stack image below text */
+@media (max-width: 767px) {
+  .mh {
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 0;
+    /* On mobile the image goes below; remove the top pad offset */
+    padding-top: 68px;
+  }
+
+  .mh-inner {
+    padding-bottom: 16px;
+  }
+
+  .mh-media {
+    /* Reset absolute positioning — becomes a normal block below the text */
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    order: 2;
+    width: 100%;
+    height: clamp(240px, 68vw, 400px);
+    opacity: 1;
+  }
+
+  /* On mobile the image fades top and bottom */
+  .mh-media::after {
+    background:
+      linear-gradient(180deg, rgba(248, 251, 255, 1) 0%, rgba(248, 251, 255, 0) 22%),
+      linear-gradient(180deg, rgba(248, 251, 255, 0) 72%, rgba(248, 251, 255, 1) 100%);
+  }
+
+  .mh-burst {
+    display: none;
+  }
+
+  .mh-cards {
+    gap: 12px;
+    max-width: 100%;
+  }
+
+  .mh-actions {
+    gap: 10px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 380px) {
+  .mh-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .mh-btn {
+    width: 100%;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .mh *,
+  .mh *::before,
+  .mh *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration:  0.01ms !important;
+  }
+}

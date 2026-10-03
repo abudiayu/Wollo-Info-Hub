@@ -1,0 +1,189 @@
+/* ───────── Tokens ───────── */
+.dg-section {
+  --dg-ink: #0f172a;
+  --dg-muted: #64748b;
+  --dg-line: #dbe6fb;
+  --dg-soft: #f4f8ff;
+  --dg-radius: 20px;
+  --dg-shadow: 0 10px 30px rgba(30, 58, 138, 0.08);
+
+  padding: 88px 0;
+  color: var(--dg-ink);
+  background:
+    radial-gradient(800px 400px at 90% 0%, color-mix(in srgb, var(--dg-accent) 10%, transparent), transparent 70%),
+    linear-gradient(180deg, #fff 0%, var(--dg-soft) 100%);
+}
+.dg-section *,
+.dg-section *::before,
+.dg-section *::after { box-sizing: border-box; }
+
+.dg-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ───────── Header ───────── */
+.dg-head { max-width: 760px; margin: 0 auto 48px; text-align: center; }
+.dg-pill {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--dg-accent) 10%, #fff);
+  color: var(--dg-accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.dg-title {
+  margin: 0 0 12px;
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.dg-sub { margin: 0; color: var(--dg-muted); line-height: 1.6; }
+
+/* ───────── Grid ───────── */
+.dg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 26px;
+}
+
+/* ───────── Card ───────── */
+.dg-card {
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--dg-line);
+  border-radius: var(--dg-radius);
+  box-shadow: var(--dg-shadow);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.dg-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 44px rgba(30, 58, 138, 0.16);
+}
+
+.dg-cover {
+  height: 92px;
+  background:
+    radial-gradient(120px 80px at 85% 0%, rgba(255, 255, 255, 0.35), transparent 70%),
+    linear-gradient(135deg, var(--dg-accent), var(--dg-accent-dark));
+}
+
+.dg-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px 22px;
+  text-align: center;
+}
+
+/* ───────── Avatar ───────── */
+.dg-avatar {
+  width: 104px;
+  height: 104px;
+  margin-top: -52px;
+  margin-bottom: 14px;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 6px 18px rgba(30, 58, 138, 0.18);
+  background: #fff;
+}
+.dg-avatar--fallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--dg-accent), var(--dg-accent-dark));
+  color: #fff;
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+
+/* ───────── Text ───────── */
+.dg-name { margin: 0 0 4px; font-size: 1.1rem; font-weight: 600; }
+.dg-role { margin: 0 0 10px; color: var(--dg-accent); font-size: 0.9rem; font-weight: 600; }
+
+.dg-meta {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  color: var(--dg-muted);
+  font-size: 0.84rem;
+}
+.dg-meta li { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.dg-meta svg { flex: none; color: var(--dg-accent); }
+
+/* ───────── Footer ───────── */
+.dg-foot {
+  width: 100%;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--dg-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.dg-year {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--dg-accent) 10%, #fff);
+  color: var(--dg-accent-dark);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.dg-go {
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--dg-accent);
+  color: #fff;
+  text-decoration: none;
+}
+.dg-go.is-link { transition: transform 0.2s; }
+.dg-go.is-link:hover { transform: rotate(45deg) scale(1.08); }
+.dg-go.is-link:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--dg-accent) 40%, transparent);
+  outline-offset: 2px;
+}
+
+/* ───────── Show more ───────── */
+.dg-more { margin-top: 40px; text-align: center; }
+.dg-more-btn {
+  padding: 13px 28px;
+  border: 2px solid var(--dg-accent);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--dg-accent);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.dg-more-btn:hover { background: var(--dg-accent); color: #fff; transform: translateY(-2px); }
+
+/* ───────── Responsive ───────── */
+@media (max-width: 960px) {
+  .dg-section { padding: 64px 0; }
+}
+@media (max-width: 600px) {
+  .dg-container { padding: 0 18px; }
+  .dg-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dg-card, .dg-go.is-link, .dg-more-btn { transition: none; }
+}
