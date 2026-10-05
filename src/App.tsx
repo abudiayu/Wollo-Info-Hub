@@ -9,7 +9,7 @@ import NotFound       from './components/NotFoundPage/NotFound.jsx';
 import DepartmentsPage             from './pages/departmentsPage/DepartmentsPage.jsx';
 import AlumniPage                  from './pages/almuniPages/Almuni.jsx';
 import MotivationStandalonePage    from './pages/motivationPage/MotivationStandalonePage.jsx';
-import OpportunitiesStandalonePage from './pages/opportunitiesPage/OpportunitiesStandalonePage.jsx';
+// import OpportunitiesStandalonePage from './pages/opportunitiesPage/OpportunitiesStandalonePage.jsx';
 import SearchPage                  from './pages/SearchPage/SearchPage.jsx';
 
 /* ── Faculty overview pages ── */
@@ -50,14 +50,14 @@ import PsychologyPage     from './pages/departments/social/PsychologyPage.jsx';
 import PoliticalSciencePage from './pages/departments/social/PoliticalSciencePage.jsx';
 
 /* ── Sport individual programs ── */
-import SportSciencePage from './pages/departments/sport/SportSciencePage.jsx';
-import FootballPage     from './pages/departments/sport/FootballPage.jsx';
-import AthleticsPage    from './pages/departments/sport/AthleticsPage.jsx';
-import BasketballPage   from './pages/departments/sport/BasketballPage.jsx';
-import VolleyballPage   from './pages/departments/sport/VolleyballPage.jsx';
-import TableTennisPage  from './pages/departments/sport/TableTennisPage.jsx';
-import MartialArtsPage  from './pages/departments/sport/MartialArtsPage.jsx';
-
+// import SportSciencePage from './pages/departments/sport/SportSciencePage.jsx';
+// import FootballPage     from './pages/departments/sport/FootballPage.jsx';
+// import AthleticsPage    from './pages/departments/sport/AthleticsPage.jsx';
+// import BasketballPage   from './pages/departments/sport/BasketballPage.jsx';
+// import VolleyballPage   from './pages/departments/sport/VolleyballPage.jsx';
+// import TableTennisPage  from './pages/departments/sport/TableTennisPage.jsx';
+// import MartialArtsPage  from './pages/departments/sport/MartialArtsPage.jsx';
+import Opportunites from "./pages/opportunitiesPage/OpportunitiesPage.jsx";
 export default function App() {
   return (
     <Router>
@@ -68,7 +68,7 @@ export default function App() {
           <Route path="/departments"   element={<DepartmentsPage />} />
           <Route path="/alumni"        element={<AlumniPage />} />
           <Route path="/motivation"    element={<MotivationStandalonePage />} />
-          <Route path="/opportunities" element={<OpportunitiesStandalonePage />} />
+          <Route path="/opportunities" element={<Opportunites />} />
           <Route path="/statistics"    element={<Statistics />} />
           <Route path="/search"        element={<SearchPage />} />
 
@@ -110,13 +110,13 @@ export default function App() {
           <Route path="/department/social-science/political-science" element={<PoliticalSciencePage />} />
 
           {/* ── Sport ── */}
-          <Route path="/department/sport/sports-science" element={<SportSciencePage />} />
+          {/* <Route path="/department/sport/sports-science" element={<SportSciencePage />} />
           <Route path="/department/sport/football"       element={<FootballPage />} />
           <Route path="/department/sport/athletics"      element={<AthleticsPage />} />
           <Route path="/department/sport/basketball"     element={<BasketballPage />} />
           <Route path="/department/sport/volleyball"     element={<VolleyballPage />} />
           <Route path="/department/sport/table-tennis"   element={<TableTennisPage />} />
-          <Route path="/department/sport/martial-arts"   element={<MartialArtsPage />} />
+          <Route path="/department/sport/martial-arts"   element={<MartialArtsPage />} /> */}
         </Route>
 
         {/* ── Standalone pages — no shared Navbar/Footer ── */}
