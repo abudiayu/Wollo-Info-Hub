@@ -1,0 +1,208 @@
+.dh-layout, .dh-login-wrap, .dh-loading {
+  --navy: #0f2742;
+  --navy-2: #173a5e;
+  --blue: #2f7de1;
+  --blue-soft: #e8f1fd;
+  --bg: #f4f7fb;
+  --text: #17263a;
+  --muted: #62748a;
+  --line: #dde5ef;
+  --danger: #c0392b;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--text);
+}
+
+.dh-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* Sidebar */
+.dh-sidebar {
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.dh-brand { padding: 0 8px 24px; display: flex; flex-direction: column; gap: 4px; }
+.dh-brand strong { font-size: 1.1rem; }
+.dh-brand span { color: #9db6d3; font-size: 0.9rem; }
+.dh-sidebar nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.dh-sidebar nav button, .dh-logout {
+  background: none;
+  border: 0;
+  color: #c9d8ea;
+  text-align: left;
+  padding: 11px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.dh-sidebar nav button:hover, .dh-logout:hover { background: var(--navy-2); color: #fff; }
+.dh-sidebar nav button.active { background: var(--blue); color: #fff; }
+.dh-sidebar button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.dh-burger { display: none; }
+
+/* Main */
+.dh-main { padding: 32px 36px 64px; max-width: 1100px; width: 100%; }
+.dh-title { margin: 0 0 6px; font-size: 1.6rem; }
+.dh-sub { margin: 0 0 22px; color: var(--muted); }
+
+.dh-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* Stats */
+.dh-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.dh-stat {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--blue);
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dh-stat strong { font-size: 2rem; line-height: 1; }
+.dh-stat span { color: var(--muted); font-size: 0.9rem; }
+
+/* Forms */
+.dh-form { display: flex; flex-direction: column; gap: 14px; }
+.dh-form label, .dh-login label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.dh-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+input, textarea, select {
+  font: inherit;
+  font-weight: 400;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+}
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--blue);
+  border-color: var(--blue);
+}
+.dh-search { width: 100%; max-width: 380px; margin-bottom: 16px; }
+.dh-actions { display: flex; gap: 10px; }
+
+.dh-btn {
+  align-self: flex-start;
+  background: var(--blue);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dh-btn:hover { background: #2569bf; }
+.dh-btn:disabled { opacity: 0.6; cursor: wait; }
+.dh-btn-ghost { background: var(--blue-soft); color: var(--blue); }
+.dh-btn-ghost:hover { background: #d6e6fb; }
+
+/* Tables */
+.dh-table-wrap { padding: 0; overflow-x: auto; }
+.dh-table { width: 100%; border-collapse: collapse; }
+.dh-table th, .dh-table td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.dh-table th { background: var(--blue-soft); font-size: 0.85rem; }
+.dh-table tr:last-child td { border-bottom: 0; }
+.dh-cell-actions { white-space: nowrap; text-align: right !important; }
+.dh-link { background: none; border: 0; color: var(--blue); cursor: pointer; padding: 4px 8px; font: inherit; }
+.dh-link:hover { text-decoration: underline; }
+.dh-danger { color: var(--danger); }
+.dh-empty { padding: 24px; margin: 0; color: var(--muted); text-align: center; }
+
+/* Content items */
+.dh-list { display: flex; flex-direction: column; }
+.dh-item { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 14px; }
+.dh-item h3 { margin: 8px 0 6px; font-size: 1.05rem; }
+.dh-item p { margin: 0 0 8px; color: var(--muted); white-space: pre-wrap; }
+.dh-item a { color: var(--blue); }
+.dh-tag { font-size: 0.78rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); }
+.dh-tag-motivation { background: #fff2dc; color: #a56a00; }
+.dh-tag-document { background: #e5f6ec; color: #1d7a45; }
+
+/* Login */
+.dh-login-wrap { min-height: 100vh; display: grid; place-items: center; background: var(--bg); padding: 20px; }
+.dh-login {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.dh-login h1 { margin: 0; font-size: 1.4rem; }
+.dh-login p { margin: 0 0 6px; color: var(--muted); }
+.dh-login .dh-btn { align-self: stretch; }
+.dh-error { background: #fdecea; color: var(--danger); padding: 10px 12px; border-radius: 8px; font-size: 0.9rem; }
+.dh-loading { min-height: 100vh; display: grid; place-items: center; color: var(--muted); }
+
+/* Toast */
+.dh-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--navy);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(15, 39, 66, 0.25);
+  z-index: 50;
+}
+.dh-toast.error { background: var(--danger); }
+
+/* Mobile */
+@media (max-width: 800px) {
+  .dh-layout { grid-template-columns: 1fr; }
+  .dh-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 40;
+  }
+  .dh-sidebar.open { transform: none; }
+  .dh-burger {
+    display: block;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 45;
+    background: var(--navy);
+    color: #fff;
+    border: 0;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  .dh-main { padding: 64px 16px 48px; }
+  .dh-row { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dh-sidebar { transition: none; }
+}
