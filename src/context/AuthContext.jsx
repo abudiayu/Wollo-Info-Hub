@@ -38,9 +38,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (email, password) => {
-    const data = await api.post('/api/auth/login', { email, password });
-    persist(data.token, data.user);
-    return data.user;
+    try {
+      const data = await api.post('/api/auth/login', { email, password });
+      persist(data.token, data.user);
+      return data.user;
+    } catch (err) {
+      throw new Error(err.data?.error || err.message || 'Login failed.');
+    }
   }, [persist]);
 
   const register = useCallback(async (full_name, email, password) => {

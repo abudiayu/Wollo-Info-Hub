@@ -190,6 +190,10 @@ export default function Auth() {
                 <a href="#signup" onClick={switchMode("signup")}>Sign up</a>
               </span>
             )}
+            <span>
+              Department head?{" "}
+              <Link to="/department-head">Sign in here</Link>
+            </span>
             <a href="/">Terms &amp; Conditions</a>
           </footer>
         </section>

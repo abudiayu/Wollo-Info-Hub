@@ -17,15 +17,15 @@ async function request(path, options = {}) {
 
   const res = await fetch(`${BASE}${path}`, { ...options, headers });
 
-  // auto-logout on 401
-  if (res.status === 401) {
+  const data = await res.json().catch(() => ({}));
+
+  // auto-logout on 401, except failed login/register (those must show the server error)
+  if (res.status === 401 && !path.startsWith('/api/auth/login') && !path.startsWith('/api/auth/register')) {
     localStorage.removeItem('wou_token');
     localStorage.removeItem('wou_user');
     window.location.href = '/auth';
     return;
   }
-
-  const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
     const err = new Error(data.error || `Request failed (${res.status})`);

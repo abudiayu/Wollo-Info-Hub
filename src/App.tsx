@@ -5,6 +5,7 @@ import HomePage       from './pages/home/HomePage';
 import Statistics     from './components/Statistics/Statistics.jsx';
 import Admin          from './pages/Admin/Admin.jsx';
 import Auth           from './pages/Auth/Auth';
+import DepartmentHead from './pages/DepartmentHead/DepartmentHead.jsx';
 import NotFound       from './components/NotFoundPage/NotFound.jsx';
 import DepartmentsPage             from './pages/departmentsPage/DepartmentsPage.jsx';
 import AlumniPage                  from './pages/almuniPages/Almuni.jsx';
@@ -129,6 +130,7 @@ export default function App() {
           }
         />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/department-head" element={<DepartmentHead />} />
         <Route path="*"     element={<NotFound />} />
       </Routes>
     </Router>
