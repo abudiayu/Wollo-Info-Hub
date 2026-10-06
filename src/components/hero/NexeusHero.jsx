@@ -24,17 +24,39 @@ export default function NexeusHero() {
         <div className="nx-scrim" aria-hidden="true" />
       </div>
 
-      <p className="nx-eyebrow">{t('hero.eyebrow')}</p>
-
-      <div className="nx-headline-mask">
-        <h1 className="nx-headline">{t('hero.headline')}</h1>
+      {/* Eyebrow badge */}
+      <div className="nx-eyebrow-container">
+        <span className="nx-eyebrow">{t('hero.eyebrow')}</span>
       </div>
 
+      {/* Main Headline */}
+      <div className="nx-headline-mask">
+        <h1 className="nx-headline">
+          Knowledge, <span className="nx-headline-gold">Innovation</span>, Excellence
+        </h1>
+      </div>
+
+      {/* Subtitle / Lede */}
       <p className="nx-lede">{t('hero.lede')}</p>
 
-      <a className="nx-cta" href="#features-section">
-        <span>{t('hero.cta')}</span>
-      </a>
+      {/* Action Buttons */}
+      <div className="nx-cta-group">
+        <a className="nx-cta nx-cta-primary" href="#explore">
+          <span>{t('hero.cta')}</span>
+        </a>
+        <a className="nx-cta nx-cta-ghost" href="#apply">
+          <span>Apply today &rarr;</span>
+        </a>
+      </div>
+
+      {/* Bottom Stats Footer Bar */}
+      <div className="nx-stats-bar">
+        <span>25K+ Students</span>
+        <span className="nx-stat-dot">•</span>
+        <span>80+ Programs</span>
+        <span className="nx-stat-dot">•</span>
+        <span>40 Years</span>
+      </div>
 
       {/* Wave divider */}
       <div className="nx-hero-wave" aria-hidden="true">

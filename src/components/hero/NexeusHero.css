@@ -3,6 +3,9 @@
    All lengths in calc(N * var(--u)) — unit defined on .nx-viewport
    ============================================================ */
 
+/* Load fonts */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Inter:wght@400;500;600;700&display=swap");
+
 /* ── Hero section ── */
 .nx-hero {
   position: relative;
@@ -98,80 +101,131 @@
   position: absolute;
   left:           calc(46.6 * var(--u));
   top:            calc(128.2 * var(--u));
-  font-family:    inherit;
-  font-size:      calc(15.0 * var(--u));
-  font-weight:    700;
+  font-family:    "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size:      calc(13.5 * var(--u));
+  font-weight:    600;
   line-height:    1;
-  letter-spacing: calc(0.2163 * var(--u));
-  color:          #fff;
+  letter-spacing: calc(0.16em);
+  color:          #ffffff;
   text-transform: uppercase;
   white-space:    nowrap;
-  margin: 0;
+  margin:         0;
+  text-shadow:    0 1px 8px rgba(0, 0, 0, 0.35);
 }
 
 .nx-headline-mask {
   position: absolute;
   left: calc(46.0 * var(--u));
   top:  calc(163.0 * var(--u));
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Headline: "Knowledge, Innovation, Excellence" */
 .nx-headline {
-  font-family:    inherit;
-  font-weight:    700;
-  font-size:      calc(65 * var(--u));
-  line-height:    1;
-  letter-spacing: calc(0.5696 * var(--u));
-  color:          #01477a;
-  /* text-shadow:    0 0 24px rgba(255,255,255,0.60); */
-  margin:7px 0 7px 0;
-  padding: 0 0 7px 0;
+  font-family:    "Playfair Display", "Georgia", "Times New Roman", serif;
+  font-weight:    500;
+  font-size:      calc(74 * var(--u));
+  line-height:    1.04;
+  letter-spacing: calc(-0.005em);
+  color:          #ffffff;
+  text-shadow:    0 2px 24px rgba(0, 0, 0, 0.28);
+  margin:         calc(10 * var(--u)) 0 calc(12 * var(--u)) 0;
+  padding:        0;
+}
+
+/* "Innovation" — gold italic accent */
+.nx-headline-gold {
+  font-style:     italic;
+  font-weight:    600;
+  background:     linear-gradient(180deg, #ffe9a8 0%, #f4c95d 55%, #d9a83a 100%);
+  -webkit-background-clip: text;
+  background-clip:         text;
+  -webkit-text-fill-color: transparent;
+  color:                   transparent;
+  text-shadow:             none;
+  padding-right:           0.06em;
 }
 
 /* Lede: "Your gateway to everything…" */
 .nx-lede {
-  position: absolute;
+  position:       absolute;
   left:           calc(46.4 * var(--u));
   top:            calc(245.2 * var(--u));
-  width:          calc(432 * var(--u));
-  font-family:    inherit;
-  font-size:      calc(17.0 * var(--u));
+  width:          calc(460 * var(--u));
+  font-family:    "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size:      calc(16.5 * var(--u));
   font-weight:    400;
-  letter-spacing: calc(-0.15232 * var(--u));
-  color:          #e9e5cd;
-  margin: 0;
+  line-height:    1.55;
+  letter-spacing: 0;
+  color:          #eaf2f8;
+  margin:         0;
+  text-shadow:    0 1px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* ── CTA group ── */
+.nx-cta-group {
+  position:    absolute;
+  left:        calc(46.8 * var(--u));
+  top:         calc(335.0 * var(--u));
+  display:     flex;
+  flex-wrap:   wrap;
+  align-items: center;
+  gap:         calc(12 * var(--u));
 }
 
 .nx-cta {
-  position: absolute;
-  left:          calc(46.8 * var(--u));
-  top:           calc(335.0 * var(--u));
-  width:         calc(157.0 * var(--u));
-  height:        calc(40.6 * var(--u));
-  border-radius: calc(4.2 * var(--u));
-  background:    #fff;
-  display:       block;
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  border-radius:   calc(6 * var(--u));
+  padding:         0 calc(24 * var(--u));
+  min-height:      calc(42 * var(--u));
   text-decoration: none;
-  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.nx-cta:hover {
-  background:  #eef2f3;
-  transform:   translateY(calc(-1.5 * var(--u)));
-  box-shadow:  0 calc(8 * var(--u)) calc(22 * var(--u)) rgba(0, 0, 0, 0.20);
+  cursor:          pointer;
+  transition:      transform 0.22s ease, background 0.22s ease,
+                   box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
 .nx-cta span {
-  position:       absolute;
-  left:           calc(32.0 * var(--u));
-  top:            calc(13.8 * var(--u));
-  font-size:      calc(15.8 * var(--u));
-  font-weight:    400;
+  font-family:    "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size:      calc(15 * var(--u));
+  font-weight:    600;
+  letter-spacing: 0.01em;
   line-height:    1;
-  letter-spacing: calc(0.057828 * var(--u));
-  color:          #004f87;
   white-space:    nowrap;
+}
+
+/* Primary — solid white, navy text */
+.nx-cta-primary {
+  background: #ffffff;
+  border:     1px solid #ffffff;
+  box-shadow: 0 calc(6 * var(--u)) calc(18 * var(--u)) rgba(0, 0, 0, 0.18);
+}
+
+.nx-cta-primary span { color: #0b2a5b; }
+
+.nx-cta-primary:hover {
+  background: #f4f7fa;
+  transform:  translateY(calc(-1.5 * var(--u)));
+  box-shadow: 0 calc(10 * var(--u)) calc(26 * var(--u)) rgba(0, 0, 0, 0.25);
+}
+
+/* Ghost — transparent, white border + white text */
+.nx-cta-ghost {
+  background: transparent;
+  border:     1.5px solid rgba(255, 255, 255, 0.85);
+  box-shadow: none;
+}
+
+.nx-cta-ghost span {
+  color:       #ffffff;
+  font-weight: 500;
+}
+
+.nx-cta-ghost:hover {
+  background:   rgba(255, 255, 255, 0.12);
+  border-color: #ffffff;
+  transform:    translateY(calc(-1.5 * var(--u)));
 }
 
 /* ── Wave divider ── */
@@ -229,63 +283,6 @@
     padding: 14px var(--pad);
   }
 
-  .nx-eyebrow {
-    position: static;
-    display: block;
-    margin-top: clamp(12px, 3vh, 28px);
-    font-size:      clamp(10.5px, 2.9vw, 15px);
-    font-weight:    700;
-    letter-spacing: 0.09em;
-    color:          #fff;
-    padding: 0 var(--pad);
-  }
-
-  .nx-headline-mask {
-    position: static;
-    padding: 0 var(--pad);
-    margin-top: calc(6 * var(--u));
-  }
-
-  .nx-headline {
-    white-space: normal;
-    font-size:   clamp(34px, 9.4vw, 72px);
-    line-height: 1.04;
-    font-weight: 800;
-    color:       #0b2a5b;
-    text-shadow: 0 0 22px rgba(255,255,255,0.60);
-  }
-
-  .nx-lede {
-    position: static;
-    width: auto;
-    max-width: 38ch;
-    padding: 0 var(--pad);
-    margin-top: calc(16 * var(--u));
-    font-size:   clamp(14.5px, 3.9vw, 18px);
-    font-weight: 400;
-    line-height: 1.42;
-    color:       #fff;
-  }
-
-  .nx-cta {
-    position: static;
-    display:    inline-flex;
-    align-items: center;
-    justify-content: center;
-    width:      auto;
-    min-width:  clamp(140px, 40vw, 190px);
-    height:     clamp(42px, 6vh, 52px);
-    padding:    0 clamp(20px, 6vw, 34px);
-    border-radius: 4px;
-    margin-top: calc(22 * var(--u));
-    margin-left: var(--pad);
-  }
-
-  .nx-cta span {
-    position: static;
-    font-size: clamp(13px, 3.5vw, 16px);
-  }
-
   .nx-hero-wave-svg {
     height: clamp(34px, 8vw, 60px);
   }
@@ -311,11 +308,6 @@
 
 /* ══════════════════════════════════════════════════════════════
    Mobile ≤ 768px — RESPONSIVE TEXT
-   The hero becomes a flex column. Eyebrow, headline, lede and
-   button flow one under another (no fixed `top` offsets), so a
-   longer headline or a longer translation pushes the next
-   element down instead of overlapping it.
-   The video, scrim and wave stay absolutely positioned.
    ══════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .nx-hero {
@@ -326,7 +318,6 @@
     height: auto;
     min-height: 580px;
     min-height: 100svh;
-    /* top clears the fixed navbar; bottom clears the wave */
     padding: clamp(88px, 14vh, 120px) 20px clamp(64px, 11vh, 96px);
   }
 
@@ -350,7 +341,6 @@
     filter: saturate(0.86);
   }
 
-  /* Stronger scrim so white text is readable at all scroll positions */
   .nx-scrim {
     position: absolute !important;
     inset: 0 !important;
@@ -364,7 +354,7 @@
     ) !important;
   }
 
-  /* ── Eyebrow: "Wollo University — Est. 1985" ── */
+  /* Eyebrow */
   .nx-eyebrow {
     position: relative !important;
     z-index: 2;
@@ -374,18 +364,18 @@
     margin: 0 !important;
     padding: 0 !important;
     font-size:      clamp(10.5px, 2.9vw, 13px) !important;
-    font-weight:    700 !important;
+    font-weight:    600 !important;
     line-height:    1.4 !important;
-    letter-spacing: 0.12em !important;
-    color:          #fff !important;
-    text-shadow:    none !important;
-    white-space:    normal !important;     /* wrap instead of cutting off */
+    letter-spacing: 0.14em !important;
+    color:          #ffffff !important;
+    text-shadow:    0 1px 8px rgba(0, 0, 0, 0.35) !important;
+    white-space:    normal !important;
     overflow:       visible !important;
     text-overflow:  clip !important;
     overflow-wrap:  anywhere;
   }
 
-  /* ── Headline: "Knowledge, Innovation, Excellence" ── */
+  /* Headline */
   .nx-headline-mask {
     position: relative !important;
     z-index: 2;
@@ -402,19 +392,24 @@
     margin: 0 !important;
     padding: 0 !important;
     white-space:    normal !important;
+    font-family:    "Playfair Display", Georgia, serif !important;
     font-size:      clamp(28px, 8.6vw, 50px) !important;
-    font-weight:    800 !important;
-    line-height:    1.1 !important;
-    letter-spacing: 0 !important;
-    color:          #0b2a5b !important;
-    text-shadow:    0 0 20px rgba(255,255,255,0.60) !important;
+    font-weight:    500 !important;
+    line-height:    1.08 !important;
+    letter-spacing: -0.005em !important;
+    color:          #ffffff !important;
+    text-shadow:    0 2px 20px rgba(0, 0, 0, 0.35) !important;
     text-wrap:      balance;
     overflow-wrap:  anywhere;
     hyphens:        auto;
     max-width:      100% !important;
   }
 
-  /* ── Lede: "Your gateway to everything…" ── */
+  .nx-headline-gold {
+    font-weight: 600 !important;
+  }
+
+  /* Lede */
   .nx-lede {
     position: relative !important;
     z-index: 2;
@@ -429,46 +424,58 @@
     font-weight:    400 !important;
     line-height:    1.55 !important;
     letter-spacing: 0 !important;
-    color:          #fff !important;
-    text-shadow:    none !important;
+    color:          #eaf2f8 !important;
+    text-shadow:    0 1px 10px rgba(0, 0, 0, 0.35) !important;
     overflow-wrap:  break-word;
   }
 
-  /* ── CTA button ── */
+  /* CTA group — column stack on mobile */
+  .nx-cta-group {
+    position: relative !important;
+    z-index: 2;
+    left: auto !important;
+    top: auto !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-top: clamp(20px, 3.4vh, 28px) !important;
+  }
+
   .nx-cta {
     position: relative !important;
     z-index: 2;
     left: auto !important;
     top: auto !important;
-    align-self: flex-start;
     width: auto !important;
     height: auto !important;
     min-width: 130px !important;
-    min-height: 44px !important;          /* comfortable tap target */
-    margin: clamp(20px, 3.4vh, 28px) 0 0 !important;
-    padding: 12px 24px !important;
-    border-radius: 4px !important;
-    display:       inline-flex !important;
-    align-items:   center !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+    padding: 12px 22px !important;
+    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
     justify-content: center !important;
   }
 
   .nx-cta span {
     position:  static !important;
     font-size: clamp(13.5px, 3.7vw, 15px) !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     line-height: 1.2 !important;
     white-space: normal !important;
     text-align: center;
-    color:     #000;
   }
+
+  .nx-cta-primary span { color: #0b2a5b !important; }
+  .nx-cta-ghost span   { color: #ffffff !important; font-weight: 500 !important; }
 
   .nx-hero-wave-svg {
     height: clamp(28px, 6vw, 48px) !important;
   }
 }
 
-/* ── Small mobile ≤ 400px — tighten headline so it never wraps awkwardly ── */
+/* ── Small mobile ≤ 400px ── */
 @media (max-width: 400px) {
   .nx-hero {
     padding-left: 16px;
@@ -484,7 +491,7 @@
   }
 }
 
-/* ── Short landscape phones: don't force a full-screen hero ── */
+/* ── Short landscape phones ── */
 @media (max-width: 768px) and (max-height: 500px) {
   .nx-hero {
     min-height: 0;
