@@ -16,7 +16,7 @@ const CONTENT_LINKS = [
 
 export default function AdminSidebar({
   open, onClose, view, onView, roleTab, onPick, counts, loading, name, role, onHome, onLogout,
-  contentSlug, onContentSlug,
+  contentSlug, onContentSlug, staffCount,
 }) {
   const num = (n) => (loading ? '…' : n);
 
@@ -61,6 +61,18 @@ export default function AdminSidebar({
               <em className="sb-count">{num(counts[n.key])}</em>
             </button>
           ))}
+
+          {/* Staff & Department Heads — combined view */}
+          <button
+            className={`sb-item ${view === 'staff' ? 'is-active' : ''}`}
+            onClick={() => { onView('staff'); onClose(); }}
+          >
+            <Icon name="shield" size={17} />
+            <span>Staff &amp; Dept. Heads</span>
+            {staffCount !== undefined && (
+              <em className="sb-count">{loading ? '…' : staffCount}</em>
+            )}
+          </button>
 
           <p className="sb-title">Content Manager</p>
           <button
