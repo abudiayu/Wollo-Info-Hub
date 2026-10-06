@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import './DepartmentHead.css';
+import Logo from '../../assets/wolloLogo.png';
 
 /* Use the same base URL as the rest of the app */
 const BASE = (import.meta.env?.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
@@ -80,80 +81,6 @@ async function apiFetch(path, options = {}) {
     throw err;
   }
   return data;
-}
-
-/* ════════════════ LOGIN ════════════════
-   Department heads live in their own table, so the main /auth form
-   (which checks `users`) cannot sign them in. They sign in here. */
-function Login({ onLoggedIn, notice }) {
-  const [form,  setForm]  = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
-  const [busy,  setBusy]  = useState(false);
-
-  const submit = async (e) => {
-    e.preventDefault();
-    setBusy(true);
-    setError('');
-    try {
-      const data = await apiFetch('/login', {
-        method: 'POST',
-        body: JSON.stringify({ email: form.email.trim().toLowerCase(), password: form.password }),
-      });
-      localStorage.setItem(TOKEN_KEY, data.token);
-      onLoggedIn();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div className="dh-login-wrap">
-      <div className="dh-login-card">
-        <aside className="dh-login-art">
-          <span className="dh-brand-mark"><Icon name="cap" size={22} /></span>
-          <h2>Wollo Info Hub</h2>
-          <p>Your department, in one place. Keep courses, announcements and student interest up to date.</p>
-          <ul>
-            <li><Icon name="book" size={16} /> Manage courses and prerequisites</li>
-            <li><Icon name="users" size={16} /> See who is interested in your department</li>
-            <li><Icon name="megaphone" size={16} /> Publish opportunities and advice</li>
-          </ul>
-        </aside>
-
-        <form className="dh-login" onSubmit={submit}>
-          <h1>Department head sign in</h1>
-          <p className="dh-login-sub">Use the email and password your administrator created for you.</p>
-
-          {notice && !error && <div className="dh-notice" role="status">{notice}</div>}
-          {error && <div className="dh-error" role="alert">{error}</div>}
-
-          <label>
-            Email
-            <span className="dh-input-icon">
-              <Icon name="mail" size={16} />
-              <input type="email" required autoComplete="email" placeholder="head@wollo.edu.et"
-                value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-            </span>
-          </label>
-          <label>
-            Password
-            <span className="dh-input-icon">
-              <Icon name="lock" size={16} />
-              <input type="password" required autoComplete="current-password" placeholder="••••••••"
-                value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
-            </span>
-          </label>
-
-          <button className="dh-btn dh-btn-block" disabled={busy}>
-            {busy ? <span className="dh-spinner dh-spinner-light" /> : <>Sign in <Icon name="arrow" size={16} /></>}
-          </button>
-          <Link to="/" className="dh-back"><Icon name="home" size={15} /> Back to website</Link>
-        </form>
-      </div>
-    </div>
-  );
 }
 
 /* ════════════════ OVERVIEW ════════════════ */
@@ -560,7 +487,6 @@ function Content({ notify, refreshStats }) {
 export default function DepartmentHead() {
   const navigate = useNavigate();
   const [authed,   setAuthed]   = useState(!!localStorage.getItem(TOKEN_KEY));
-  const [notice,   setNotice]   = useState('');
   const [tab,      setTab]      = useState('overview');
   const [me,       setMe]       = useState(null);
   const [stats,    setStats]    = useState({ students: 0, courses: 0, content: 0 });
@@ -572,12 +498,11 @@ export default function DepartmentHead() {
     setTimeout(() => setToast(null), 4000);
   }, []);
 
-  const logout = useCallback((message = '') => {
+  const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     setAuthed(false);
     setMe(null);
     setTab('overview');
-    setNotice(typeof message === 'string' ? message : '');
   }, []);
 
   /* Log out button: clear the session and send the user to /auth */
@@ -590,7 +515,7 @@ export default function DepartmentHead() {
     try {
       setMe(await apiFetch('/me'));
     } catch (err) {
-      if (err.status === 401 || err.status === 403) logout('Your session ended. Please sign in again.');
+      if (err.status === 401 || err.status === 403) logout();
       else notify(err.message, true);
     }
   }, [logout, notify]);
@@ -605,7 +530,7 @@ export default function DepartmentHead() {
     if (authed) { loadMe(); loadStats(); }
   }, [authed, loadMe, loadStats]);
 
-  if (!authed) return <Login notice={notice} onLoggedIn={() => { setNotice(''); setAuthed(true); }} />;
+  if (!authed) return <Navigate to="/auth" replace />;
 
   if (!me) {
     return (
@@ -632,7 +557,7 @@ export default function DepartmentHead() {
       {/* ── Sidebar ── */}
       <aside className={`dh-sidebar ${menuOpen ? 'open' : ''}`}>
         <div className="dh-brand">
-          <span className="dh-brand-mark"><Icon name="cap" size={20} /></span>
+          <img src={Logo} alt="Wollo Info Hub logo" className="dh-brand-logo" />
           <div>
             <strong>Wollo Info Hub</strong>
             <span>{me.department_name}</span>
@@ -669,6 +594,8 @@ export default function DepartmentHead() {
 
       {/* ── Main content ── */}
       <main className="dh-main">
+        <button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={() => navigate('/')}>
+          <Icon name="arrowLeft" size={15} /><span className="adm-hide-sm">Back to site</span>          </button>
         <div className="dh-topbar">
           <span className="dh-crumb">Dashboard <i>/</i> <b>{current?.label}</b></span>
           <span className="dh-date">{today}</span>

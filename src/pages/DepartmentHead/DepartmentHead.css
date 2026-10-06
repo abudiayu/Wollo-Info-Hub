@@ -18,7 +18,13 @@
   -webkit-font-smoothing: antialiased;
 }
 .dh-layout *, .dh-login-wrap * { box-sizing: border-box; }
-
+.dh-brand-logo {
+  width: 55px;
+  height: 55px;
+  flex: none;
+  object-fit: contain;
+  padding: 4px;
+}
 /* ───────── Layout ───────── */
 .dh-layout {
   display: grid;

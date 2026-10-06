@@ -494,6 +494,7 @@ export default function Admin() {
         onLogout={typeof logout === 'function' ? () => logout() : undefined}
         contentSlug={contentSlug}
         onContentSlug={setContentSlug}
+        staffCount={staffList.length}
       />
 
       <div className="adm-main">
