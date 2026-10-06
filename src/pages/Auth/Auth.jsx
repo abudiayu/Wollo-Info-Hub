@@ -5,12 +5,12 @@ import teamImg from "../../assets/team.jpg";
 import Logo    from "../../assets/wolloLogo.png";
 import { useAuth } from "../../context/AuthContext";
 
-import CloseIcon                from "@mui/icons-material/Close";
-import AppleIcon                from "@mui/icons-material/Apple";
-import GoogleIcon               from "@mui/icons-material/Google";
-import VisibilityOutlinedIcon   from "@mui/icons-material/VisibilityOutlined";
+import CloseIcon                 from "@mui/icons-material/Close";
+import AppleIcon                 from "@mui/icons-material/Apple";
+import GoogleIcon                from "@mui/icons-material/Google";
+import VisibilityOutlinedIcon    from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
-import MoreHorizIcon            from "@mui/icons-material/MoreHoriz";
+import MoreHorizIcon             from "@mui/icons-material/MoreHoriz";
 
 const DAYS = [
   { d: "Sun", n: 22 }, { d: "Mon", n: 23 }, { d: "Tue", n: 24 },
@@ -20,21 +20,27 @@ const DAYS = [
 
 const emptyForm = { name: "", email: "", password: "", remember: false };
 
+/* Department-head token key — must match DepartmentHead.jsx */
+const DEPT_HEAD_TOKEN_KEY = "dept_head_token";
+const BASE = (import.meta.env?.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
+
 export default function Auth() {
   const { login, register } = useAuth();
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // After login/register go back to where the user came from, default "/"
+  /* After student login/register, go back to where they came from */
   const from = location.state?.from?.pathname || "/";
 
+  /* mode: "signin" | "signup" | "depthead" */
   const [mode,         setMode]         = useState("signin");
   const [form,         setForm]         = useState(emptyForm);
   const [showPassword, setShowPassword] = useState(false);
   const [loading,      setLoading]      = useState(false);
   const [error,        setError]        = useState("");
 
-  const isSignup = mode === "signup";
+  const isSignup   = mode === "signup";
+  const isDeptHead = mode === "depthead";
 
   const switchMode = (next) => (e) => {
     e.preventDefault();
@@ -50,25 +56,49 @@ export default function Auth() {
     if (error) setError("");
   };
 
-  const handleSubmit = async (e) => {
+  /* ── Department head login ── */
+  const handleDeptHeadSubmit = async (e) => {
     e.preventDefault();
+    if (!form.email.trim())  { setError("Please enter your email."); return; }
+    if (!form.password)      { setError("Please enter your password."); return; }
 
-    if (isSignup && !form.name.trim()) {
-      setError("Please enter your full name.");
-      return;
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(`${BASE}/api/department-head/login`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ email: form.email.trim(), password: form.password }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.message || data.error || `Sign-in failed (${res.status})`);
+      }
+
+      /* Store dept-head token and redirect to dashboard */
+      localStorage.setItem(DEPT_HEAD_TOKEN_KEY, data.token);
+      navigate("/department-head", { replace: true });
+    } catch (err) {
+      setError(
+        err.message === "Failed to fetch"
+          ? "Cannot reach the server. Make sure the backend is running."
+          : err.message || "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
-    if (!form.email.trim()) {
-      setError("Please enter your email.");
-      return;
-    }
-    if (!form.password) {
-      setError("Please enter your password.");
-      return;
-    }
-    if (isSignup && form.password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
+  };
+
+  /* ── Student login / register ── */
+  const handleStudentSubmit = async (e) => {
+    e.preventDefault();
+    if (isSignup && !form.name.trim())       { setError("Please enter your full name."); return; }
+    if (!form.email.trim())                  { setError("Please enter your email."); return; }
+    if (!form.password)                      { setError("Please enter your password."); return; }
+    if (isSignup && form.password.length < 6){ setError("Password must be at least 6 characters."); return; }
 
     setLoading(true);
     setError("");
@@ -87,10 +117,16 @@ export default function Auth() {
     }
   };
 
+  /* ── Form content varies by mode ── */
+  const formProps = isDeptHead
+    ? { onSubmit: handleDeptHeadSubmit }
+    : { onSubmit: handleStudentSubmit };
+
   return (
     <div className="lg-page">
       <div className="lg-card">
-        {/* ── LEFT ── */}
+
+        {/* ══════════ LEFT ══════════ */}
         <section className="lg-left">
           <div className="lg-logo">
             <Link className="ab-navbar-brand" to="/">
@@ -99,16 +135,48 @@ export default function Auth() {
             </Link>
           </div>
 
-          <form key={mode} className="lg-form" onSubmit={handleSubmit} noValidate>
-            <h1>{isSignup ? "Create an account" : "Welcome back"}</h1>
-            <p className="lg-sub">
-              {isSignup
-                ? "Sign up and get full access"
-                : "Sign in to continue to your account"}
-            </p>
+          {/* ── Mode tabs ── */}
+          <div className="lg-tabs" role="tablist">
+            <button
+              role="tab" type="button"
+              className={`lg-tab ${mode === "signin" ? "active" : ""}`}
+              aria-selected={mode === "signin"}
+              onClick={switchMode("signin")}
+            >Sign in</button>
+            <button
+              role="tab" type="button"
+              className={`lg-tab ${mode === "signup" ? "active" : ""}`}
+              aria-selected={mode === "signup"}
+              onClick={switchMode("signup")}
+            >Sign up</button>
+            <button
+              role="tab" type="button"
+              className={`lg-tab lg-tab--dept ${mode === "depthead" ? "active" : ""}`}
+              aria-selected={mode === "depthead"}
+              onClick={switchMode("depthead")}
+            >Dept. Head</button>
+          </div>
 
-            {error && <div className="lg-error">{error}</div>}
+          {/* ── Form ── */}
+          <form key={mode} className="lg-form" noValidate {...formProps}>
 
+            {isDeptHead ? (
+              <>
+                <h1>Department Head</h1>
+                <p className="lg-sub">Sign in to manage your department</p>
+              </>
+            ) : (
+              <>
+                <h1>{isSignup ? "Create an account" : "Welcome back"}</h1>
+                <p className="lg-sub">
+                  {isSignup ? "Sign up and get full access" : "Sign in to continue to your account"}
+                </p>
+              </>
+            )}
+
+            {error && <div className="lg-error" role="alert">{error}</div>}
+
+            {/* Full name — signup only */}
             {isSignup && (
               <div className="lg-field">
                 <label htmlFor="name">Full name</label>
@@ -149,6 +217,7 @@ export default function Auth() {
               </div>
             </div>
 
+            {/* Remember me — sign-in and dept-head */}
             {!isSignup && (
               <div className="lg-row">
                 <label className="lg-check">
@@ -162,43 +231,66 @@ export default function Auth() {
               </div>
             )}
 
-            <button type="submit" className="lg-submit" disabled={loading}>
+            <button
+              type="submit"
+              className={`lg-submit ${isDeptHead ? "lg-submit--dept" : ""}`}
+              disabled={loading}
+            >
               {loading
                 ? <span className="lg-spinner" />
-                : isSignup ? "Create account" : "Sign in"}
+                : isDeptHead
+                  ? "Sign in to dashboard"
+                  : isSignup
+                    ? "Create account"
+                    : "Sign in"}
             </button>
 
-            <div className="lg-socials">
-              <button type="button" className="lg-social">
-                <AppleIcon /> Apple
-              </button>
-              <button type="button" className="lg-social">
-                <GoogleIcon /> Google
-              </button>
-            </div>
+            {/* Social buttons — only for students */}
+            {!isDeptHead && (
+              <div className="lg-socials">
+                <button type="button" className="lg-social">
+                  <AppleIcon /> Apple
+                </button>
+                <button type="button" className="lg-social">
+                  <GoogleIcon /> Google
+                </button>
+              </div>
+            )}
+
+            {/* Dept-head helper text */}
+            {isDeptHead && (
+              <p className="lg-dept-hint">
+                Department head accounts are created by the university admin.
+                Contact your administrator if you don&apos;t have credentials.
+              </p>
+            )}
           </form>
 
           <footer className="lg-foot">
-            {isSignup ? (
+            {!isDeptHead && (
+              isSignup ? (
+                <span>
+                  Already have an account?{" "}
+                  <a href="#signin" onClick={switchMode("signin")}>Sign in</a>
+                </span>
+              ) : (
+                <span>
+                  No account?{" "}
+                  <a href="#signup" onClick={switchMode("signup")}>Sign up</a>
+                </span>
+              )
+            )}
+            {isDeptHead && (
               <span>
-                Already have an account?{" "}
-                <a href="#signin" onClick={switchMode("signin")}>Sign in</a>
-              </span>
-            ) : (
-              <span>
-                No account?{" "}
-                <a href="#signup" onClick={switchMode("signup")}>Sign up</a>
+                Not a department head?{" "}
+                <a href="#signin" onClick={switchMode("signin")}>Student sign in</a>
               </span>
             )}
-            <span>
-              Department head?{" "}
-              <Link to="/department-head">Sign in here</Link>
-            </span>
             <a href="/">Terms &amp; Conditions</a>
           </footer>
         </section>
 
-        {/* ── RIGHT ── */}
+        {/* ══════════ RIGHT ══════════ */}
         <section className="lg-right">
           <img src={teamImg} alt="Team meeting" className="lg-photo" />
           <Link to="/" className="lg-close" aria-label="Go home">
@@ -230,6 +322,7 @@ export default function Auth() {
             </div>
           </div>
         </section>
+
       </div>
     </div>
   );

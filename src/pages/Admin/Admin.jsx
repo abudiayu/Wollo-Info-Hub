@@ -338,9 +338,15 @@ export default function Admin() {
   const [page,     setPage]     = useState(1);
   const [editing,  setEditing]  = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [view,     setView]     = useState('dashboard'); // 'dashboard' | 'users' | 'content' | 'media'
+  const [view,     setView]     = useState('dashboard');
   const [contentSlug, setContentSlug] = useState(null);
   const { toasts, push: pushToast } = useToast();
+
+  /* ── Staff list (dept heads + staff users combined) ── */
+  const [staffList,    setStaffList]    = useState([]);
+  const [staffFetch,   setStaffFetch]   = useState(false);
+  const [staffErr,     setStaffErr]     = useState(null);
+  const [staffSearch,  setStaffSearch]  = useState('');
 
   const myRole = me?.role ? String(me.role).toLowerCase() : '';
   const canTry = !!me && (!myRole || myRole === 'admin');
@@ -352,7 +358,7 @@ export default function Admin() {
     if (myRole && myRole !== 'admin') navigate('/', { replace: true });
   }, [me, myRole, authLoading, navigate]);
 
-  /* fetch */
+  /* fetch users */
   const fetchUsers = useCallback(async () => {
     setFetching(true);
     setFetchErr(null);
@@ -367,9 +373,23 @@ export default function Admin() {
     }
   }, [ctxToken]);
 
+  /* fetch combined staff + dept heads */
+  const fetchStaff = useCallback(async () => {
+    setStaffFetch(true);
+    setStaffErr(null);
+    try {
+      const payload = await request('GET', '/api/admin/staff', null, ctxToken);
+      setStaffList(Array.isArray(payload) ? payload : []);
+    } catch (err) {
+      setStaffErr(err.message || 'Failed to load staff.');
+    } finally {
+      setStaffFetch(false);
+    }
+  }, [ctxToken]);
+
   useEffect(() => {
-    if (!authLoading && canTry) fetchUsers();
-  }, [authLoading, canTry, fetchUsers]);
+    if (!authLoading && canTry) { fetchUsers(); fetchStaff(); }
+  }, [authLoading, canTry, fetchUsers, fetchStaff]);
 
   /* derived */
   const countOf = (role) => users.filter((u) => u.role === role).length;
@@ -581,6 +601,17 @@ export default function Admin() {
                           <span className="adm-tab-count">{fetching ? '…' : item.count}</span>
                         </button>
                       ))}
+                      {/* Staff & dept heads shortcut */}
+                      <button
+                        className="adm-btn adm-btn--ghost"
+                        style={{ justifyContent: 'space-between', width: '100%' }}
+                        onClick={() => setView('staff')}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <Icon name="shield" size={15} />Staff &amp; Dept. Heads
+                        </span>
+                        <span className="adm-tab-count">{staffFetch ? '…' : staffList.length}</span>
+                      </button>
                     </div>
                   </section>
                 </div>
@@ -806,6 +837,161 @@ export default function Admin() {
                             ))
                       }
                     </ul>
+                  </section>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── Staff & Department Heads ── */}
+          {view === 'staff' && (
+            <>
+              <div className="adm-header">
+                <p className="adm-eyebrow">Admin console</p>
+                <h1 className="adm-title">Staff &amp; Department Heads</h1>
+                <p className="adm-subtitle">
+                  All staff accounts and department head accounts across Wollo University.
+                </p>
+              </div>
+
+              <div className="adm-grid">
+                <section className="adm-card">
+                  <div className="adm-card-head">
+                    <div>
+                      <h2 className="adm-card-title">Staff directory</h2>
+                      <p className="adm-card-sub">
+                        {staffFetch ? '…' : `${staffList.length} member${staffList.length !== 1 ? 's' : ''}`}
+                      </p>
+                    </div>
+                    <button
+                      className="adm-btn adm-btn--primary adm-btn--sm"
+                      onClick={fetchStaff}
+                      disabled={staffFetch}
+                    >
+                      <span className={staffFetch ? 'adm-spin' : ''}><Icon name="refresh" size={15} /></span>
+                      <span className="adm-hide-sm">Refresh</span>
+                    </button>
+                  </div>
+
+                  {/* Search */}
+                  <div className="adm-search-wrap" style={{ padding: '0 0 12px' }}>
+                    <Icon name="search" size={16} />
+                    <input
+                      type="search" className="adm-search"
+                      placeholder="Search by name, email or department…"
+                      value={staffSearch}
+                      onChange={(e) => setStaffSearch(e.target.value)}
+                      aria-label="Search staff"
+                    />
+                  </div>
+
+                  {staffErr ? (
+                    <div className="adm-error-state">
+                      <span className="adm-state-icon adm-state-icon--danger"><Icon name="alert" size={22} /></span>
+                      <p className="adm-state-title">Could not load staff</p>
+                      <p className="adm-state-text">{staffErr}</p>
+                      <button className="adm-btn adm-btn--primary" onClick={fetchStaff}>Try again</button>
+                    </div>
+                  ) : (
+                    <div className="adm-table-wrap">
+                      <table className="adm-table" aria-label="Staff and department heads">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Joined</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {staffFetch
+                            ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                            : (() => {
+                                const q = staffSearch.trim().toLowerCase();
+                                const shown = staffList.filter(s =>
+                                  !q ||
+                                  s.name?.toLowerCase().includes(q) ||
+                                  s.email?.toLowerCase().includes(q) ||
+                                  s.department_name?.toLowerCase().includes(q)
+                                );
+                                if (shown.length === 0) return (
+                                  <tr><td colSpan={5}>
+                                    <div className="adm-empty">
+                                      <span className="adm-state-icon"><Icon name="users" size={22} /></span>
+                                      <p className="adm-state-title">
+                                        {q ? `No results for "${staffSearch}"` : 'No staff accounts yet.'}
+                                      </p>
+                                    </div>
+                                  </td></tr>
+                                );
+                                return shown.map((s, i) => (
+                                  <tr key={`${s.source}-${s.id}-${i}`} className="adm-row">
+                                    <td>
+                                      <div className="adm-user-cell">
+                                        {/* Avatar using initials */}
+                                        <span
+                                          className="adm-avatar adm-avatar--initials"
+                                          style={{ background: s.source === 'department_heads' ? '#1d6b66' : '#6366f1' }}
+                                          aria-hidden="true"
+                                        >
+                                          {(s.name || '?').split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('')}
+                                        </span>
+                                        <div className="adm-user-info">
+                                          <span className="adm-user-name">{s.name}</span>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td className="adm-user-email">{s.email}</td>
+                                    <td>
+                                      <span className={`adm-badge adm-badge--${s.source === 'department_heads' ? 'depthead' : 'staff'}`}>
+                                        <span className="adm-badge-dot" />
+                                        {s.source === 'department_heads' ? 'Dept. Head' : 'Staff'}
+                                      </span>
+                                    </td>
+                                    <td className="adm-muted-cell">
+                                      {s.department_name || <span className="adm-muted">—</span>}
+                                    </td>
+                                    <td className="adm-date">{formatDate(s.created_at)}</td>
+                                  </tr>
+                                ));
+                              })()
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </section>
+
+                {/* Side panel: summary */}
+                <div className="adm-side">
+                  <section className="adm-card adm-card--pad">
+                    <h2 className="adm-card-title">Summary</h2>
+                    <p className="adm-card-sub">Staff breakdown by type</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>
+                      {[
+                        {
+                          label: 'Department Heads',
+                          count: staffList.filter(s => s.source === 'department_heads').length,
+                          icon: 'shield',
+                          color: '#1d6b66',
+                        },
+                        {
+                          label: 'Staff (users table)',
+                          count: staffList.filter(s => s.source === 'users').length,
+                          icon: 'staff',
+                          color: '#6366f1',
+                        },
+                      ].map(item => (
+                        <div key={item.label} className="adm-stat-row">
+                          <span className="adm-stat-icon-sm" style={{ color: item.color }}>
+                            <Icon name={item.icon} size={16} />
+                          </span>
+                          <span className="adm-stat-label">{item.label}</span>
+                          <span className="adm-stat-val">{staffFetch ? '…' : item.count}</span>
+                        </div>
+                      ))}
+                    </div>
                   </section>
                 </div>
               </div>

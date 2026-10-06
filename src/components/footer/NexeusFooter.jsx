@@ -1,9 +1,35 @@
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import './NexeusFooter.css';
 import Logo from '../../assets/wolloLogo.png';
 
-/* ── Social SVG icons (inline — no extra dependency) ──────── */
+/* ── Languages shown in the dropdown (edit to match your i18n resources) ── */
+const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'am', label: 'አማርኛ' },
+  { code: 'om', label: 'Afaan Oromoo' },
+];
+
+/* ── Inline SVG icons (no extra dependency) ───────────────── */
+
+function IconGlobe() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z" />
+    </svg>
+  );
+}
+
+function IconChevron() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
 
 function IconX() {
   return (
@@ -61,73 +87,135 @@ function IconInstagram() {
   );
 }
 
+/* ── Language dropdown ────────────────────────────────────── */
+
+function LanguageSelect() {
+  const { i18n } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  const currentCode = (i18n.resolvedLanguage || i18n.language || 'en').split('-')[0];
+  const current = LANGUAGES.find((l) => l.code === currentCode) || LANGUAGES[0];
+
+  /* close on outside click / Escape */
+  useEffect(() => {
+    if (!open) return undefined;
+    const onClick = (e) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const choose = (code) => {
+    i18n.changeLanguage(code);
+    setOpen(false);
+  };
+
+  return (
+    <div className="nx-lang" ref={wrapRef}>
+      <button
+        type="button"
+        className="nx-lang-btn"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <IconGlobe />
+        <span>{current.label}</span>
+        <span className={`nx-lang-chevron${open ? ' is-open' : ''}`}>
+          <IconChevron />
+        </span>
+      </button>
+
+      {open && (
+        <ul className="nx-lang-menu" role="listbox" aria-label="Language">
+          {LANGUAGES.map((l) => (
+            <li key={l.code} role="option" aria-selected={l.code === current.code}>
+              <button
+                type="button"
+                className={`nx-lang-option${l.code === current.code ? ' is-active' : ''}`}
+                onClick={() => choose(l.code)}
+              >
+                {l.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+
 export default function NexeusFooter() {
   const { t } = useTranslation();
 
   return (
     <footer className="nx-footer">
-      <div className="nx-footer-wave" aria-hidden="true">
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="nx-footer-wave-svg">
-          <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,30 L1440,80 L0,80 Z" className="nx-footer-wave-path" />
-        </svg>
-      </div>
-
       <div className="nx-finner">
-        <div className="nx-footer-top">
 
-          {/* Brand column */}
-          <div className="nx-brandcol">
-            <div className="nx-brandrow">
-              <a className="ab-navbar-brand" href="/">
-                  <img src={Logo} alt="Wollo-Info Logo" className="ab-navbar-logo" />
-                  <span className="ab-navbar-word">Wollo-Info</span>
-                </a>
-            </div>
-            <p className="nx-tagline">{t('footer.tagline')}</p>
+        {/* Top bar: CTA (left) + language select (right) */}
+        <div className="nx-topbar">
+          
+          <LanguageSelect />
+        </div>
+
+        {/* Link columns */}
+        <nav className="nx-nav" aria-label="Footer navigation">
+          <div className="nx-col">
+            <h3>{t('footer.academics.heading')}</h3>
+            <ul>
+              <li><Link to="/departments">{t('footer.academics.departments')}</Link></li>
+              <li><Link to="/departments">{t('footer.academics.programs')}</Link></li>
+              <li><a href="/">{t('footer.academics.research')}</a></li>
+              <li><a href="/">{t('footer.academics.library')}</a></li>
+            </ul>
           </div>
 
-          {/* Nav columns */}
-          <nav className="nx-nav" aria-label="Footer navigation">
-            <div className="nx-col">
-              <h3>{t('footer.academics.heading')}</h3>
-              <ul>
-                <li><Link to="/departments">{t('footer.academics.departments')}</Link></li>
-                <li><Link to="/departments">{t('footer.academics.programs')}</Link></li>
-                <li><a href="/">{t('footer.academics.research')}</a></li>
-                <li><a href="/">{t('footer.academics.library')}</a></li>
-              </ul>
-            </div>
-            <div className="nx-col">
-              <h3>{t('footer.campusLife.heading')}</h3>
-              <ul>
-                <li><Link to="/opportunities">{t('footer.campusLife.clubs')}</Link></li>
-                <li><Link to="/opportunities">{t('footer.campusLife.sports')}</Link></li>
-                <li><a href="/">{t('footer.campusLife.accommodation')}</a></li>
-                <li><a href="/">{t('footer.campusLife.cafeteria')}</a></li>
-              </ul>
-            </div>
-            <div className="nx-col">
-              <h3>{t('footer.resources.heading')}</h3>
-              <ul>
-                <li><a href="/">{t('footer.resources.elearning')}</a></li>
-                <li><Link to="/alumni">{t('footer.resources.alumni')}</Link></li>
-                <li><Link to="/opportunities">{t('footer.resources.opportunities')}</Link></li>
-                <li><Link to="/statistics">{t('footer.resources.statistics')}</Link></li>
-              </ul>
-            </div>
-          </nav>
-        </div>
+          <div className="nx-col">
+            <h3>{t('footer.campusLife.heading')}</h3>
+            <ul>
+              <li><Link to="/opportunities">{t('footer.campusLife.clubs')}</Link></li>
+              <li><Link to="/opportunities">{t('footer.campusLife.sports')}</Link></li>
+              <li><a href="/">{t('footer.campusLife.accommodation')}</a></li>
+              <li><a href="/">{t('footer.campusLife.cafeteria')}</a></li>
+            </ul>
+          </div>
+
+          <div className="nx-col">
+            <h3>{t('footer.resources.heading')}</h3>
+            <ul>
+              <li><a href="/">{t('footer.resources.elearning')}</a></li>
+              <li><Link to="/alumni">{t('footer.resources.alumni')}</Link></li>
+              <li><Link to="/opportunities">{t('footer.resources.opportunities')}</Link></li>
+              <li><Link to="/statistics">{t('footer.resources.statistics')}</Link></li>
+            </ul>
+          </div>
+
+          {/* Brand column (4th column, like the "Help" column in the reference) */}
+          <div className="nx-col nx-brandcol">
+            <a className="nx-brand" href="/">
+              <img src={Logo} alt="Wollo-Info Logo" className="nx-brand-logo" />
+              <span className="nx-brand-word">Wollo-Info</span>
+            </a>
+            <p className="nx-tagline">{t('footer.tagline')}</p>
+          </div>
+        </nav>
 
         <hr className="nx-rule" />
 
+        {/* Bottom row: legal + socials */}
         <div className="nx-footrow">
-          <p className="nx-legal">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true" style={{display:'inline-block', verticalAlign:'middle', marginRight:'4px', marginBottom:'1px'}}>
-              <circle cx="6.5" cy="6.5" r="5.75" stroke="currentColor" strokeWidth="1.1"/>
-              <path d="M8.3 4.8A2.3 2.3 0 1 0 8.3 8.2" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
-            </svg>
-            2025 Abdulqadir MD all rights reserved.
-          </p>
+          <p className="nx-legal">2025 Abdulqadir MD all rights reserved.</p>
           <div className="nx-socials">
             <a href="/" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="nx-social-link"><IconX /></a>
             <a href="/" target="_blank" rel="noopener noreferrer" aria-label="YouTube"     className="nx-social-link"><IconYouTube /></a>

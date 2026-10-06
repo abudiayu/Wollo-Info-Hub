@@ -1,61 +1,48 @@
 /* ================================================================
-   NAVBAR — AAU-style clean white institutional bar
-   FIX NOTES:
-   1. Icon + text sizing: home icon 20px, chevron 13×13, links 15px
-   2. Dropdown: position:absolute on parent, width:max-content panel
-   3. Sticky: container is sticky top:0 z-index:200, NO overflow:hidden
-              so absolute-positioned dropdowns are never clipped
-   4. Hamburger: 44px tap target, drawer hidden from keyboard when
-              closed, username/logout/admin hidden in the top bar on
-              mobile (they live in the drawer) so the hamburger is
-              never pushed off-screen
+   NAVBAR  —  Wollo-Info institutional bar
+   Mobile-first: hamburger always in the DOM, shown at ≤860px.
+   The bar layout is always: [Brand] [flex spacer] [Right group]
+   The right group contains: desktop items + search + hamburger.
+   Desktop items are hidden on mobile; hamburger is hidden on desktop.
    ================================================================ */
 
-/* ─────────────────────────────────────────────────────────────────
-   FIX 3 — Sticky container
-   CRITICAL: overflow must stay 'visible' (default).
-   Setting overflow:hidden/auto/scroll on a sticky element creates a
-   new scroll container that clips absolutely-positioned children
-   (the dropdowns). Never add overflow here.
-   ───────────────────────────────────────────────────────────────── */
+/* ── Sticky container ─────────────────────────────────────────── */
 .ab-navbar-container {
   position: fixed;
   top: 0;
-  z-index: 200;
+  left: 0;
   width: 100%;
-  font-family: "Inter", sans-serif;
-  /* overflow: visible — do NOT override this */
+  z-index: 200;
+  font-family: "Inter", system-ui, sans-serif;
+  /* overflow MUST remain visible — hidden would clip dropdowns */
 }
 
-/* ── The bar ───────────────────────────────────────────────────── */
+/* ── The bar ── */
 .ab-navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0;
-
   width: 100%;
-  padding: 0 clamp(16px, 4vw, 48px);
   height: 68px;
-
+  padding: 0 clamp(16px, 4vw, 48px);
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
-/* ── Brand — logo + two-line stacked title ─────────────────────── */
+/* ── Brand ── */
 .ab-navbar-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   text-decoration: none;
   flex-shrink: 0;
-  margin-right: 32px;
+  margin-right: 24px;
 }
 
 .ab-navbar-logo {
-  width: 58px;
-  height: 58px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -68,7 +55,7 @@
 }
 
 .ab-navbar-title {
-  font-size: 30px;
+  font-size: 22px;
   font-weight: 700;
   color: #1a3c6e;
   white-space: nowrap;
@@ -76,24 +63,22 @@
 }
 
 .ab-navbar-subtitle {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
   color: #6b7280;
   white-space: nowrap;
-  letter-spacing: 0.02em;
 }
 
-/* ── Nav links row ─────────────────────────────────────────────── */
+/* ── Desktop nav links row ── */
 .ab-navbar-links {
   display: flex;
   align-items: center;
   gap: 2px;
   flex: 1;
   justify-content: flex-end;
-  margin-right: 16px;
+  margin-right: 12px;
 }
 
-/* FIX 1 — Home icon: rendered at 20px so it matches 15px text visually */
 .ab-navlink-home {
   display: flex;
   align-items: center;
@@ -105,65 +90,47 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.ab-navlink-home:hover {
-  background: #f3f4f6;
-  color: #1a3c6e;
-}
+.ab-navlink-home:hover { background: #f3f4f6; color: #1a3c6e; }
 
-/* FIX 1 — Force MUI HomeTwoToneIcon to exactly 20px */
 .ab-navlink-home .ab-home-icon,
 .ab-navlink-home svg {
-  font-size: 40px !important;
-  width: 40px !important;
-  height: 40px !important;
+  font-size: 26px !important;
+  width:  26px !important;
+  height: 26px !important;
 }
 
-/* FIX 1 — Nav link text: 15px (was 14px), gap widened to 5px */
 .ab-navlink {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 6px 12px;
-  font-size: 15px;          /* was 14px */
+  font-size: 14px;
   font-weight: 500;
   color: #374151;
   text-decoration: none;
   border-radius: 6px;
   white-space: nowrap;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
 .ab-navlink:hover,
-.ab-navlink.ab-navlink-active {
-  background: #f3f4f6;
-  color: #111827;
-}
+.ab-navlink.ab-navlink-active { background: #f3f4f6; color: #111827; }
 
-/* FIX 1 — Chevron: 13×13px (was 11×11), rotates when active */
+.ab-navlink--btn { cursor: pointer; }
+
 .ab-chevron-icon {
   color: #9ca3af;
   flex-shrink: 0;
   transition: transform 0.2s ease, color 0.2s ease;
 }
+.ab-navlink:hover .ab-chevron-icon { color: #374151; }
+.ab-navlink.ab-navlink-active .ab-chevron-icon { transform: rotate(180deg); color: #374151; }
 
-.ab-navlink:hover .ab-chevron-icon {
-  color: #374151;
-}
-
-.ab-navlink.ab-navlink-active .ab-chevron-icon {
-  transform: rotate(180deg);
-  color: #374151;
-}
-
-/* Nav link — button variant (for dropdown triggers) */
-.ab-navlink--btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-/* Vertical divider between links and search icon */
+/* Vertical divider */
 .ab-nav-divider {
   display: inline-block;
   width: 1px;
@@ -173,7 +140,7 @@
   flex-shrink: 0;
 }
 
-/* FIX 1 — Search icon: 19×19px (was 17×17) */
+/* Search icon button */
 .ab-nav-search {
   display: flex;
   align-items: center;
@@ -186,16 +153,12 @@
   border-radius: 6px;
   color: #374151;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
   flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
 }
+.ab-nav-search:hover { background: #f3f4f6; color: #111827; }
 
-.ab-nav-search:hover {
-  background: #f3f4f6;
-  color: #111827;
-}
-
-/* ── Right group — login + language + hamburger ──── */
+/* ── Right group ── */
 .ab-navbar-right {
   display: flex;
   align-items: center;
@@ -203,67 +166,62 @@
   flex-shrink: 0;
 }
 
+/* Desktop auth elements */
 .ab-navbar-cta {
   font-weight: 600;
-  font-size: 13.5px;
+  font-size: 13px;
   color: #ffffff;
   background: #1a3c6e;
-  padding: 8px 20px;
+  padding: 8px 18px;
   border-radius: 9999px;
   text-decoration: none;
   white-space: nowrap;
   flex-shrink: 0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.14);
+  transition: background 0.2s ease, transform 0.2s ease;
 }
+.ab-navbar-cta:hover { background: #1e4a8a; transform: translateY(-1px); }
 
-.ab-navbar-cta:hover {
-  background: #1e4a8a;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
-}
-
-/* ── Logged-in: username display ── */
 .ab-navbar-username {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   color: #1a3c6e;
   white-space: nowrap;
-  max-width: 120px;
+  max-width: 110px;
   overflow: hidden;
   text-overflow: ellipsis;
   flex-shrink: 0;
 }
 
-/* ── Logged-in: logout button ── */
 .ab-navbar-logout {
   font-weight: 600;
-  font-size: 13.5px;
+  font-size: 13px;
   color: #ffffff;
   background: #dc2626;
-  padding: 8px 16px;
+  padding: 7px 14px;
   border-radius: 9999px;
   border: none;
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.14);
   transition: background 0.2s ease, transform 0.2s ease;
 }
+.ab-navbar-logout:hover { background: #b91c1c; transform: translateY(-1px); }
 
-.ab-navbar-logout:hover {
-  background: #b91c1c;
-  transform: translateY(-1px);
-}
-
-/* ── Hamburger ──────────────────────────────────────────────────── */
+/* ── Hamburger ─────────────────────────────────────────────────
+   Base state: display:none (hidden on desktop).
+   The @media block below shows it on mobile.
+   44px × 44px = minimum accessible tap target.
+────────────────────────────────────────────────────────────── */
 .ab-hamburger {
+  /* IMPORTANT: display:none on desktop, display:flex on mobile */
   display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 5px;
-  width: 44px;               /* 44px minimum tap target */
+  width: 44px;
   height: 44px;
   padding: 0;
   background: #f3f4f6;
@@ -275,8 +233,7 @@
   transition: background 0.2s ease;
 }
 
-.ab-hamburger:hover { background: #e5e7eb; }
-
+.ab-hamburger:hover  { background: #e5e7eb; }
 .ab-hamburger:focus-visible {
   outline: 3px solid rgba(26, 60, 110, 0.35);
   outline-offset: 2px;
@@ -284,7 +241,7 @@
 
 .ab-hamburger-bar {
   display: block;
-  flex: none;                /* bars must never shrink or stretch */
+  flex: none;
   width: 18px;
   height: 2px;
   border-radius: 2px;
@@ -293,39 +250,29 @@
   transform-origin: center;
 }
 
-/* bar height 2px + gap 5px = 7px travel to meet in the centre */
 .ab-hamburger--open .ab-hamburger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .ab-hamburger--open .ab-hamburger-bar:nth-child(2) { opacity: 0; width: 0; }
 .ab-hamburger--open .ab-hamburger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* ─────────────────────────────────────────────────────────────────
-   FIX 2 — Dropdown panel: content-hugging width
-   The parent .ab-navbar-item-with-menu is position:relative so the
-   panel can use position:absolute and align to the trigger item.
-   width:max-content lets the panel shrink-wrap its column content.
-   A min-width stops it from being too narrow on short link lists.
-   ───────────────────────────────────────────────────────────────── */
-.ab-navbar-item-with-menu {
-  position: relative;   /* dropdown anchor point */
-}
+/* Mobile-only search icon — hidden on desktop */
+.ab-nav-search--mobile { display: none; }
+
+/* ── Dropdown panel ── */
+.ab-navbar-item-with-menu { position: relative; }
 
 .ab-dropdown {
   position: absolute;
-  top: calc(100% + 8px);   /* 8px gap below the nav link */
-  left: 0;                 /* left-aligns with the trigger item */
-  z-index: 201;            /* above navbar container (200) */
-
-  width: max-content;      /* shrink-wraps column content */
-  min-width: 280px;        /* prevents very narrow panels */
-  max-width: 520px;        /* caps very wide panels */
-
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 201;
+  width: max-content;
+  min-width: 280px;
+  max-width: 520px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.11), 0 2px 6px rgba(0, 0, 0, 0.06);
-
+  box-shadow: 0 8px 28px rgba(0,0,0,0.11), 0 2px 6px rgba(0,0,0,0.06);
   padding: 20px 24px 24px;
-
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -333,12 +280,7 @@
   transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
 }
 
-/* If the trigger is near the right edge, flip alignment so the panel
-   doesn't overflow off-screen */
-.ab-navbar-item-with-menu:last-of-type .ab-dropdown {
-  left: auto;
-  right: 0;
-}
+.ab-navbar-item-with-menu:last-of-type .ab-dropdown { left: auto; right: 0; }
 
 .ab-dropdown-open {
   opacity: 1;
@@ -347,20 +289,13 @@
   transform: translateY(0);
 }
 
-.ab-dropdown-inner {
-  display: flex;
-  gap: 32px;
-}
+.ab-dropdown-inner { display: flex; gap: 32px; }
+.ab-dropdown-column { min-width: 130px; }
 
-.ab-dropdown-column {
-  min-width: 130px;
-}
-
-/* Small blue uppercase heading — matches reference image */
 .ab-dropdown-heading {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
-  color: #1a3c6e;           /* university blue */
+  color: #1a3c6e;
   margin: 0 0 10px;
   text-transform: uppercase;
   letter-spacing: 0.09em;
@@ -377,95 +312,75 @@
 }
 
 .ab-dropdown-column li a {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   color: #1f2937;
   text-decoration: none;
   white-space: nowrap;
   transition: color 0.14s ease;
 }
+.ab-dropdown-column li a:hover { color: #1a3c6e; text-decoration: underline; text-underline-offset: 3px; }
 
-.ab-dropdown-column li a:hover {
-  color: #1a3c6e;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-/* ── Mobile drawer ──────────────────────────────────────────────── */
+/* ── Mobile drawer ─────────────────────────────────────────────
+   Hidden by default (display:none + visibility:hidden).
+   Shown at ≤860px via the media query.
+────────────────────────────────────────────────────────────── */
 .ab-mobile-drawer {
-  display: none;
+  display: none;              /* overridden in @media block */
   position: fixed;
-  top: 69px;
+  top: 68px;                  /* match navbar height */
   left: 0;
   width: 100%;
   z-index: 198;
-
   background: #ffffff;
   border-top: 1px solid #e5e7eb;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-
-  padding: 8px 0 24px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  padding: 0 0 24px;
   overflow-y: auto;
-  max-height: calc(100vh - 69px);
-  max-height: calc(100dvh - 69px);   /* mobile browsers with a moving address bar */
+  max-height: calc(100dvh - 68px);
   overscroll-behavior: contain;
-
-  /* visibility:hidden also removes closed-drawer links from tab order */
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(-6px);
+  transform: translateY(-8px);
   transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
 }
 
 .ab-mobile-drawer--open {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
   pointer-events: auto;
+  transform: translateY(0);
 }
 
-.ab-mobile-nav {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+/* Nav list */
+.ab-mobile-nav { list-style: none; margin: 0; padding: 0; }
 
-.ab-mobile-nav-item {
-  border-bottom: 1px solid #f3f4f6;
-}
+.ab-mobile-nav-item { border-bottom: 1px solid #f3f4f6; }
+.ab-mobile-nav-item:last-child { border-bottom: none; }
 
-.ab-mobile-nav-item:last-child {
-  border-bottom: none;
-}
-
-.ab-mobile-home-icon {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.ab-mobile-home-icon { display: flex; align-items: center; gap: 8px; }
 
 .ab-mobile-nav-link {
-  display: block;
-  padding: 14px clamp(16px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 clamp(16px, 4vw, 32px);
   font-size: 15px;
   font-weight: 500;
   color: #374151;
   text-decoration: none;
   transition: background 0.15s ease, color 0.15s ease;
 }
-
-.ab-mobile-nav-link:hover {
-  background: #f9fafb;
-  color: #111827;
-}
+.ab-mobile-nav-link:hover { background: #f9fafb; color: #111827; }
 
 .ab-mobile-nav-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 14px clamp(16px, 4vw, 32px);
+  min-height: 48px;
+  padding: 0 clamp(16px, 4vw, 32px);
   background: none;
   border: none;
   font-size: 15px;
@@ -475,21 +390,10 @@
   text-align: left;
   transition: background 0.15s ease, color 0.15s ease;
 }
+.ab-mobile-nav-btn:hover { background: #f9fafb; color: #111827; }
 
-.ab-mobile-nav-btn:hover {
-  background: #f9fafb;
-  color: #111827;
-}
-
-.ab-mobile-chevron {
-  color: #9ca3af;
-  transition: transform 0.24s ease;
-  flex-shrink: 0;
-}
-
-.ab-mobile-chevron--open {
-  transform: rotate(180deg);
-}
+.ab-mobile-chevron { color: #9ca3af; transition: transform 0.24s ease; flex-shrink: 0; }
+.ab-mobile-chevron--open { transform: rotate(180deg); }
 
 .ab-mobile-sub {
   display: grid;
@@ -497,125 +401,201 @@
   transition: grid-template-rows 0.26s ease;
   background: #f9fafb;
 }
-
-.ab-mobile-sub--open {
-  grid-template-rows: 1fr;
-}
+.ab-mobile-sub--open { grid-template-rows: 1fr; }
 
 .ab-mobile-sub-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
   overflow: hidden;
-  padding: 10px clamp(16px, 4vw, 32px) 10px calc(clamp(16px, 4vw, 32px) + 16px);
+  padding: 0 clamp(16px, 4vw, 32px) 0 calc(clamp(16px, 4vw, 32px) + 20px);
   font-size: 13.5px;
   font-weight: 400;
   color: #6b7280;
   text-decoration: none;
   transition: color 0.15s ease;
 }
+.ab-mobile-sub-link:hover { color: #1a3c6e; }
 
-.ab-mobile-sub-link:hover {
-  color: #1a3c6e;
-}
-
+/* ── Drawer footer ── */
 .ab-mobile-footer {
-  padding: 16px clamp(16px, 4vw, 32px) 4px;
+  padding: 16px clamp(16px, 4vw, 32px) 8px;
+  border-top: 1px solid #f3f4f6;
+  margin-top: 8px;
 }
 
-/* Hide mobile search button on desktop — the one in ab-navbar-links handles it */
-/* MUST be defined BEFORE the media query, not after, to avoid cascade override */
-.ab-nav-search--mobile {
-  display: none;
+/* Logged-in user block */
+.ab-mobile-user {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* ── Responsive ─────────────────────────────────────────────────── */
+.ab-mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0 4px;
+}
+
+/* Avatar initial circle */
+.ab-mobile-avatar {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a3c6e, #2563eb);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.ab-mobile-user-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+.ab-mobile-user-role {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+/* Admin panel link */
+.ab-mobile-admin-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: #f0f4ff;
+  color: #1a3c6e;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.ab-mobile-admin-link:hover { background: #dbeafe; }
+
+/* Logout button */
+.ab-mobile-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  width: 100%;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: none;
+  background: #dc2626;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.ab-mobile-logout-btn:hover { background: #b91c1c; }
+
+/* Login button (logged out state) */
+.ab-mobile-auth { display: flex; flex-direction: column; }
+
+.ab-mobile-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  width: 100%;
+  border-radius: 8px;
+  background: #1a3c6e;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+.ab-mobile-login-btn:hover { background: #1e4a8a; }
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE  ≤ 860px
+   This is the ONLY place the hamburger is made visible.
+════════════════════════════════════════════════════════════ */
 @media (max-width: 860px) {
-  .ab-navbar-links  { display: none; }
-  .ab-hamburger     { display: flex; }
-  .ab-mobile-drawer { display: block; }
 
-  /* Show the search icon in the mobile bar, left of the hamburger */
-  .ab-nav-search--mobile { display: flex; }
+  /* Hide the entire desktop links row */
+  .ab-navbar-links { display: none !important; }
 
-  /* Hide login, language switcher, username, logout and admin link —
-     they are available in the drawer, and keeping them here pushed the
-     hamburger off-screen for logged-in users.
-     Mobile bar becomes: logo/title ··· search | hamburger */
+  /* Hide desktop-only auth elements from the top bar */
   .ab-navbar-cta,
   .ab-navbar-username,
   .ab-navbar-logout,
-  .ab-navbar-admin { display: none; }
-  .ls-root         { display: none; }
+  .ab-navbar-admin { display: none !important; }
 
-  /* Make search icon visually consistent with hamburger on mobile:
-     same plain style (no box background), same color, same size */
+  /* Hide language switcher from the top bar */
+  .ls-root { display: none !important; }
+
+  /* ── Show the hamburger ── */
+  .ab-hamburger {
+    display: flex !important;   /* override display:none from base */
+  }
+
+  /* Show mobile search icon */
   .ab-nav-search--mobile {
-    display: flex;
+    display: flex !important;
+    width: 44px;
+    height: 44px;
     background: none;
     border: none;
     border-radius: 8px;
     color: #374151;
-    width: 44px;
-    height: 44px;
   }
-
   .ab-nav-search--mobile:hover,
   .ab-nav-search--mobile.ab-nav-search--active {
     background: #f3f4f6;
     color: #1a3c6e;
   }
 
-  .ab-hamburger {
-    background: none;
-    border: none;
-    color: #374151;
-  }
-
-  .ab-hamburger:hover {
-    background: #f3f4f6;
-  }
-
-  /* CTA buttons inside the drawer must stay visible */
-  .ab-mobile-footer .ab-navbar-cta { display: inline-block; }
+  /* Show the mobile drawer container */
+  .ab-mobile-drawer { display: block !important; }
 }
 
+/* ≤ 600px — shrink brand */
 @media (max-width: 600px) {
   .ab-navbar-logo     { width: 36px; height: 36px; }
-  .ab-navbar-title    { font-size: 15px; }
+  .ab-navbar-title    { font-size: 16px; }
   .ab-navbar-subtitle { display: none; }
-  .ab-navbar-brand    { margin-right: 12px; }
+  .ab-navbar-brand    { margin-right: 8px; gap: 8px; }
+  .ab-navbar          { padding: 0 14px; }
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════
    SEARCH DROPDOWN PANEL
-   Appears below the navbar bar on search icon click.
-   position:absolute so it sits in the sticky container's flow
-   without affecting page layout; z-index:199 keeps it under
-   the navbar bar (200) but above all page content.
-   ═══════════════════════════════════════════════════════════════ */
+════════════════════════════════════════════════════════════ */
 .ab-search-dropdown {
   position: absolute;
-  top: 100%;            /* flush below the navbar bar */
+  top: 100%;
   left: 0;
   width: 100%;
   z-index: 199;
-
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
   padding: 14px clamp(16px, 4vw, 48px);
-
-  /* Slide-down + fade transition */
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transform: translateY(-8px);
-  transition:
-    opacity   0.22s ease,
-    transform 0.22s ease,
-    visibility 0.22s;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
 }
-
 .ab-search-dropdown--open {
   opacity: 1;
   visibility: visible;
@@ -623,31 +603,25 @@
   transform: translateY(0);
 }
 
-/* Search field row — rounded container holding icon + input + X */
 .ab-search-field {
   display: flex;
   align-items: center;
   gap: 10px;
-
   background: #f3f4f6;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 10px 14px;
-
-  max-width: 640px;      /* reasonable max so it doesn't stretch wall-to-wall */
+  max-width: 640px;
   width: 100%;
-  margin: 0 auto;        /* center within the full-width panel */
-
+  margin: 0 auto;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-
 .ab-search-field:focus-within {
   border-color: #1a3c6e;
-  box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.10);
+  box-shadow: 0 0 0 3px rgba(26,60,110,0.10);
   background: #ffffff;
 }
 
-/* Left magnifying glass — muted, non-interactive */
 .ab-search-field-icon {
   display: flex;
   align-items: center;
@@ -656,7 +630,6 @@
   pointer-events: none;
 }
 
-/* The input itself — no default browser styles */
 .ab-search-input {
   flex: 1;
   min-width: 0;
@@ -664,26 +637,15 @@
   background: transparent;
   outline: none;
   font-size: 15px;
-  font-weight: 400;
   color: #111827;
   line-height: 1.4;
-  /* remove browser's native search cancel button */
   -webkit-appearance: none;
   appearance: none;
 }
-
-.ab-search-input::placeholder {
-  color: #9ca3af;
-}
-
-/* Remove default Safari/Chrome search clear button */
+.ab-search-input::placeholder { color: #9ca3af; }
 .ab-search-input::-webkit-search-cancel-button,
-.ab-search-input::-webkit-search-decoration {
-  -webkit-appearance: none;
-  appearance: none;
-}
+.ab-search-input::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
 
-/* Right X close button */
 .ab-search-close {
   display: flex;
   align-items: center;
@@ -699,19 +661,10 @@
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
+.ab-search-close:hover { background: #e5e7eb; color: #374151; }
 
-.ab-search-close:hover {
-  background: #e5e7eb;
-  color: #374151;
-}
+.ab-nav-search--active { background: #f3f4f6; color: #1a3c6e; }
 
-/* Active state on the search icon button when panel is open */
-.ab-nav-search--active {
-  background: #f3f4f6;
-  color: #1a3c6e;
-}
-
-/* ── Search "Go" button ── */
 .ab-search-go {
   flex-shrink: 0;
   padding: 0 14px;

@@ -873,3 +873,37 @@
   padding-right: 4px;
 }
 .adm-select:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Dept-head badge ── */
+.adm-badge--depthead { background: #d1fae5; color: #065f46; }
+.adm-badge--depthead .adm-badge-dot { background: #059669; }
+
+/* ── Avatar initials (for staff table) ── */
+.adm-avatar--initials {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Muted table cell ── */
+.adm-muted-cell { color: var(--adm-muted); font-size: 0.875rem; }
+
+/* ── Staff summary rows ── */
+.adm-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #f0f0f0;
+}
+.adm-stat-icon-sm { flex-shrink: 0; display: flex; }
+.adm-stat-label { flex: 1; font-size: 0.875rem; font-weight: 500; }
+.adm-stat-val { font-size: 1rem; font-weight: 700; color: var(--adm-text); }

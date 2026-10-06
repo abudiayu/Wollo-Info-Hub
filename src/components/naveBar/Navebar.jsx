@@ -24,11 +24,6 @@ const SearchIcon = () => (
   </svg>
 );
 
-/*
- * Each mega-menu link has:
- *   label   — display text
- *   to      — React Router path  (null = not yet a real page, falls back to /departments)
- */
 const MEGA_MENU_DATA = {
   Health: {
     columns: [
@@ -55,11 +50,11 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Resources',
         links: [
-          { label: 'Faculty Directory',       to: '/departments' },
-          { label: 'Academic Calendar',       to: '/departments' },
-          { label: 'Internship Opportunities',to: '/opportunities' },
-          { label: 'Alumni Network',          to: '/alumni' },
-          { label: 'Statistics & Rankings',   to: '/statistics' },
+          { label: 'Faculty Directory',        to: '/departments' },
+          { label: 'Academic Calendar',        to: '/departments' },
+          { label: 'Internship Opportunities', to: '/opportunities' },
+          { label: 'Alumni Network',           to: '/alumni' },
+          { label: 'Statistics & Rankings',    to: '/statistics' },
         ],
       },
     ],
@@ -69,11 +64,11 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Departments',
         links: [
-          { label: 'Computer Science',    to: '/department/computer-science/cs' },
+          { label: 'Computer Science',       to: '/department/computer-science/cs' },
           { label: 'Information Technology', to: '/department/computer-science/it' },
-          { label: 'Information Systems', to: '/department/computer-science/information-systems' },
-          { label: 'Software Engineering',to: '/department/computer-science/software-engineering' },
-          { label: 'Data Science',        to: '/department/computer-science/cs' },
+          { label: 'Information Systems',    to: '/department/computer-science/information-systems' },
+          { label: 'Software Engineering',   to: '/department/computer-science/software-engineering' },
+          { label: 'Data Science',           to: '/department/computer-science/cs' },
         ],
       },
       {
@@ -89,11 +84,11 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Resources',
         links: [
-          { label: 'Faculty Directory',       to: '/departments' },
-          { label: 'Academic Calendar',       to: '/departments' },
-          { label: 'Internship Opportunities',to: '/opportunities' },
-          { label: 'Alumni Network',          to: '/alumni' },
-          { label: 'Statistics & Rankings',   to: '/statistics' },
+          { label: 'Faculty Directory',        to: '/departments' },
+          { label: 'Academic Calendar',        to: '/departments' },
+          { label: 'Internship Opportunities', to: '/opportunities' },
+          { label: 'Alumni Network',           to: '/alumni' },
+          { label: 'Statistics & Rankings',    to: '/statistics' },
         ],
       },
     ],
@@ -103,21 +98,21 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Departments',
         links: [
-          { label: 'Civil Engineering',      to: '/department/engineering/civil' },
-          { label: 'Electrical Engineering', to: '/department/engineering/electrical' },
-          { label: 'Mechanical Engineering', to: '/department/engineering/mechanical' },
-          { label: 'Chemical Engineering',   to: '/department/engineering/chemical' },
+          { label: 'Civil Engineering',           to: '/department/engineering/civil' },
+          { label: 'Electrical Engineering',      to: '/department/engineering/electrical' },
+          { label: 'Mechanical Engineering',      to: '/department/engineering/mechanical' },
+          { label: 'Chemical Engineering',        to: '/department/engineering/chemical' },
           { label: 'Water Resources Engineering', to: '/department/engineering/water-resources' },
         ],
       },
       {
         heading: 'Quick Links',
         links: [
-          { label: 'Course Catalog',        to: '/departments' },
-          { label: 'Admission Requirements',to: '/departments' },
-          { label: 'Engineering Labs',      to: '/departments' },
-          { label: 'Research Projects',     to: '/departments' },
-          { label: 'Industrial Attachment', to: '/opportunities' },
+          { label: 'Course Catalog',         to: '/departments' },
+          { label: 'Admission Requirements', to: '/departments' },
+          { label: 'Engineering Labs',       to: '/departments' },
+          { label: 'Research Projects',      to: '/departments' },
+          { label: 'Industrial Attachment',  to: '/opportunities' },
         ],
       },
       {
@@ -150,11 +145,11 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Quick Links',
         links: [
-          { label: 'Course Catalog',        to: '/departments' },
-          { label: 'Admission Requirements',to: '/departments' },
-          { label: 'Research Projects',     to: '/departments' },
-          { label: 'Student Projects',      to: '/opportunities' },
-          { label: 'Industrial Attachment', to: '/opportunities' },
+          { label: 'Course Catalog',         to: '/departments' },
+          { label: 'Admission Requirements', to: '/departments' },
+          { label: 'Research Projects',      to: '/departments' },
+          { label: 'Student Projects',       to: '/opportunities' },
+          { label: 'Industrial Attachment',  to: '/opportunities' },
         ],
       },
       {
@@ -179,9 +174,6 @@ const NAV_ITEMS = [
   { key: 'Social',      icon: false, tKey: 'nav.Social',      menu: 'Social'      },
 ];
 
-/* Must match the CSS breakpoint where the hamburger appears */
-const MOBILE_BREAKPOINT = 860;
-
 function Navebar() {
   const { t }            = useTranslation();
   const { user, logout } = useAuth();
@@ -192,27 +184,10 @@ function Navebar() {
   const [mobileExpanded, setMobileExpanded] = useState(null);
   const [searchOpen,     setSearchOpen]     = useState(false);
   const [searchQuery,    setSearchQuery]    = useState('');
+
   const searchInputRef = useRef(null);
   const closeTimer     = useRef(null);
   const navRef         = useRef(null);
-
-  /* ── Mobile drawer helpers ── */
-  const closeMobile = () => {
-    setMobileOpen(false);
-    setMobileExpanded(null);
-  };
-
-  const toggleMobile = () => {
-    setSearchOpen(false);          // never show search + drawer together
-    setOpenMenu(null);
-    if (mobileOpen) closeMobile();
-    else setMobileOpen(true);
-  };
-
-  const toggleSearch = () => {
-    closeMobile();                 // never show search + drawer together
-    setSearchOpen(v => !v);
-  };
 
   /* ── Desktop hover helpers ── */
   const openWithHover  = (key) => { clearTimeout(closeTimer.current); setOpenMenu(key); };
@@ -225,7 +200,6 @@ function Navebar() {
       if (navRef.current && !navRef.current.contains(e.target)) {
         setOpenMenu(null);
         setMobileOpen(false);
-        setMobileExpanded(null);
         setSearchOpen(false);
       }
     }
@@ -233,35 +207,9 @@ function Navebar() {
     return () => document.removeEventListener('mousedown', handle);
   }, []);
 
-  /* ── Close on Escape + close drawer when resized to desktop ── */
+  /* ── Auto-focus search input ── */
   useEffect(() => {
-    function onKey(e) {
-      if (e.key === 'Escape') {
-        setOpenMenu(null);
-        setMobileOpen(false);
-        setMobileExpanded(null);
-        setSearchOpen(false);
-      }
-    }
-    function onResize() {
-      if (window.innerWidth > MOBILE_BREAKPOINT) {
-        setMobileOpen(false);
-        setMobileExpanded(null);
-      }
-    }
-    document.addEventListener('keydown', onKey);
-    window.addEventListener('resize', onResize);
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      window.removeEventListener('resize', onResize);
-    };
-  }, []);
-
-  /* ── Auto-focus search input when panel opens ── */
-  useEffect(() => {
-    if (searchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
+    if (searchOpen && searchInputRef.current) searchInputRef.current.focus();
   }, [searchOpen]);
 
   /* ── Lock body scroll when mobile drawer is open ── */
@@ -273,20 +221,18 @@ function Navebar() {
   const handleLogout = () => {
     logout();
     navigate('/');
+    setMobileOpen(false);
   };
 
-  /* ── Search submit: go to /departments or /opportunities depending on query ── */
   function handleSearchSubmit(e) {
     e.preventDefault();
     const q = searchQuery.trim();
     if (!q) return;
-    // Navigate to the search results page — for now route to departments with ?q= param
     navigate(`/search?q=${encodeURIComponent(q)}`);
     setSearchOpen(false);
     setSearchQuery('');
   }
 
-  /* ── Navigate to a mega-menu link ── */
   function handleMegaLinkClick(e, to) {
     e.preventDefault();
     if (!user) { navigate('/auth'); return; }
@@ -294,24 +240,29 @@ function Navebar() {
     navigate(to);
   }
 
+  const firstName = user?.full_name?.split(' ')[0] || user?.email || '';
+
   return (
     <div className="ab-navbar-container" ref={navRef}>
 
-      <nav className="ab-navbar" aria-label="Primary">
+      {/* ════════════════════════════════════════
+          MAIN NAV BAR
+          Mobile layout: [Logo/Title] ··· [Search] [Hamburger]
+          Desktop layout: [Logo] [Nav links] [CTA/User] [Lang]
+      ════════════════════════════════════════ */}
+      <nav className="ab-navbar" aria-label="Primary navigation">
 
-        {/* LEFT — logo + two-line title block */}
-        <Link className="ab-navbar-brand" to="/" onClick={closeMobile}>
-          <img src={Logo} alt="Wollo University Logo" className="ab-navbar-logo" />
+        {/* Brand */}
+        <Link className="ab-navbar-brand" to="/">
+          <img src={Logo} alt="Wollo University" className="ab-navbar-logo" />
           <div className="ab-navbar-title-block">
             <span className="ab-navbar-title">Wollo-Info</span>
             <span className="ab-navbar-subtitle">{t('nav.subtitle')}</span>
           </div>
         </Link>
 
-        {/* CENTER / RIGHT — desktop nav links */}
-        <div className="ab-navbar-links">
-
-          {/* Home icon */}
+        {/* Desktop nav links — hidden on mobile via CSS */}
+        <div className="ab-navbar-links" aria-hidden="false">
           <Link to="/" className="ab-navlink-home" aria-label={t('nav.Home')}>
             <HomeTwoToneIcon className="ab-home-icon" />
           </Link>
@@ -337,7 +288,6 @@ function Navebar() {
                   <ChevronDown />
                 </button>
 
-                {/* Dropdown panel */}
                 {(() => {
                   const data = MEGA_MENU_DATA[item.menu];
                   if (!data) return null;
@@ -350,10 +300,7 @@ function Navebar() {
                             <ul>
                               {col.links.map((link) => (
                                 <li key={link.label}>
-                                  <a
-                                    href={link.to}
-                                    onClick={(e) => handleMegaLinkClick(e, link.to)}
-                                  >
+                                  <a href={link.to} onClick={(e) => handleMegaLinkClick(e, link.to)}>
                                     {link.label}
                                   </a>
                                 </li>
@@ -373,58 +320,63 @@ function Navebar() {
             )
           )}
 
-          {/* Divider + Search */}
           <span className="ab-nav-divider" aria-hidden="true" />
           <button
             className={`ab-nav-search ${searchOpen ? 'ab-nav-search--active' : ''}`}
             aria-label={searchOpen ? 'Close search' : 'Open search'}
             aria-expanded={searchOpen}
-            onClick={toggleSearch}
+            onClick={() => setSearchOpen(v => !v)}
           >
             <SearchIcon />
           </button>
         </div>
 
-        {/* RIGHT — auth controls + language + hamburger */}
+        {/* Right section */}
         <div className="ab-navbar-right">
 
+          {/* ── Desktop-only: username, logout / login, admin, language ── */}
           {user ? (
             <>
+              {/* ab-navbar-admin class → hidden on mobile via CSS */}
               {user.role === 'admin' && (
-                <Link className="ab-navlink ab-navbar-admin" to="/admin" style={{ fontWeight: 600, color: '#6366f1' }}>
+                <Link className="ab-navlink ab-navbar-admin" to="/admin">
                   Admin
                 </Link>
               )}
+              {/* ab-navbar-username → hidden on mobile via CSS */}
               <span className="ab-navbar-username" title={user.email}>
-                {user.full_name?.split(' ')[0] || user.email}
+                {firstName}
               </span>
+              {/* ab-navbar-logout → hidden on mobile via CSS */}
               <button className="ab-navbar-logout" onClick={handleLogout}>
                 {t('nav.logout') || 'Logout'}
               </button>
             </>
           ) : (
+            /* ab-navbar-cta → hidden on mobile via CSS */
             <Link className="ab-navbar-cta" to="/auth">{t('nav.login')}</Link>
           )}
 
+          {/* Language switcher — ls-root hidden on mobile via CSS */}
           <LanguageSwitcher />
 
-          {/* Mobile-only search icon */}
+          {/* ── Mobile-only: search icon ── */}
           <button
             className={`ab-nav-search ab-nav-search--mobile ${searchOpen ? 'ab-nav-search--active' : ''}`}
             aria-label={searchOpen ? 'Close search' : 'Open search'}
             aria-expanded={searchOpen}
-            onClick={toggleSearch}
+            onClick={() => setSearchOpen(v => !v)}
           >
             <SearchIcon />
           </button>
 
+          {/* ── Hamburger — only visible on mobile via CSS ── */}
           <button
-            type="button"
             className={`ab-hamburger ${mobileOpen ? 'ab-hamburger--open' : ''}`}
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileOpen}
             aria-controls="ab-mobile-drawer"
-            onClick={toggleMobile}
+            onClick={() => setMobileOpen(v => !v)}
           >
             <span className="ab-hamburger-bar" />
             <span className="ab-hamburger-bar" />
@@ -437,7 +389,7 @@ function Navebar() {
       <div
         className={`ab-search-dropdown ${searchOpen ? 'ab-search-dropdown--open' : ''}`}
         role="search"
-        aria-hidden={!searchOpen}
+        aria-label="Site search"
       >
         <form className="ab-search-field" onSubmit={handleSearchSubmit}>
           <span className="ab-search-field-icon" aria-hidden="true"><SearchIcon /></span>
@@ -452,12 +404,7 @@ function Navebar() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           {searchQuery && (
-            <button
-              type="submit"
-              className="ab-search-go"
-              tabIndex={searchOpen ? 0 : -1}
-              aria-label="Search"
-            >
+            <button type="submit" className="ab-search-go" tabIndex={searchOpen ? 0 : -1} aria-label="Search">
               Go
             </button>
           )}
@@ -477,13 +424,18 @@ function Navebar() {
         </form>
       </div>
 
-      {/* ── Mobile drawer ── */}
+      {/* ════════════════════════════════════════
+          MOBILE DRAWER
+          Slides down from the navbar on hamburger tap.
+          Contains: nav links, user info, logout / login.
+      ════════════════════════════════════════ */}
       <div
         id="ab-mobile-drawer"
         className={`ab-mobile-drawer ${mobileOpen ? 'ab-mobile-drawer--open' : ''}`}
-        aria-hidden={!mobileOpen}
+        aria-label="Mobile navigation"
       >
-        <ul className="ab-mobile-nav">
+        {/* Nav links */}
+        <ul className="ab-mobile-nav" role="list">
           {NAV_ITEMS.map((item) => (
             <li key={item.key} className="ab-mobile-nav-item">
               {item.menu ? (
@@ -491,7 +443,7 @@ function Navebar() {
                   <button
                     className="ab-mobile-nav-btn"
                     onClick={() => {
-                      if (!user) { navigate('/auth'); closeMobile(); return; }
+                      if (!user) { navigate('/auth'); setMobileOpen(false); return; }
                       setMobileExpanded(p => p === item.menu ? null : item.menu);
                     }}
                     aria-expanded={mobileExpanded === item.menu}
@@ -513,7 +465,7 @@ function Navebar() {
                           key={link.label}
                           to={link.to}
                           className="ab-mobile-sub-link"
-                          onClick={closeMobile}
+                          onClick={() => setMobileOpen(false)}
                         >
                           {link.label}
                         </Link>
@@ -526,7 +478,7 @@ function Navebar() {
                   to="/"
                   className="ab-mobile-nav-link"
                   aria-label={t(item.tKey)}
-                  onClick={closeMobile}
+                  onClick={() => setMobileOpen(false)}
                 >
                   {item.icon
                     ? <span className="ab-mobile-home-icon">
@@ -540,40 +492,47 @@ function Navebar() {
           ))}
         </ul>
 
-        {/* Mobile drawer footer */}
+        {/* Drawer footer — user info + auth actions */}
         <div className="ab-mobile-footer">
           {user ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <span style={{ fontSize: 14, color: '#374151', padding: '0 4px' }}>
-                👤 {user.full_name || user.email}
-              </span>
+            <div className="ab-mobile-user">
+              {/* User avatar initial + name */}
+              <div className="ab-mobile-user-info">
+                <span className="ab-mobile-avatar" aria-hidden="true">
+                  {(user.full_name?.[0] || user.email?.[0] || '?').toUpperCase()}
+                </span>
+                <div>
+                  <p className="ab-mobile-user-name">{user.full_name || user.email}</p>
+                  <p className="ab-mobile-user-role">{user.role || 'Student'}</p>
+                </div>
+              </div>
+
+              {/* Admin link — only for admins */}
               {user.role === 'admin' && (
                 <Link
-                  className="ab-navbar-cta"
+                  className="ab-mobile-admin-link"
                   to="/admin"
-                  style={{ display: 'inline-block', textAlign: 'center' }}
-                  onClick={closeMobile}
+                  onClick={() => setMobileOpen(false)}
                 >
-                  Admin
+                  ⚙ Admin Panel
                 </Link>
               )}
-              <button
-                className="ab-navbar-cta"
-                onClick={() => { handleLogout(); closeMobile(); }}
-                style={{ display: 'inline-block', textAlign: 'center', cursor: 'pointer', border: 'none' }}
-              >
+
+              {/* Logout */}
+              <button className="ab-mobile-logout-btn" onClick={handleLogout}>
                 {t('nav.logout') || 'Logout'}
               </button>
             </div>
           ) : (
-            <Link
-              className="ab-navbar-cta"
-              to="/auth"
-              style={{ display: 'inline-block', textAlign: 'center' }}
-              onClick={closeMobile}
-            >
-              {t('nav.login')}
-            </Link>
+            <div className="ab-mobile-auth">
+              <Link
+                className="ab-mobile-login-btn"
+                to="/auth"
+                onClick={() => setMobileOpen(false)}
+              >
+                {t('nav.login') || 'Login'}
+              </Link>
+            </div>
           )}
         </div>
       </div>

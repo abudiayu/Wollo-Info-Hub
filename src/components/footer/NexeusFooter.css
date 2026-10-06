@@ -1,332 +1,350 @@
 /* ============================================================
-   NexeusFooter.css — glass footer, self-contained
-   No --u / --fw dependency. Plain flexbox + real units.
+   NexeusFooter — dark, rounded-top footer (AWS-style layout)
    ============================================================ */
 
-/* ── Footer shell ─────────────────────────────────────────── */
+.nx-footer {
+  --nx-bg: #0f141a;
+  --nx-text: #ffffff;
+  --nx-link: #c6cdd6;
+  --nx-link-hover: #ffffff;
+  --nx-line: rgba(255, 255, 255, 0.16);
+  --nx-radius: 70px;
 
-.nx-footer,
-.nx-footer * {
+  background: var(--nx-bg);
+  color: var(--nx-text);
+  border-top-left-radius: var(--nx-radius);
+  border-top-right-radius: var(--nx-radius);
+  margin-top: 56px;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.nx-footer *,
+.nx-footer *::before,
+.nx-footer *::after {
   box-sizing: border-box;
 }
 
-.nx-footer {
-  font-family: "Public Sans", "Inter", "Segoe UI", Arial, sans-serif;
-  font-size: 14px;
-  position: relative;
-  width: 100%;
-  padding: clamp(48px, 8vw, 96px) clamp(24px, 5vw, 72px) 36px;
-
-  /* Wave must be able to paint above the footer */
-  overflow: visible;
-
-  -webkit-backdrop-filter: blur(40px) saturate(0.85);
-  backdrop-filter: blur(40px) saturate(0.85);
-
-  background:
-    radial-gradient(
-      ellipse 80% 70% at 50% 115%,
-      rgba(64, 184, 194, 0.22) 0%,
-      rgba(29, 111, 125, 0.12) 35%,
-      rgba(8, 35, 48, 0) 72%
-    ),
-
-    linear-gradient(
-      90deg,
-      #004266 0%,
-      rgba(255, 255, 255, 0.07) 18%,
-      rgba(255, 255, 255, 0) 42%,
-      rgba(255, 255, 255, 0) 58%,
-      rgba(255, 255, 255, 0.045) 82%,
-      rgba(255, 255, 255, 0.02) 100%
-    ),
-
-    linear-gradient(
-      180deg,
-      #004266 0%,
-      #022f43 42%,
-      rgb(7, 43, 61) 72%,
-      #051923 100%
-    );
-
-  color: #fff;
-
-  box-shadow:
-    inset 1px 0 0 rgba(255, 255, 255, 0.145),
-    inset -1px 0 0 rgba(255, 255, 255, 0.125),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.17),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
-}
-
-/* ── Footer wave ──────────────────────────────────────────── */
-
-.nx-footer-wave {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-
-  width: 100%;
-  line-height: 0;
-
-  pointer-events: none;
-
-  /* Pull wave above footer */
-  transform: translateY(-99%);
-
-  z-index: 2;
-}
-
-.nx-footer-wave-svg {
-  display: block;
-  width: 100%;
-  height: clamp(48px, 7vw, 96px);
-  overflow: visible;
-}
-
-.nx-footer-wave-path {
-  fill: #004266;
-}
-
-/* ── Inner container ──────────────────────────────────────── */
-
 .nx-finner {
-  position: relative;
-  z-index: 3;
-  max-width: 1400px;
+  max-width: 1620px;
   margin: 0 auto;
+  padding: 70px 150px 36px;
 }
 
-/* ── Top row ──────────────────────────────────────────────── */
+/* ── Top bar: CTA + language ─────────────────────────────── */
 
-.nx-footer-top {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 48px;
-  margin-bottom: 48px;
-}
-
-/* ── Brand column ─────────────────────────────────────────── */
-
-.nx-brandcol {
-  flex: 0 0 auto;
-  max-width: 300px;
-}
-
-.nx-brandrow {
+.nx-topbar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 64px;
 }
 
-/*
-  Keep footer branding independent from Navbar styling.
-  This prevents .ab-navbar-* rules from affecting the footer.
-*/
-.nx-footer .ab-navbar-brand {
+.nx-cta {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  height: 55px;
+  padding: 0 32px;
+  background: #ffffff;
+  color: #0f141a;
+  font-size: 18px;
+  font-weight: 600;
   text-decoration: none;
-  color: inherit;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.nx-footer .ab-navbar-logo {
-  width: 180px;
-  height: 180px;
-  flex-shrink: 0;
-  object-fit: contain;
+.nx-cta:hover {
+  background: transparent;
+  color: #ffffff;
 }
 
-.nx-footer .ab-navbar-word {
-  font-weight: 400;
-  font-size: 20px;
-  letter-spacing: 0.012em;
-  color: #fff;
-  white-space: nowrap;
-  line-height: 1;
+.nx-cta:focus-visible,
+.nx-lang-btn:focus-visible,
+.nx-lang-option:focus-visible,
+.nx-col a:focus-visible,
+.nx-social-link:focus-visible,
+.nx-brand:focus-visible {
+  outline: 3px solid #7fb4ff;
+  outline-offset: 3px;
 }
 
-.nx-mark {
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
+/* ── Language select ─────────────────────────────────────── */
+
+.nx-lang {
+  position: relative;
 }
 
-.nx-wordmark {
-  font-weight: 400;
-  font-size: 20px;
-  letter-spacing: 0.012em;
-  color: #fff;
-  white-space: nowrap;
-  line-height: 1;
+.nx-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 55px;
+  padding: 0 28px 0 30px;
+  background: transparent;
+  color: #ffffff;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-.nx-tagline {
-  font-size: 13.5px;
-  font-weight: 500;
-  line-height: 1.55;
-  letter-spacing: -0.01em;
-  color: rgba(255, 255, 255, 0.68);
-  max-width: 28ch;
+.nx-lang-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nx-lang-chevron {
+  display: inline-flex;
+  transition: transform 0.2s ease;
+}
+
+.nx-lang-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.nx-lang-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  min-width: 100%;
   margin: 0;
+  padding: 8px;
+  list-style: none;
+  background: #1b222b;
+  border: 1px solid var(--nx-line);
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  z-index: 20;
 }
 
-/* ── Nav columns ──────────────────────────────────────────── */
+.nx-lang-option {
+  display: block;
+  width: 100%;
+  padding: 10px 18px;
+  background: transparent;
+  color: var(--nx-link);
+  font: inherit;
+  font-size: 16px;
+  text-align: left;
+  white-space: nowrap;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.nx-lang-option:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.nx-lang-option.is-active {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ── Link columns ────────────────────────────────────────── */
 
 .nx-nav {
-  display: flex;
-  gap: clamp(32px, 5vw, 80px);
-  flex-wrap: wrap;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 40px;
 }
 
 .nx-col h3 {
-  font-weight: 400;
-  font-size: 12.5px;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.86);
-  white-space: nowrap;
-  margin: 0 0 14px;
+  margin: 0 0 20px;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .nx-col ul {
-  list-style: none;
   margin: 0;
   padding: 0;
+  list-style: none;
 }
 
-.nx-col ul li {
-  line-height: 1.9;
+.nx-col li {
+  margin: 0 0 14px;
 }
 
-.nx-col ul a {
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: -0.005em;
-  color: #fff;
+.nx-col a {
+  color: var(--nx-link);
+  font-size: 18px;
+  line-height: 1.4;
   text-decoration: none;
-  white-space: nowrap;
-  transition:
-    opacity 0.2s ease,
-    color 0.2s ease;
+  transition: color 0.15s ease;
 }
 
-.nx-col ul a:hover {
-  opacity: 0.55;
+.nx-col a:hover {
+  color: var(--nx-link-hover);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-/* ── Rule divider ─────────────────────────────────────────── */
+/* ── Brand column ────────────────────────────────────────── */
+
+.nx-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.nx-col .nx-brand:hover {
+  text-decoration: none;
+}
+
+.nx-brand-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.nx-brand-word {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.nx-tagline {
+  margin: 18px 0 0;
+  max-width: 320px;
+  color: var(--nx-link);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* ── Divider + bottom row ────────────────────────────────── */
 
 .nx-rule {
-  display: block;
-  width: 100%;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.32);
-  border: none;
-  margin: 0 0 22px;
+  margin: 28px 0 24px;
+  border: 0;
+  border-top: 1px solid var(--nx-line);
 }
-
-/* ── Bottom row ───────────────────────────────────────────── */
 
 .nx-footrow {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
   flex-wrap: wrap;
-  gap: 14px;
 }
 
 .nx-legal {
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: rgba(255, 255, 255, 0.68);
-  white-space: nowrap;
   margin: 0;
+  color: var(--nx-link);
+  font-size: 16px;
 }
 
 .nx-socials {
   display: flex;
   align-items: center;
-  gap: 20px;
-  flex-shrink: 0;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .nx-social-link {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  width: 26px;
-  height: 26px;
-
-  color: rgba(255, 255, 255, 0.75);
-  text-decoration: none;
-
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.nx-social-link:hover {
+  width: 42px;
+  height: 42px;
   color: #ffffff;
-  transform: translateY(-2px);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .nx-social-link svg {
-  display: block;
-  width: 100%;
-  height: 100%;
+  width: 18px;
+  height: 18px;
 }
 
-/* ── Mobile ───────────────────────────────────────────────── */
+.nx-social-link:hover {
+  background: #ffffff;
+  color: #0f141a;
+  border-color: #ffffff;
+}
 
-@media (max-width: 720px) {
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 1400px) {
+  .nx-finner {
+    padding: 60px 80px 32px;
+  }
+}
+
+@media (max-width: 1024px) {
   .nx-footer {
-    padding:
-      clamp(56px, 10vw, 80px)
-      clamp(20px, 5vw, 40px)
-      28px;
+    --nx-radius: 48px;
   }
 
-  .nx-footer-top {
-    flex-direction: column;
-    gap: 32px;
-    margin-bottom: 36px;
-  }
-
-  .nx-brandcol {
-    max-width: 100%;
+  .nx-finner {
+    padding: 48px 40px 28px;
   }
 
   .nx-nav {
-    gap: 28px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .nx-footer {
+    --nx-radius: 32px;
+  }
+
+  .nx-finner {
+    padding: 36px 20px 24px;
+  }
+
+  .nx-topbar {
+    margin-bottom: 40px;
+  }
+
+  .nx-cta,
+  .nx-lang-btn {
+    height: 48px;
+    font-size: 16px;
+  }
+
+  .nx-nav {
+    grid-template-columns: 1fr;
+    gap: 32px;
   }
 
   .nx-col h3 {
-    margin-bottom: 10px;
+    font-size: 20px;
+    margin-bottom: 14px;
   }
 
-  .nx-footrow {
-    gap: 12px;
-  }
-}
-
-@media (max-width: 400px) {
-  .nx-nav {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px 20px;
+  .nx-col a {
+    font-size: 17px;
   }
 
   .nx-footrow {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-cta,
+  .nx-lang-btn,
+  .nx-lang-chevron,
+  .nx-col a,
+  .nx-social-link {
+    transition: none;
   }
 }
