@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import './NexeusHero.css';
+import {Link} from "react-router-dom";
 
 export default function NexeusHero() {
   const { t } = useTranslation();
@@ -41,12 +42,12 @@ export default function NexeusHero() {
 
       {/* Action Buttons */}
       <div className="nx-cta-group">
-        <a className="nx-cta nx-cta-primary" href="#explore">
-          <span>{t('hero.cta')}</span>
-        </a>
-        <a className="nx-cta nx-cta-ghost" href="#apply">
+        <Link className="nx-cta nx-cta-primary" to="/departments">
+          {t('hero.cta')}
+        </Link>
+        <Link className="nx-cta nx-cta-ghost" to="/apply">
           <span>Apply today &rarr;</span>
-        </a>
+        </Link>
       </div>
 
       {/* Bottom Stats Footer Bar */}

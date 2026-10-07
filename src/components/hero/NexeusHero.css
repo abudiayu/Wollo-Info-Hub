@@ -4,7 +4,7 @@
    ============================================================ */
 
 /* Load fonts */
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Inter:wght@400;500;600;700&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Inter:wght@400;500;600;700&display=swap"); */
 
 /* ── Hero section ── */
 .nx-hero {
@@ -205,7 +205,8 @@
 .nx-cta-primary span { color: #0b2a5b; }
 
 .nx-cta-primary:hover {
-  background: #f4f7fa;
+  background: #cdd7e1;
+  color: #0b2a5b;
   transform:  translateY(calc(-1.5 * var(--u)));
   box-shadow: 0 calc(10 * var(--u)) calc(26 * var(--u)) rgba(0, 0, 0, 0.25);
 }
@@ -224,7 +225,6 @@
 
 .nx-cta-ghost:hover {
   background:   rgba(255, 255, 255, 0.12);
-  border-color: #ffffff;
   transform:    translateY(calc(-1.5 * var(--u)));
 }
 
