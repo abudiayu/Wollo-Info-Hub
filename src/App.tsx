@@ -50,6 +50,7 @@ import EconomicsPage        from './pages/departments/social/EconomicsPage.jsx';
 import SociologyPage        from './pages/departments/social/SociologyPage.jsx';
 import PsychologyPage       from './pages/departments/social/PsychologyPage.jsx';
 import PoliticalSciencePage from './pages/departments/social/PoliticalSciencePage.jsx';
+import Apply from './components/Apply/Apply.jsx';
 
 export default function App() {
   return (
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="/opportunities" element={<OpportunitiesPage />} />
           <Route path="/statistics"    element={<Statistics />} />
           <Route path="/search"        element={<SearchPage />} />
+          <Route path="/apply"         element={<Apply />} />
 
           {/* ── Faculty overview pages ── */}
           <Route path="/department/medicine"         element={<Medicine />} />

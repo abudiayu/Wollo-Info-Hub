@@ -2,10 +2,16 @@ import Logo from '../../../assets/wolloLogo.png';
 import { Icon, initials } from '../AdminShared/AdminShared';
 import "../AdminSideBar/AdminSidebar.css";
 
+/*
+ * ACCOUNT_LINKS — one entry per distinct role.
+ *   key 'depthead' maps to view='depthead' in Admin.jsx (separate from view='users')
+ *   so dept heads (stored in department_heads table) are shown separately.
+ */
 const ACCOUNT_LINKS = [
-  { key: 'user',  label: 'Users',  icon: 'user' },
-  { key: 'staff', label: 'Staff',  icon: 'staff' },
-  { key: 'admin', label: 'Admins', icon: 'shield' },
+  { key: 'user',     label: 'Users',         icon: 'user',    viewKey: 'users',    roleFilter: 'user'  },
+  { key: 'staff',    label: 'Staff',         icon: 'staff',   viewKey: 'users',    roleFilter: 'staff' },
+  { key: 'admin',    label: 'Admins',        icon: 'shield',  viewKey: 'users',    roleFilter: 'admin' },
+  { key: 'depthead', label: 'Dept. Heads',   icon: 'cap',     viewKey: 'depthead', roleFilter: null    },
 ];
 
 const CONTENT_LINKS = [
@@ -15,10 +21,12 @@ const CONTENT_LINKS = [
 ];
 
 export default function AdminSidebar({
-  open, onClose, view, onView, roleTab, onPick, counts, loading, name, role, onHome, onLogout,
-  contentSlug, onContentSlug, staffCount,
+  open, onClose, view, onView, roleTab, onPick, counts, loading, name, role,
+  onHome, onLogout, contentSlug, onContentSlug,
+  /* staffCount removed — replaced by per-role counts in the ACCOUNT_LINKS */
+  deptHeadCount,
 }) {
-  const num = (n) => (loading ? '…' : n);
+  const num = (n) => (loading ? '…' : (n ?? 0));
 
   return (
     <>
@@ -37,6 +45,7 @@ export default function AdminSidebar({
         </div>
 
         <nav className="sb-nav">
+          {/* ── Overview ── */}
           <p className="sb-title">Overview</p>
           <button
             className={`sb-item ${view === 'dashboard' ? 'is-active' : ''}`}
@@ -44,36 +53,56 @@ export default function AdminSidebar({
           >
             <Icon name="home" size={17} /><span>Dashboard</span>
           </button>
+
           <button
             className={`sb-item ${view === 'users' && roleTab === 'all' ? 'is-active' : ''}`}
             onClick={() => { onView('users'); onPick('all'); onClose(); }}
           >
-            <Icon name="users" size={17} /><span>User management</span>
+            <Icon name="users" size={17} /><span>All accounts</span>
             <em className="sb-count">{num(counts.all)}</em>
           </button>
 
+          {/* ── Accounts — one row per role, no duplicates ── */}
           <p className="sb-title">Accounts</p>
-          {ACCOUNT_LINKS.map((n) => (
-            <button key={n.key}
-              className={`sb-item ${view === 'users' && roleTab === n.key ? 'is-active' : ''}`}
-              onClick={() => { onView('users'); onPick(n.key); onClose(); }}>
-              <Icon name={n.icon} size={17} /><span>{n.label}</span>
-              <em className="sb-count">{num(counts[n.key])}</em>
-            </button>
-          ))}
+          {ACCOUNT_LINKS.map((n) => {
+            const isActive = n.viewKey === 'depthead'
+              ? view === 'depthead'
+              : view === 'users' && roleTab === n.key;
 
-          {/* Staff & Department Heads — combined view */}
+            const count = n.viewKey === 'depthead'
+              ? deptHeadCount
+              : counts[n.key];
+
+            return (
+              <button
+                key={n.key}
+                className={`sb-item ${isActive ? 'is-active' : ''}`}
+                onClick={() => {
+                  if (n.viewKey === 'depthead') {
+                    onView('depthead');
+                  } else {
+                    onView('users');
+                    onPick(n.key);
+                  }
+                  onClose();
+                }}
+              >
+                <Icon name={n.icon} size={17} /><span>{n.label}</span>
+                <em className="sb-count">{num(count)}</em>
+              </button>
+            );
+          })}
+
+          {/* ── Departments (faculties + programs CRUD) ── */}
+          <p className="sb-title">Structure</p>
           <button
-            className={`sb-item ${view === 'staff' ? 'is-active' : ''}`}
-            onClick={() => { onView('staff'); onClose(); }}
+            className={`sb-item ${view === 'departments' ? 'is-active' : ''}`}
+            onClick={() => { onView('departments'); onClose(); }}
           >
-            <Icon name="shield" size={17} />
-            <span>Staff &amp; Dept. Heads</span>
-            {staffCount !== undefined && (
-              <em className="sb-count">{loading ? '…' : staffCount}</em>
-            )}
+            <Icon name="building" size={17} /><span>Departments</span>
           </button>
 
+          {/* ── Content Manager ── */}
           <p className="sb-title">Content Manager</p>
           <button
             className={`sb-item ${view === 'content' && !contentSlug ? 'is-active' : ''}`}
@@ -82,9 +111,11 @@ export default function AdminSidebar({
             <Icon name="fileText" size={17} /><span>All content</span>
           </button>
           {CONTENT_LINKS.map(c => (
-            <button key={c.slug}
+            <button
+              key={c.slug}
               className={`sb-item ${view === 'content' && contentSlug === c.slug ? 'is-active' : ''}`}
-              onClick={() => { onView('content'); if (onContentSlug) onContentSlug(c.slug); onClose(); }}>
+              onClick={() => { onView('content'); if (onContentSlug) onContentSlug(c.slug); onClose(); }}
+            >
               <Icon name={c.icon} size={17} /><span>{c.label}</span>
             </button>
           ))}
