@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './DepartmentsPage.css';
 
 import engineering  from '../../assets/engineering.png';
@@ -7,8 +7,74 @@ import health       from '../../assets/health.png';
 import informatics  from '../../assets/informatics.png';
 import social       from '../../assets/social.png';
 import sportImg     from '../../assets/Sport.png';
+import NexeusFeatures from '../../components/body/NexeusFeatures';
 
 const API = (import.meta.env?.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+
+/* ── Explore navigation: map CMS item → real route defined in App.jsx ── */
+
+/* Exact route slugs that exist in App.jsx (faculty + program pages) */
+const VALID_ROUTES = new Set([
+  'medicine', 'computer-science', 'engineering', 'social-science', 'sport',
+  'medicine/md', 'medicine/pharmacy', 'medicine/nursing', 'medicine/midwifery', 'medicine/veterinary',
+  'computer-science/cs', 'computer-science/it', 'computer-science/information-systems',
+  'computer-science/software-engineering',
+  'engineering/civil', 'engineering/electrical', 'engineering/mechanical',
+  'engineering/chemical', 'engineering/water-resources',
+  'social-science/law', 'social-science/accounting', 'social-science/management',
+  'social-science/journalism', 'social-science/economics', 'social-science/sociology',
+  'social-science/psychology', 'social-science/political-science',
+]);
+
+/* Keyword rules — specific programs first, then faculties */
+const ROUTE_RULES = [
+  // Health programs
+  [/veterinar/,                         'medicine/veterinary'],
+  [/midwifer/,                          'medicine/midwifery'],
+  [/nursing/,                           'medicine/nursing'],
+  [/pharmac/,                           'medicine/pharmacy'],
+  // Informatics programs
+  [/software/,                          'computer-science/software-engineering'],
+  [/information\s*systems?/,            'computer-science/information-systems'],
+  [/information\s*technology|\bit\b/,   'computer-science/it'],
+  [/computer\s*science|\bcs\b/,         'computer-science/cs'],
+  // Engineering programs
+  [/civil/,                             'engineering/civil'],
+  [/electrical/,                        'engineering/electrical'],
+  [/mechanical/,                        'engineering/mechanical'],
+  [/chemical/,                          'engineering/chemical'],
+  [/water/,                             'engineering/water-resources'],
+  // Social science programs
+  [/political/,                         'social-science/political-science'],
+  [/psycholog/,                         'social-science/psychology'],
+  [/sociolog/,                          'social-science/sociology'],
+  [/econom/,                            'social-science/economics'],
+  [/journalis/,                         'social-science/journalism'],
+  [/management/,                        'social-science/management'],
+  [/accounting/,                        'social-science/accounting'],
+  [/\blaw\b/,                           'social-science/law'],
+  // Faculties
+  [/sport|physical\s*education/,        'sport'],
+  [/health|medic/,                      'medicine'],
+  [/informatic|computing/,              'computer-science'],
+  [/engineering|institute\s*of\s*technology/, 'engineering'],
+  [/social|humanit/,                    'social-science'],
+];
+
+function resolveDepartmentPath(item) {
+  // 1) Use the slug directly if it is a real route (strip leading/trailing slashes)
+  const slug = String(item?.slug || '').trim().replace(/^\/+|\/+$/g, '').toLowerCase();
+  if (VALID_ROUTES.has(slug)) return `/department/${slug}`;
+
+  // 2) Otherwise match on slug + title keywords
+  const text = `${item?.slug || ''} ${item?.title || ''}`.toLowerCase();
+  for (const [pattern, route] of ROUTE_RULES) {
+    if (pattern.test(text)) return `/department/${route}`;
+  }
+
+  // 3) Safe fallback — never send users to a 404
+  return '/departments';
+}
 
 /* Each entry maps to a department sub-page route */
 const DEPARTMENTS = [
@@ -66,6 +132,7 @@ const DEPARTMENTS = [
 
 export default function DepartmentsPage() {
   const sectionRef = useRef(null);
+  const navigate   = useNavigate();
   const [cmsItems, setCmsItems] = useState([]);
   const [loaded,   setLoaded]   = useState(false);
 
@@ -144,7 +211,10 @@ export default function DepartmentsPage() {
                         ))}
                       </div>
                     )}
-                    <button className="dept-explore-btn" onClick={() => window.location.href = `/department/${item.slug}`}>
+                    <button
+                      className="dept-explore-btn"
+                      onClick={() => navigate(resolveDepartmentPath(item))}
+                    >
                       Explore
                       <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
                         <path d="M3 8h9M8 3l5 5-5 5" stroke="currentColor" strokeWidth="1.8"
