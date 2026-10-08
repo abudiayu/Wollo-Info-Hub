@@ -4,7 +4,12 @@
    ============================================ */
 :root { --sp-accent:#f97316; --sp-accent-dark:#ea580c; }
 
-.sp-page { min-height:100vh; background:#f8f9fb; color:#111; }
+.sp-page {
+   min-height:100vh; 
+   background:#f8f9fb; 
+   color:#111; 
+  font-family:'Russo One', sans-serif;
+  }
 
 .sp-hero {
   position:relative; min-height:clamp(280px,45vw,520px);
