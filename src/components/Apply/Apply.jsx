@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Apply.css'
 
 const DEPARTMENTS = [
@@ -44,11 +45,29 @@ const EMPTY_FORM = {
   message: '',
 }
 
-function Apply({ isOpen, onClose, onSubmit }) {
+/**
+ * All props are optional so <Apply /> works as a routed page (/apply)
+ * and also as a controlled modal.
+ *
+ * @param {{
+ *   isOpen?: boolean,
+ *   onClose?: () => void,
+ *   onSubmit?: (form: typeof EMPTY_FORM) => Promise<void> | void
+ * }} props
+ */
+function Apply({ isOpen = true, onClose, onSubmit }) {
+  const navigate = useNavigate()
   const [form, setForm] = useState(EMPTY_FORM)
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
   const [draftSaved, setDraftSaved] = useState(false)
+
+  // Use the parent's onClose when given; otherwise leave the page
+  const handleClose = useCallback(() => {
+    if (onClose) onClose()
+    else if (window.history.length > 1) navigate(-1)
+    else navigate('/')
+  }, [onClose, navigate])
 
   // Load saved draft whenever the popup opens
   useEffect(() => {
@@ -66,7 +85,7 @@ function Apply({ isOpen, onClose, onSubmit }) {
   // Close on Escape + lock page scroll while open
   useEffect(() => {
     if (!isOpen) return
-    const onKey = (e) => e.key === 'Escape' && onClose?.()
+    const onKey = (e) => e.key === 'Escape' && handleClose()
     document.addEventListener('keydown', onKey)
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -74,7 +93,7 @@ function Apply({ isOpen, onClose, onSubmit }) {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prevOverflow
     }
-  }, [isOpen, onClose])
+  }, [isOpen, handleClose])
 
   if (!isOpen) return null
 
@@ -124,7 +143,7 @@ function Apply({ isOpen, onClose, onSubmit }) {
   }
 
   return (
-    <div className="apply-overlay" onMouseDown={onClose}>
+    <div className="apply-overlay" onMouseDown={handleClose}>
       <div
         className="apply-modal"
         role="dialog"
@@ -143,7 +162,7 @@ function Apply({ isOpen, onClose, onSubmit }) {
             <h2 id="apply-title">Apply now</h2>
             <p>Tell us a little about yourself and what you need.</p>
           </div>
-          <button type="button" className="apply-close" onClick={onClose} aria-label="Close">
+          <button type="button" className="apply-close" onClick={handleClose} aria-label="Close">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>
@@ -159,7 +178,7 @@ function Apply({ isOpen, onClose, onSubmit }) {
             </div>
             <h3>Thank you, {form.name.split(' ')[0]}!</h3>
             <p>We received your message and will get back to you at {form.email}.</p>
-            <button type="button" className="apply-btn apply-btn-primary" onClick={onClose}>
+            <button type="button" className="apply-btn apply-btn-primary" onClick={handleClose}>
               Close
             </button>
           </div>
@@ -277,4 +296,4 @@ function Apply({ isOpen, onClose, onSubmit }) {
   )
 }
 
-export default Apply;
+export default Apply
