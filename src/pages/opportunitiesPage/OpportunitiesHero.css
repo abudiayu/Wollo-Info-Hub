@@ -1,611 +1,337 @@
 /* ================================================================
    OpportunitiesHero.css
-   Palette: navy #0f2a5c · accent #5b4bff · orange #ff7a59
-   Prefix:  op-
-   Reference: "15+ Hero Sections Bootstrap Bundle" — tilted
-   browser-mockup cards in a perspective collage on the right.
+   White background · black text · DM Sans · prefix: op-
    ================================================================ */
-
-/* ── Design tokens ── */
-.op-section {
-  --op-navy:    #0f2a5c;
-  --op-accent:  #5b4bff;
-  --op-orange:  #ff7a59;
-  --op-white:   #ffffff;
-  --op-body:    #4a5a73;
-  --op-card-bg: #ffffff;
-  --op-card-w:  260px;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}
+@import url('https://fonts.googleapis.com/css?family=DM+Sans:500,400');
 
 .op-section {
+  --op-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
   width: 100%;
   overflow: hidden;
+  background: #fff;
+  color: #000;
+  font-family: 'DM Sans', sans-serif;
 }
 
-/* ================================================================
-   HERO
-   ================================================================ */
-
-.op-hero {
+/* ── Top area ── */
+.op-top {
   position: relative;
-  /* warm peach → soft lavender → pale blue — matches reference */
-  background: linear-gradient(135deg, #fff0ea 0%, #f8f4ff 45%, #edf1ff 100%);
-  padding: clamp(60px, 8vw, 108px) clamp(20px, 5.5vw, 56px) clamp(48px, 6vw, 88px);
+  padding: 160px clamp(24px, 4vw, 64px) 40px;
+}
+.op-fsq-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.op-fsq { position: absolute; display: block; }
+.op-fsq-inner { display: block; background: #000; }
+
+.op-header {
+  position: relative;
+  max-width: 80rem;
+  margin: 0 auto;
+  text-align: center;
+}
+.op-badge {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 6px 16px;
+  background: #000;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+.op-heading {
+  margin: 0;
+  font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+  font-weight: 300;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+}
+.op-heading-a { color: #000; }
+.op-heading-b { color: rgba(0, 0, 0, 0.4); }
+.op-sub {
+  margin: 18px auto 0;
+  max-width: 46ch;
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* ── Card grid ── */
+.op-grid-wrap {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 4vw, 64px) 64px;
+}
+.op-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .op-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.op-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  background: #e9e9e9;
+}
+.op-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.op-card-img--placeholder { background: linear-gradient(135deg, #e4e4e4, #cfcfcf); }
+
+.op-pixels { position: absolute; inset: 0; pointer-events: none; }
+.op-pixel {
+  position: absolute;
+  display: block;
+  background: rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transform: scale(0);
+}
+
+.op-card-excerpt {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  z-index: 5;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #fff;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--op-ease) 0.2s;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.op-card-excerpt.is-visible { opacity: 1; }
 
-/* large top-right purple glow */
-.op-hero::before {
-  content: '';
+.op-msq {
   position: absolute;
-  top: -100px; right: -100px;
-  width: 520px; height: 520px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(91,75,255,0.13) 0%, transparent 70%);
+  display: block;
+  background: #000;
   pointer-events: none;
+  z-index: 6;
 }
 
-/* bottom-left warm glow */
-.op-hero::after {
-  content: '';
+.op-card-plus {
   position: absolute;
-  bottom: -60px; left: -60px;
-  width: 380px; height: 380px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,122,89,0.10) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* ── Two-column layout ── */
-.op-hero-inner {
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
   display: flex;
   align-items: center;
-  gap: clamp(24px, 4vw, 56px);
-}
-
-/* ── Left copy ── */
-.op-hero-copy {
-  flex: 1 1 460px;
-  min-width: 0;
-  z-index: 1;
-}
-
-/* pill badge */
-.op-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  border-radius: 999px;
-  background: rgba(91,75,255,0.10);
-  border: 1px solid rgba(91,75,255,0.24);
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--op-accent);
-  margin-bottom: 22px;
-}
-.op-badge::before {
-  content: '';
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--op-accent);
-  flex-shrink: 0;
 }
 
-/* big gradient heading */
-.op-heading {
-  margin: 0 0 18px;
-  font-weight: 800;
-  font-size: clamp(30px, 4.2vw, 54px);
-  line-height: 1.07;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--op-navy) 0%, #1e3f80 55%, var(--op-accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  max-width: 16ch;
+.op-card-plate {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 20;
+  max-width: 70%;
+  padding: 10px 16px 12px;
+  background: #fff;
 }
-@supports not (-webkit-background-clip: text) {
-  .op-heading { color: var(--op-navy); }
+.op-card-title {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
+  font-weight: 400;
+  line-height: 1.2;
+  color: #000;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.op-card-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 6px;
+  font-size: 12px;
+}
+.op-card-tag  { color: rgba(0, 0, 0, 0.6); }
+.op-card-more { font-weight: 500; color: #000; }
+
+/* ── Footer ── */
+.op-footer {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 4vw, 64px) 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+@media (min-width: 768px) {
+  .op-footer { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+}
+.op-footer-left { max-width: 28rem; }
+
+.op-plus-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  font-size: 12px;
+  color: #000;
 }
 
-/* subtitle */
-.op-sub {
-  margin: 0 0 26px;
-  font-size: clamp(14.5px, 1.6vw, 17px);
-  font-weight: 450;
-  line-height: 1.65;
-  color: var(--op-body);
-  max-width: 46ch;
-}
-
-/* bullet list */
 .op-bullets {
   list-style: none;
-  margin: 0 0 34px;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 11px;
+  gap: 10px;
 }
 .op-bullet {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 14px;
-  font-weight: 500;
-  color: var(--op-navy);
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.6);
 }
 .op-bullet-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background: rgba(91,75,255,0.12);
-  color: var(--op-accent);
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
+  background: #000;
+  color: #fff;
 }
 
-/* buttons */
 .op-actions {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  align-items: flex-end;
   flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 24px;
 }
-.op-btn {
+
+/* CTA with arrow badge */
+.op-cta {
+  display: flex;
+  align-items: flex-end;
+  text-decoration: none;
+}
+.op-cta-label {
   display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+.op-cta:hover .op-cta-label,
+.op-cta:focus-visible .op-cta-label { background: rgba(0, 0, 0, 0.85); }
+.op-cta-badge {
+  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 26px;
-  border-radius: 10px;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 24px;
+  background: #000;
+  transition: all 0.3s var(--op-ease);
+}
+.op-cta:hover .op-cta-badge,
+.op-cta:focus-visible .op-cta-badge { margin-bottom: 36px; }
+
+.op-link-ghost {
+  padding-bottom: 8px;
   font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-  white-space: nowrap;
+  font-weight: 500;
+  color: #000;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(0, 0, 0, 0.25);
+  transition: text-decoration-color 0.2s;
 }
-.op-btn--primary {
-  background: var(--op-accent);
-  color: var(--op-white);
-  box-shadow: 0 4px 18px rgba(91,75,255,0.30);
-}
-.op-btn--primary:hover,
-.op-btn--primary:focus-visible {
-  background: #4a3aee;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 26px rgba(91,75,255,0.40);
-}
-.op-btn--ghost {
-  background: transparent;
-  color: var(--op-navy);
-  border: 2px solid rgba(15,42,92,0.28);
-}
-.op-btn--ghost:hover,
-.op-btn--ghost:focus-visible {
-  border-color: var(--op-navy);
-  background: rgba(15,42,92,0.05);
-  transform: translateY(-2px);
-}
+.op-link-ghost:hover { text-decoration-color: #000; }
 
-/* ================================================================
-   HERO COLLAGE — tilted browser-mockup cards (reference style)
-   ================================================================ */
-
-.op-hero-collage {
-  flex: 0 0 460px;
-  position: relative;
-  height: 380px;
-  /* 3-D perspective container */
-  perspective: 1000px;
-  z-index: 0;
-}
-
-/* diffuse glow behind the cards */
-.op-collage-glow {
-  position: absolute;
-  inset: 10%;
-  border-radius: 50%;
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    rgba(91,75,255,0.18) 0%,
-    rgba(255,122,89,0.10) 50%,
-    transparent 75%
-  );
-  filter: blur(28px);
-  z-index: 0;
-}
-
-/* ── Base hero card shell ── */
-.op-hcard {
-  position: absolute;
-  width: 220px;
-  border-radius: 14px;
-  background: #ffffff;
-  box-shadow:
-    0 4px 6px rgba(0,0,0,0.04),
-    0 12px 32px rgba(0,0,0,0.14),
-    0 2px 0 rgba(255,255,255,0.8) inset;
-  overflow: hidden;
-  /* each card gets its own tilt via the modifier classes below */
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-  z-index: 1;
-}
-
-.op-hcard:hover {
-  box-shadow:
-    0 8px 12px rgba(0,0,0,0.06),
-    0 20px 48px rgba(0,0,0,0.20);
-  z-index: 3;
-}
-
-/* ── Browser chrome bar ── */
-.op-hcard-chrome {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 10px;
-  background: #f1f3f5;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-}
-.op-hcard-dot {
-  display: inline-block;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-/* ── Card image ── */
-.op-hcard-img-wrap {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  background: #e8ecf2;
-}
-.op-hcard-img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.op-hcard-img-placeholder {
-  width: 100%; height: 100%;
-  background: linear-gradient(135deg, #dde3ef, #c8d0e5);
-}
-
-/* ── Card footer ── */
-.op-hcard-footer {
-  padding: 10px 12px 12px;
-}
-.op-hcard-tag {
-  display: inline-block;
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--op-accent);
-  margin-bottom: 4px;
-}
-.op-hcard-title {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.35;
-  color: var(--op-navy);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ── Tilt positions (reference: top-left, top-right, bottom-right) ──
-   Each card is rotated on the Y and X axes to look "inclined"
-   like the mockup screenshots in the reference image.
-   ── */
-
-/* Top-left card — tilted right, slightly down */
-.op-hcard--tl {
-  top: 0;
-  left: 0;
-  transform: perspective(900px) rotateY(18deg) rotateX(-6deg) rotate(-2deg) translateZ(10px);
-  transform-origin: left center;
-  z-index: 2;
-}
-.op-hcard--tl:hover {
-  transform: perspective(900px) rotateY(10deg) rotateX(-3deg) rotate(-1deg) translateZ(30px);
-}
-
-/* Top-right card — tilted left, overlaps slightly */
-.op-hcard--tr {
-  top: 20px;
-  right: 0;
-  transform: perspective(900px) rotateY(-16deg) rotateX(-5deg) rotate(2deg) translateZ(20px);
-  transform-origin: right center;
-  z-index: 1;
-}
-.op-hcard--tr:hover {
-  transform: perspective(900px) rotateY(-8deg) rotateX(-2deg) rotate(1deg) translateZ(40px);
-}
-
-/* Bottom-right card — lower, tilted inward */
-.op-hcard--br {
-  bottom: 0;
-  right: 30px;
-  transform: perspective(900px) rotateY(-12deg) rotateX(5deg) rotate(1deg) translateZ(5px);
-  transform-origin: right bottom;
-  z-index: 3;
-}
-.op-hcard--br:hover {
-  transform: perspective(900px) rotateY(-6deg) rotateX(2deg) rotate(0deg) translateZ(30px);
-}
-
-/* ================================================================
-   AUTO-SCROLLING CARD ROWS  —  mountain-slope style
-   Two rows on a light peach→lavender gradient.
-   Row 1 tilts upward  (rotate -4deg), scrolls ltr.
-   Row 2 tilts downward (rotate +4deg), scrolls rtl.
-   The .op-row-slant wrapper owns the 2-D tilt; the viewport inside
-   it clips overflow; the track animates with translate3d.
-   ================================================================ */
-
-/* ── Section shell ── */
-.op-cards-section {
-  /* light peach → warm blush → soft lavender */
-  background: linear-gradient(160deg, #fff1e8 0%, #fde3d6 45%, #ece6ff 100%);
-  /* tall padding absorbs the tilted rows so they don't clip */
-  padding: clamp(60px, 9vw, 100px) 0 clamp(60px, 9vw, 100px);
-  display: flex;
-  flex-direction: column;
-  /* vertical gap between the two slanted rows */
-  gap: clamp(32px, 4vw, 48px);
-  /* hard clip on the outer shell */
-  overflow: hidden;
-  position: relative;
-}
-
-/* left + right soft fade edges via mask */
-.op-cards-section::before,
-.op-cards-section::after {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0;
-  width: clamp(60px, 8vw, 120px);
-  z-index: 2;
-  pointer-events: none;
-}
-.op-cards-section::before {
-  left: 0;
-  background: linear-gradient(to right, #fff1e8, transparent);
-}
-.op-cards-section::after {
-  right: 0;
-  background: linear-gradient(to left, #ece6ff, transparent);
-}
-
-/* ── Slant wrapper ──
-   Rotates the whole row on a 2-D axis (mountain slope).
-   Scale-up compensates for the corner gaps that rotation creates.
-   ── */
-.op-row-slant {
-  width: 100%;
-  /* scale slightly so rotated ends never expose the background */
-  transform-origin: center center;
-}
-
-/* Row 1 — tilts upward, left edge lower than right edge */
-.op-row-slant--up {
-  transform: rotate(-4deg) scaleX(1.12);
-}
-
-/* Row 2 — tilts downward, left edge higher than right edge */
-.op-row-slant--down {
-  transform: rotate(4deg) scaleX(1.12);
-}
-
-/* ── Viewport — clips the scrolling track ── */
-.op-row-viewport {
-  width: 100%;
-  overflow: hidden;
-}
-
-/* pause on hover / keyboard-focus anywhere in the slant wrapper */
-.op-row-slant:hover .op-row-track,
-.op-row-slant:focus-within .op-row-track {
-  animation-play-state: paused;
-}
-
-/* ── Scrolling track ── */
-.op-row-track {
-  display: flex;
-  gap: 20px;
-  /* let it grow as wide as its children need */
-  width: max-content;
-  will-change: transform;
-}
-
-/* Row 1: ltr — starts fully to the left, slides right */
-.op-row-track--ltr {
-  animation: op-ltr 60s linear infinite;
-}
-
-/* Row 2: rtl — starts at zero, slides left */
-.op-row-track--rtl {
-  animation: op-rtl 55s linear infinite;
-}
-
-/*
-  Seamless loop: the track contains [items + items] (doubled in JSX).
-  50% of the track width == exactly one full copy, so animating
-  0 → -50% (or -50% → 0) produces a perfect infinite loop.
-*/
-@keyframes op-ltr {
-  from { transform: translate3d(-50%, 0, 0); }
-  to   { transform: translate3d(0,   0, 0); }
-}
-
-@keyframes op-rtl {
-  from { transform: translate3d(0,    0, 0); }
-  to   { transform: translate3d(-50%, 0, 0); }
-}
-
-/* ── Card shell ── */
-.op-card {
-  flex: 0 0 var(--op-card-w);
-  width: var(--op-card-w);
-  border-radius: 16px;
-  overflow: hidden;
-  background: #ffffff;
-  /* shadow visible on the light background */
-  box-shadow:
-    0 1px 3px rgba(15, 42, 92, 0.06),
-    0 6px 20px rgba(15, 42, 92, 0.12),
-    0 0 0 1px rgba(15, 42, 92, 0.05);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.op-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow:
-    0 2px 6px rgba(15, 42, 92, 0.08),
-    0 14px 36px rgba(15, 42, 92, 0.18),
-    0 0 0 1px rgba(91, 75, 255, 0.15);
-}
-
-/* ── Card image ── */
-.op-card-img-wrap {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  flex-shrink: 0;
-  background: #e0e7f3;
-}
-.op-card-img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.4s ease;
-}
-.op-card-img--placeholder {
-  width: 100%; height: 100%;
-  background: linear-gradient(135deg, #d8e0f0, #c5cfea);
-}
-.op-card:hover .op-card-img {
-  transform: scale(1.06);
-}
-
-/* ── Card body — light background so dark text ── */
-.op-card-body {
-  display: flex;
-  flex-direction: column;
+/* ── Marquee ── */
+.op-footer-right {
   flex: 1;
-  padding: 14px 16px 16px;
-}
-.op-card-tag {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--op-accent);
-  margin-bottom: 5px;
-}
-.op-card-title {
-  margin: 0 0 6px;
-  font-size: 14.5px;
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--op-navy);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  min-width: 0;
   overflow: hidden;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
-.op-card-excerpt {
-  margin: 0 0 12px;
-  font-size: 12px;
-  font-weight: 450;
-  line-height: 1.55;
-  color: #6b7a93;
-  flex-grow: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+@media (min-width: 768px) {
+  .op-footer-right { margin-left: 48px; border-top: none; }
 }
-.op-card-link {
-  display: inline-flex;
+.op-marquee { overflow: hidden; padding: 20px 0; }
+.op-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeProjects 28s linear infinite;
+}
+.op-marquee-track:hover { animation-play-state: paused; }
+.op-marquee-item {
+  display: flex;
+  flex-shrink: 0;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--op-accent);
-  text-decoration: none;
-  width: fit-content;
-  margin-top: auto;
-  transition: gap 0.18s ease;
+  gap: 10px;
+  padding: 0 32px;
 }
-.op-card-link:hover { gap: 8px; }
+.op-marquee-name {
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  color: rgba(0, 0, 0, 0.8);
+}
+@keyframes marqueeProjects {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
 
-/* ================================================================
-   REDUCED MOTION
-   Kill animations, flatten tilts, fall back to plain scroll.
-   ================================================================ */
+.op-spacer { height: 48px; }
 
+/* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
-  .op-row-track--ltr,
-  .op-row-track--rtl {
-    animation: none !important;
-    transform: none !important;
-  }
-  /* flatten the slant wrappers */
-  .op-row-slant--up,
-  .op-row-slant--down {
-    transform: none !important;
-  }
-  /* allow horizontal scrolling as fallback */
-  .op-row-viewport {
-    overflow-x: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(15, 42, 92, 0.15) transparent;
-  }
-  .op-card            { transition: none !important; }
-  .op-card-img        { transition: none !important; }
-  /* flatten hero card tilts too */
-  .op-hcard--tl,
-  .op-hcard--tr,
-  .op-hcard--br       { transform: none !important; }
+  .op-marquee-track { animation: none; }
+  .op-footer-right  { overflow-x: auto; }
+  .op-cta-badge, .op-card-excerpt { transition: none; }
 }
 
-/* ================================================================
-   RESPONSIVE
-   ================================================================ */
-
-/* Tablet — collapse hero collage, single-column */
-@media (max-width: 900px) {
-  .op-hero-collage { display: none; }
-  .op-heading      { max-width: 100%; }
-}
-
-/* Mobile — smaller tilt, smaller cards, stacked buttons */
+/* ── Mobile ── */
 @media (max-width: 560px) {
-  .op-row-slant--up   { transform: rotate(-2deg) scaleX(1.06); }
-  .op-row-slant--down { transform: rotate(2deg)  scaleX(1.06); }
-
-  .op-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .op-btn {
-    width: 100%;
-    padding: 14px 20px;
-  }
-  .op-section { --op-card-w: 210px; }
+  .op-top { padding-top: 120px; }
+  .op-card-plate { max-width: 85%; }
+  .op-actions { flex-direction: column; align-items: flex-start; }
 }
