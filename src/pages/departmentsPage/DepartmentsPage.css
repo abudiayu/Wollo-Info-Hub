@@ -1,5 +1,3 @@
-
-
 /* ==========================================================
    Page
    ========================================================== */
@@ -492,17 +490,23 @@
 
   padding: 11px 22px;
 
+  border: 0;
+
   border-radius: 999px;
 
   background: var(--dept-color);
 
   color: #fff;
 
+  font-family: inherit;
+
   font-size: 0.92rem;
 
   font-weight: 600;
 
   text-decoration: none;
+
+  cursor: pointer;
 
   box-shadow:
     0 8px 18px -8px
@@ -552,7 +556,34 @@
   --dept-color: var(--brand);
 }
 
+/* Accent colour per CMS card (cycles through the grid) */
+.dept-card--cms:nth-child(5n + 1) { --dept-color: #2563eb; }
+.dept-card--cms:nth-child(5n + 2) { --dept-color: #e63946; }
+.dept-card--cms:nth-child(5n + 3) { --dept-color: #f59e0b; }
+.dept-card--cms:nth-child(5n + 4) { --dept-color: #10b981; }
+.dept-card--cms:nth-child(5n + 5) { --dept-color: #f97316; }
+
+/* Soft overlay on CMS cover images */
+.dept-card--cms .dept-card-img-wrap::after {
+  content: '';
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(7, 26, 58, 0.35),
+      transparent 55%
+    );
+
+  pointer-events: none;
+}
+
 .dept-card-body-html {
+  margin-bottom: 18px;
+
   font-size: 0.97rem;
 
   line-height: 1.7;
@@ -606,7 +637,8 @@
 
   gap: 8px;
 
-  margin-top: 20px;
+  margin-top: 0;
+  margin-bottom: 22px;
 }
 
 .dept-gallery-img {
@@ -617,6 +649,8 @@
   object-fit: cover;
 
   border-radius: 10px;
+
+  border: 1px solid var(--line);
 
   transition:
     transform 0.3s ease;
@@ -649,6 +683,21 @@
 
   .dept-grid .dept-card:nth-child(4),
   .dept-grid .dept-card:nth-child(5) {
+    grid-column: span 3;
+  }
+
+  /* Same layout for CMS cards */
+  .dept-cms-grid {
+    grid-template-columns:
+      repeat(6, 1fr);
+  }
+
+  .dept-cms-grid .dept-card {
+    grid-column: span 2;
+  }
+
+  .dept-cms-grid .dept-card:nth-child(4),
+  .dept-cms-grid .dept-card:nth-child(5) {
     grid-column: span 3;
   }
 }
@@ -751,6 +800,14 @@
     margin-bottom: 12px;
   }
 
+  .dept-card-body-html {
+    font-size: 0.78rem;
+
+    line-height: 1.5;
+
+    margin-bottom: 12px;
+  }
+
   /* Card image */
 
   .dept-card-img-wrap {
@@ -796,6 +853,8 @@
       repeat(2, 1fr);
 
     gap: 6px;
+
+    margin-bottom: 14px;
   }
 }
 
@@ -829,7 +888,8 @@
     font-size: 0.9rem;
   }
 
-  .dept-card-desc {
+  .dept-card-desc,
+  .dept-card-body-html {
     font-size: 0.72rem;
 
     line-height: 1.45;

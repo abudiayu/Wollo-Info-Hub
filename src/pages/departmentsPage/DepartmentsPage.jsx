@@ -130,10 +130,69 @@ const DEPARTMENTS = [
   // },
 ];
 
+/* ── MOCK CMS DATA ─────────────────────────────────────────
+   Temporary placeholder items shaped like the backend response.
+   Replaced automatically when the API returns real items.
+   Remove this block (and use useState([])) once the backend is live.
+──────────────────────────────────────────────────────────── */
+const MOCK_CMS_ITEMS = [
+  {
+    id: 'mock-informatics',
+    slug: 'computer-science',
+    title: 'Informatics',
+    cover_url: informatics,
+    body: '<p>Home of Computer Science, Information Technology, Information Systems and Software Engineering. Build the software and systems that power the modern world.</p>',
+    gallery: [
+      { id: 'mi-1', type: 'image', url: informatics, original_name: 'Informatics lab' },
+      { id: 'mi-2', type: 'image', url: engineering,  original_name: 'Systems design' },
+    ],
+  },
+  {
+    id: 'mock-health',
+    slug: 'medicine',
+    title: 'Health',
+    cover_url: health,
+    body: '<p>Training compassionate, competent health professionals in Medicine, Pharmacy, Nursing and Midwifery to serve communities across Ethiopia and beyond.</p>',
+    gallery: [
+      { id: 'mh-1', type: 'image', url: health, original_name: 'Health sciences' },
+    ],
+  },
+  {
+    id: 'mock-engineering',
+    slug: 'engineering',
+    title: 'Engineering',
+    cover_url: engineering,
+    body: '<p>Civil, Electrical, Mechanical, Chemical and Water Resources Engineering — building the infrastructure of tomorrow.</p>',
+    gallery: [
+      { id: 'me-1', type: 'image', url: engineering, original_name: 'Engineering workshop' },
+      { id: 'me-2', type: 'image', url: informatics, original_name: 'Design studio' },
+      { id: 'me-3', type: 'image', url: social,      original_name: 'Field work' },
+    ],
+  },
+  {
+    id: 'mock-social',
+    slug: 'social-science',
+    title: 'Social Science',
+    cover_url: social,
+    body: '<p>Law, Accounting, Management, Journalism, Economics, Sociology and Psychology — understanding societies to address a rapidly changing world.</p>',
+    gallery: [
+      { id: 'ms-1', type: 'image', url: social, original_name: 'Social science class' },
+    ],
+  },
+  {
+    id: 'mock-sport',
+    slug: 'sport',
+    title: 'Sport',
+    cover_url: sportImg,
+    body: '<p>Compete, grow, lead. The sports programme develops athletes and future physical education professionals.</p>',
+    gallery: [],
+  },
+];
+
 export default function DepartmentsPage() {
   const sectionRef = useRef(null);
   const navigate   = useNavigate();
-  const [cmsItems, setCmsItems] = useState([]);
+  const [cmsItems, setCmsItems] = useState(MOCK_CMS_ITEMS);
   const [loaded,   setLoaded]   = useState(false);
 
   /* Fetch CMS-published department content */
