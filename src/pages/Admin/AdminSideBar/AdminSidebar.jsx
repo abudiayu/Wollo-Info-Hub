@@ -96,6 +96,13 @@ export default function AdminSidebar({
           {/* ── Departments (faculties + programs CRUD) ── */}
           <p className="sb-title">Structure</p>
           <button
+            className={`sb-item ${view === 'staffmanager' ? 'is-active' : ''}`}
+            onClick={() => { onView('staffmanager'); onClose(); }}
+          >
+            <Icon name="cap" size={17} /><span>Staff &amp; Heads</span>
+            <em className="sb-count">{num((counts.staff || 0) + (deptHeadCount || 0))}</em>
+          </button>
+          <button
             className={`sb-item ${view === 'departments' ? 'is-active' : ''}`}
             onClick={() => { onView('departments'); onClose(); }}
           >

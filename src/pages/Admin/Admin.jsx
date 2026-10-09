@@ -1,3 +1,16 @@
+/**
+ * src/pages/Admin/Admin.jsx  — Supabase edition
+ *
+ * Fixes:
+ *  1. "Admin access required" bug: admin check now comes from Supabase JWT
+ *     via the Express /api/auth/me response (role field from staff_profiles).
+ *  2. User list comes from /api/admin/users which reads v_admin_users view —
+ *     one clean, de-duplicated row per user, no duplicate Accounts sections.
+ *  3. Password reset calls PATCH /api/admin/users/:id/password (service-role key).
+ *  4. Role change calls PATCH /api/admin/users/:id/role.
+ *  5. Token is taken from useAuth().token (access_token), not localStorage directly.
+ */
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -5,15 +18,17 @@ import {
   API_BASE, request, normalizeList, normalizeUser, rowKey, formatDate,
   pageList, passwordStrength, Icon, Avatar, RoleBadge,
 } from './AdminShared/AdminShared';
-import AdminSidebar    from "./AdminSideBar/AdminSidebar";
+import AdminSidebar    from './AdminSideBar/AdminSidebar';
 import { StatCards, SignupsChart, RoleDonut } from './AdminChart/AdminChart';
 import ContentManager  from './ContentManager/ContentManager';
 import MediaLibrary    from './ContentManager/MediaLibrary';
+import StaffManager    from './StaffManager/StaffManager';
 import './Admin.css';
 import './AdminChart/AdminChart.css';
 
 const PAGE_SIZE = 10;
-const ROLES = ['user', 'staff', 'admin'];
+// All roles that can exist in the new schema (matches v_admin_users)
+const ROLES = ['student', 'staff', 'head', 'admin'];
 
 /* ─── toast ─── */
 function useToast() {
@@ -88,12 +103,13 @@ function ConfirmModal({ title, text, onConfirm, onCancel, busy, danger = true })
   );
 }
 
-/* ─── edit user drawer ─── */
+/* ─── Edit user drawer ─── */
 function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId }) {
-  const [name,       setName]       = useState(user.full_name);
+  const [name,       setName]       = useState(user.full_name || '');
   const [password,   setPassword]   = useState('');
   const [confirm,    setConfirm]    = useState('');
-  const [role,       setRole]       = useState(user.role || 'user');
+  const [role,       setRole]       = useState(user.role || 'student');
+  const [deptId,     setDeptId]     = useState(user.department_id || '');
   const [showPw,     setShowPw]     = useState(false);
   const [saving,     setSaving]     = useState(false);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -113,7 +129,7 @@ function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId 
 
   const strength = passwordStrength(password);
   const strengthLabel = ['Too short', 'Weak', 'Good', 'Strong'][strength];
-  const hasChanges = name.trim() !== user.full_name || password.length > 0 || role !== user.role;
+  const hasChanges = name.trim() !== (user.full_name || '') || password.length > 0 || role !== (user.role || 'student');
 
   function validate() {
     const e = {};
@@ -129,14 +145,23 @@ function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId 
     if (Object.keys(e).length) { setErrors(e); return; }
     setSaving(true);
     try {
-      const body = { full_name: name.trim() };
-      if (password) body.password = password;
-      const res = await request('PUT', `/api/admin/users/${user.id}`, body, token);
-      let merged = normalizeUser({ ...user, ...(res?.user ?? res?.data ?? res ?? {}), role, id: user.id });
-      if (role !== user.role) {
-        const roleRes = await request('PATCH', `/api/admin/users/${user.id}/role`, { role }, token);
-        merged = normalizeUser({ ...merged, ...(roleRes?.user ?? roleRes?.data ?? roleRes ?? {}), role });
+      // 1. Update name/username
+      const updated = await request('PUT', `/api/admin/users/${user.id}`, { full_name: name.trim() }, token);
+
+      // 2. Reset password separately (uses service-role key on backend)
+      if (password) {
+        await request('PATCH', `/api/admin/users/${user.id}/password`, { password }, token);
       }
+
+      // 3. Change role if needed (includes department_id for head role)
+      let merged = normalizeUser({ ...user, ...(updated ?? {}), id: user.id });
+      if (role !== user.role) {
+        const roleBody = { role };
+        if (role === 'head' && deptId) roleBody.department_id = deptId;
+        const roleRes = await request('PATCH', `/api/admin/users/${user.id}/role`, roleBody, token);
+        merged = normalizeUser({ ...merged, ...(roleRes ?? {}), role });
+      }
+
       onSaved(merged);
       pushToast(`${merged.full_name} was updated.`, 'success');
       onClose();
@@ -183,11 +208,13 @@ function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId 
               <p className="adm-drawer-email">{user.email}</p>
               <div className="adm-drawer-meta">
                 <RoleBadge role={user.role} />
-                <span className="adm-id">ID #{user.id}</span>
+                <span className="adm-id">ID {String(user.id).slice(0, 8)}…</span>
               </div>
             </div>
           </div>
+
           <form className="adm-form" onSubmit={handleSave} noValidate>
+            {/* Full name */}
             <div className="adm-field">
               <label htmlFor="em-name" className="adm-label">Full name</label>
               <div className={`adm-input-wrap ${errors.name ? 'is-error' : ''}`}>
@@ -197,6 +224,8 @@ function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId 
               </div>
               {errors.name && <span className="adm-field-err">{errors.name}</span>}
             </div>
+
+            {/* Role */}
             <div className="adm-field">
               <label htmlFor="em-role" className="adm-label">
                 Role {isSelf && <span className="adm-label-hint">You cannot change your own role</span>}
@@ -205,10 +234,27 @@ function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId 
                 <Icon name="shield" size={16} />
                 <select id="em-role" className="adm-input adm-select" value={role}
                   disabled={isSelf} onChange={(e) => setRole(e.target.value)}>
-                  {ROLES.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+                  {ROLES.map(r => (
+                    <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>
+                  ))}
                 </select>
               </div>
             </div>
+
+            {/* Department ID — shown only when role = head */}
+            {role === 'head' && (
+              <div className="adm-field">
+                <label htmlFor="em-dept" className="adm-label">Department ID (UUID)</label>
+                <div className="adm-input-wrap">
+                  <Icon name="building" size={16} />
+                  <input id="em-dept" className="adm-input" value={deptId}
+                    onChange={(e) => setDeptId(e.target.value)}
+                    placeholder="e.g. b1000000-0000-0000-0000-000000000011" />
+                </div>
+              </div>
+            )}
+
+            {/* New password */}
             <div className="adm-field">
               <label htmlFor="em-pw" className="adm-label">
                 New password <span className="adm-label-hint">Leave blank to keep current</span>
@@ -232,6 +278,7 @@ function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId 
                 </div>
               )}
             </div>
+
             {password && (
               <div className="adm-field">
                 <label htmlFor="em-confirm" className="adm-label">Confirm password</label>
@@ -244,6 +291,7 @@ function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId 
                 {errors.confirm && <span className="adm-field-err">{errors.confirm}</span>}
               </div>
             )}
+
             <div className="adm-drawer-actions">
               <button type="button" className="adm-btn adm-btn--danger-ghost"
                 disabled={isSelf || saving} onClick={() => setShowDelete(true)}
@@ -251,7 +299,9 @@ function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId 
                 <Icon name="trash" size={14} /> Delete
               </button>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button type="button" className="adm-btn adm-btn--ghost" onClick={onClose} disabled={saving}>Cancel</button>
+                <button type="button" className="adm-btn adm-btn--ghost" onClick={onClose} disabled={saving}>
+                  Cancel
+                </button>
                 <button type="submit" className="adm-btn adm-btn--primary" disabled={saving || !hasChanges}>
                   {saving ? <span className="adm-spinner" /> : 'Save changes'}
                 </button>
@@ -260,25 +310,26 @@ function EditDrawer({ user, token, onClose, onSaved, onDeleted, pushToast, meId 
           </form>
         </aside>
       </div>
+
       {showDelete && (
-        <ConfirmModal title="Delete account?"
-          text={`This will permanently remove ${user.full_name}'s account (${user.email}). This action cannot be undone.`}
-          onConfirm={handleDelete} onCancel={() => setShowDelete(false)} busy={deleteBusy} />
+        <ConfirmModal
+          title="Delete account?"
+          text={`This will permanently remove ${user.full_name}'s account (${user.email}). This cannot be undone.`}
+          onConfirm={handleDelete} onCancel={() => setShowDelete(false)} busy={deleteBusy}
+        />
       )}
     </>
   );
 }
 
-/* ─── Departments management view (Task 5) ─── */
+/* ─── Departments management view ─── */
 function DepartmentsView({ token, pushToast }) {
-  const [faculties, setFaculties] = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState('');
-
-  /* form state */
+  const [faculties,    setFaculties]    = useState([]);
+  const [loading,      setLoading]      = useState(true);
+  const [error,        setError]        = useState('');
   const [showFacForm,  setShowFacForm]  = useState(false);
   const [showDeptForm, setShowDeptForm] = useState(false);
-  const [editingFac,   setEditingFac]   = useState(null);  // null = add, obj = edit
+  const [editingFac,   setEditingFac]   = useState(null);
   const [editingDept,  setEditingDept]  = useState(null);
   const [parentFacId,  setParentFacId]  = useState('');
   const [facName,      setFacName]      = useState('');
@@ -287,7 +338,7 @@ function DepartmentsView({ token, pushToast }) {
   const [deptName,     setDeptName]     = useState('');
   const [deptDesc,     setDeptDesc]     = useState('');
   const [saving,       setSaving]       = useState(false);
-  const [confirmDel,   setConfirmDel]   = useState(null); // { type:'faculty'|'department', id, name }
+  const [confirmDel,   setConfirmDel]   = useState(null);
   const [delBusy,      setDelBusy]      = useState(false);
 
   const load = useCallback(async () => {
@@ -302,29 +353,17 @@ function DepartmentsView({ token, pushToast }) {
 
   useEffect(() => { load(); }, [load]);
 
-  function openAddFaculty() {
-    setEditingFac(null); setFacName(''); setFacColor('#2563eb'); setFacDesc('');
-    setShowFacForm(true);
-  }
-  function openEditFaculty(f) {
-    setEditingFac(f); setFacName(f.name); setFacColor(f.color || '#2563eb'); setFacDesc(f.description || '');
-    setShowFacForm(true);
-  }
-  function openAddDept(facId) {
-    setEditingDept(null); setParentFacId(String(facId)); setDeptName(''); setDeptDesc('');
-    setShowDeptForm(true);
-  }
-  function openEditDept(d, facId) {
-    setEditingDept(d); setParentFacId(String(facId)); setDeptName(d.name); setDeptDesc(d.description || '');
-    setShowDeptForm(true);
-  }
+  function openAddFaculty()   { setEditingFac(null); setFacName(''); setFacColor('#2563eb'); setFacDesc(''); setShowFacForm(true); }
+  function openEditFaculty(f) { setEditingFac(f); setFacName(f.name_en || f.name || ''); setFacColor(f.color || '#2563eb'); setFacDesc(f.description || ''); setShowFacForm(true); }
+  function openAddDept(facId) { setEditingDept(null); setParentFacId(String(facId)); setDeptName(''); setDeptDesc(''); setShowDeptForm(true); }
+  function openEditDept(d, facId) { setEditingDept(d); setParentFacId(String(facId)); setDeptName(d.name_en || d.name || ''); setDeptDesc(d.description || ''); setShowDeptForm(true); }
 
   async function saveFaculty(e) {
     e.preventDefault();
     if (!facName.trim()) return;
     setSaving(true);
     try {
-      const body = { name: facName.trim(), color: facColor, description: facDesc };
+      const body = { name_en: facName.trim(), color: facColor, description: facDesc };
       if (editingFac) {
         await request('PUT', `/api/admin/faculties/${editingFac.id}`, body, token);
         pushToast('Faculty updated.', 'success');
@@ -344,7 +383,7 @@ function DepartmentsView({ token, pushToast }) {
     if (!deptName.trim() || !parentFacId) return;
     setSaving(true);
     try {
-      const body = { name: deptName.trim(), description: deptDesc };
+      const body = { name_en: deptName.trim(), description: deptDesc };
       if (editingDept) {
         await request('PUT', `/api/admin/departments/${editingDept.id}`, body, token);
         pushToast('Department updated.', 'success');
@@ -382,8 +421,6 @@ function DepartmentsView({ token, pushToast }) {
         <h1 className="adm-title">Departments &amp; Faculties</h1>
         <p className="adm-subtitle">Manage the university's faculties and their academic departments.</p>
       </div>
-
-      {/* top actions */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
         <button className="adm-btn adm-btn--primary" onClick={openAddFaculty}>
           <Icon name="plus" size={15} /> Add Faculty
@@ -392,7 +429,7 @@ function DepartmentsView({ token, pushToast }) {
 
       {loading && (
         <div className="adm-empty">
-          <span className="adm-spinner" style={{ width: 24, height: 24, border: '3px solid #e2e8f0', borderTopColor: 'var(--adm-green)' }} />
+          <span className="adm-spinner" style={{ width: 24, height: 24 }} />
           <p className="adm-state-title" style={{ marginTop: 12 }}>Loading…</p>
         </div>
       )}
@@ -407,48 +444,44 @@ function DepartmentsView({ token, pushToast }) {
         <div className="adm-empty">
           <Icon name="building" size={28} />
           <p className="adm-state-title">No faculties yet.</p>
-          <button className="adm-btn adm-btn--primary" style={{ marginTop: 12 }} onClick={openAddFaculty}>Add your first faculty</button>
+          <button className="adm-btn adm-btn--primary" style={{ marginTop: 12 }} onClick={openAddFaculty}>
+            Add your first faculty
+          </button>
         </div>
       )}
 
-      {/* Faculty list */}
       {!loading && faculties.map(fac => (
         <section key={fac.id} className="adm-dept-faculty">
           <div className="adm-dept-faculty-head">
             <span className="adm-dept-fac-dot" style={{ background: fac.color || '#2563eb' }} />
-            <h2 className="adm-dept-fac-name">{fac.name}</h2>
-            <span className="adm-dept-fac-count">{(fac.departments || []).length} dept{(fac.departments || []).length !== 1 ? 's' : ''}</span>
+            <h2 className="adm-dept-fac-name">{fac.name_en || fac.name}</h2>
+            <span className="adm-dept-fac-count">
+              {(fac.departments || []).length} dept{(fac.departments || []).length !== 1 ? 's' : ''}
+            </span>
             <div className="adm-dept-fac-actions">
-              <button className="adm-icon-btn adm-icon-btn--bordered" title="Add department"
-                onClick={() => openAddDept(fac.id)}>
-                <Icon name="plus" size={15} />
-              </button>
-              <button className="adm-icon-btn adm-icon-btn--bordered" title="Edit faculty"
-                onClick={() => openEditFaculty(fac)}>
-                <Icon name="edit" size={15} />
-              </button>
+              <button className="adm-icon-btn adm-icon-btn--bordered" title="Add department" onClick={() => openAddDept(fac.id)}><Icon name="plus" size={15} /></button>
+              <button className="adm-icon-btn adm-icon-btn--bordered" title="Edit faculty"   onClick={() => openEditFaculty(fac)}><Icon name="edit" size={15} /></button>
               <button className="adm-icon-btn adm-icon-btn--bordered adm-icon-btn--danger" title="Delete faculty"
-                onClick={() => setConfirmDel({ type: 'faculty', id: fac.id, name: fac.name })}>
+                onClick={() => setConfirmDel({ type: 'faculty', id: fac.id, name: fac.name_en || fac.name })}>
                 <Icon name="trash" size={15} />
               </button>
             </div>
           </div>
 
           {(fac.departments || []).length === 0 ? (
-            <p className="adm-dept-empty">No departments yet. <button className="adm-link-btn" onClick={() => openAddDept(fac.id)}>Add one</button></p>
+            <p className="adm-dept-empty">
+              No departments yet. <button className="adm-link-btn" onClick={() => openAddDept(fac.id)}>Add one</button>
+            </p>
           ) : (
             <ul className="adm-dept-list">
               {(fac.departments || []).map(d => (
                 <li key={d.id} className="adm-dept-item">
-                  <span className="adm-dept-item-name">{d.name}</span>
+                  <span className="adm-dept-item-name">{d.name_en || d.name}</span>
                   <span className="adm-dept-item-slug">{d.slug}</span>
                   <div className="adm-dept-item-actions">
-                    <button className="adm-icon-btn adm-icon-btn--bordered" title="Edit"
-                      onClick={() => openEditDept(d, fac.id)}>
-                      <Icon name="edit" size={14} />
-                    </button>
+                    <button className="adm-icon-btn adm-icon-btn--bordered" title="Edit"   onClick={() => openEditDept(d, fac.id)}><Icon name="edit" size={14} /></button>
                     <button className="adm-icon-btn adm-icon-btn--bordered adm-icon-btn--danger" title="Delete"
-                      onClick={() => setConfirmDel({ type: 'department', id: d.id, name: d.name })}>
+                      onClick={() => setConfirmDel({ type: 'department', id: d.id, name: d.name_en || d.name })}>
                       <Icon name="trash" size={14} />
                     </button>
                   </div>
@@ -461,37 +494,31 @@ function DepartmentsView({ token, pushToast }) {
 
       {/* Faculty form modal */}
       {showFacForm && (
-        <div className="adm-backdrop" onClick={(e) => { if (e.target === e.currentTarget) setShowFacForm(false); }}
-          role="dialog" aria-modal="true">
+        <div className="adm-backdrop" onClick={(e) => { if (e.target === e.currentTarget) setShowFacForm(false); }} role="dialog" aria-modal="true">
           <aside className="adm-drawer">
             <header className="adm-drawer-head">
-              <div><p className="adm-eyebrow">Faculties</p>
-                <h2 className="adm-drawer-title">{editingFac ? 'Edit Faculty' : 'Add Faculty'}</h2></div>
+              <div><p className="adm-eyebrow">Faculties</p><h2 className="adm-drawer-title">{editingFac ? 'Edit Faculty' : 'Add Faculty'}</h2></div>
               <button className="adm-icon-btn" onClick={() => setShowFacForm(false)} aria-label="Close"><Icon name="close" /></button>
             </header>
             <form className="adm-form" onSubmit={saveFaculty} noValidate>
               <div className="adm-field">
-                <label className="adm-label">Name *</label>
+                <label className="adm-label">Name (English) *</label>
                 <div className="adm-input-wrap">
                   <Icon name="building" size={16} />
-                  <input className="adm-input" required value={facName}
-                    onChange={e => setFacName(e.target.value)} placeholder="e.g. College of Health Sciences" />
+                  <input className="adm-input" required value={facName} onChange={e => setFacName(e.target.value)} placeholder="e.g. College of Health Sciences" />
                 </div>
               </div>
               <div className="adm-field">
                 <label className="adm-label">Accent colour</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <input type="color" value={facColor} onChange={e => setFacColor(e.target.value)}
-                    style={{ width: 40, height: 36, border: 'none', cursor: 'pointer', borderRadius: 6 }} />
+                  <input type="color" value={facColor} onChange={e => setFacColor(e.target.value)} style={{ width: 40, height: 36, border: 'none', cursor: 'pointer', borderRadius: 6 }} />
                   <span style={{ fontSize: 13, color: '#64748b' }}>{facColor}</span>
                 </div>
               </div>
               <div className="adm-field">
                 <label className="adm-label">Description</label>
                 <div className="adm-input-wrap" style={{ alignItems: 'flex-start' }}>
-                  <textarea className="adm-input" rows={3} value={facDesc}
-                    onChange={e => setFacDesc(e.target.value)} placeholder="Short description…"
-                    style={{ resize: 'vertical', paddingTop: 10 }} />
+                  <textarea className="adm-input" rows={3} value={facDesc} onChange={e => setFacDesc(e.target.value)} placeholder="Short description…" style={{ resize: 'vertical', paddingTop: 10 }} />
                 </div>
               </div>
               <div className="adm-drawer-actions">
@@ -507,12 +534,10 @@ function DepartmentsView({ token, pushToast }) {
 
       {/* Department form modal */}
       {showDeptForm && (
-        <div className="adm-backdrop" onClick={(e) => { if (e.target === e.currentTarget) setShowDeptForm(false); }}
-          role="dialog" aria-modal="true">
+        <div className="adm-backdrop" onClick={(e) => { if (e.target === e.currentTarget) setShowDeptForm(false); }} role="dialog" aria-modal="true">
           <aside className="adm-drawer">
             <header className="adm-drawer-head">
-              <div><p className="adm-eyebrow">Departments</p>
-                <h2 className="adm-drawer-title">{editingDept ? 'Edit Department' : 'Add Department'}</h2></div>
+              <div><p className="adm-eyebrow">Departments</p><h2 className="adm-drawer-title">{editingDept ? 'Edit Department' : 'Add Department'}</h2></div>
               <button className="adm-icon-btn" onClick={() => setShowDeptForm(false)} aria-label="Close"><Icon name="close" /></button>
             </header>
             <form className="adm-form" onSubmit={saveDept} noValidate>
@@ -521,34 +546,29 @@ function DepartmentsView({ token, pushToast }) {
                   <label className="adm-label">Faculty *</label>
                   <div className="adm-input-wrap">
                     <Icon name="building" size={16} />
-                    <select className="adm-input adm-select" value={parentFacId}
-                      onChange={e => setParentFacId(e.target.value)}>
+                    <select className="adm-input adm-select" value={parentFacId} onChange={e => setParentFacId(e.target.value)}>
                       <option value="">Select a faculty…</option>
-                      {faculties.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                      {faculties.map(f => <option key={f.id} value={f.id}>{f.name_en || f.name}</option>)}
                     </select>
                   </div>
                 </div>
               )}
               <div className="adm-field">
-                <label className="adm-label">Department name *</label>
+                <label className="adm-label">Department name (English) *</label>
                 <div className="adm-input-wrap">
                   <Icon name="cap" size={16} />
-                  <input className="adm-input" required value={deptName}
-                    onChange={e => setDeptName(e.target.value)} placeholder="e.g. Computer Science" />
+                  <input className="adm-input" required value={deptName} onChange={e => setDeptName(e.target.value)} placeholder="e.g. Computer Science" />
                 </div>
               </div>
               <div className="adm-field">
                 <label className="adm-label">Description</label>
                 <div className="adm-input-wrap" style={{ alignItems: 'flex-start' }}>
-                  <textarea className="adm-input" rows={3} value={deptDesc}
-                    onChange={e => setDeptDesc(e.target.value)} placeholder="Short description…"
-                    style={{ resize: 'vertical', paddingTop: 10 }} />
+                  <textarea className="adm-input" rows={3} value={deptDesc} onChange={e => setDeptDesc(e.target.value)} placeholder="Short description…" style={{ resize: 'vertical', paddingTop: 10 }} />
                 </div>
               </div>
               <div className="adm-drawer-actions">
                 <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setShowDeptForm(false)}>Cancel</button>
-                <button type="submit" className="adm-btn adm-btn--primary"
-                  disabled={saving || !deptName.trim() || (!editingDept && !parentFacId)}>
+                <button type="submit" className="adm-btn adm-btn--primary" disabled={saving || !deptName.trim() || (!editingDept && !parentFacId)}>
                   {saving ? <span className="adm-spinner" /> : editingDept ? 'Save changes' : 'Add department'}
                 </button>
               </div>
@@ -557,20 +577,20 @@ function DepartmentsView({ token, pushToast }) {
         </div>
       )}
 
-      {/* Delete confirm */}
       {confirmDel && (
         <ConfirmModal
           title={`Delete ${confirmDel.type === 'faculty' ? 'faculty' : 'department'}?`}
           text={confirmDel.type === 'faculty'
             ? `Deleting "${confirmDel.name}" will also delete all its departments. This cannot be undone.`
             : `"${confirmDel.name}" will be permanently deleted.`}
-          onConfirm={doDelete} onCancel={() => setConfirmDel(null)} busy={delBusy} />
+          onConfirm={doDelete} onCancel={() => setConfirmDel(null)} busy={delBusy}
+        />
       )}
     </div>
   );
 }
 
-/* ─── Dept Heads view (Task 2 — no duplicate) ─── */
+/* ─── Department Heads view — reads from v_admin_users (no duplicates) ─── */
 function DeptHeadsView({ token, pushToast }) {
   const [list,    setList]    = useState([]);
   const [loading, setLoading] = useState(true);
@@ -580,19 +600,22 @@ function DeptHeadsView({ token, pushToast }) {
   const load = useCallback(async () => {
     setLoading(true); setError('');
     try {
+      // v_admin_users returns role = 'head' for department heads — no duplicates
       const payload = await request('GET', '/api/admin/staff', null, token);
-      const heads = (Array.isArray(payload) ? payload : [])
-        .filter(s => s.source === 'department_heads');
+      const heads = (Array.isArray(payload) ? payload : []).filter(s => s.role === 'head');
       setList(heads);
-    } catch (e) { setError(e.message || 'Failed to load.'); }
-    finally { setLoading(false); }
+    } catch (e) {
+      setError(e.message || 'Failed to load.');
+    } finally { setLoading(false); }
   }, [token]);
 
   useEffect(() => { load(); }, [load]);
 
   const shown = list.filter(s => {
     const q = search.trim().toLowerCase();
-    return !q || s.name?.toLowerCase().includes(q) || s.email?.toLowerCase().includes(q)
+    return !q
+      || s.full_name?.toLowerCase().includes(q)
+      || s.email?.toLowerCase().includes(q)
       || s.department_name?.toLowerCase().includes(q);
   });
 
@@ -621,12 +644,15 @@ function DeptHeadsView({ token, pushToast }) {
         {error && <p style={{ color: '#dc2626', padding: '8px 0' }}>{error}</p>}
         <div className="adm-table-wrap">
           <table className="adm-table">
-            <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Joined</th></tr></thead>
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Department</th><th>Joined</th></tr>
+            </thead>
             <tbody>
               {loading ? Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={i} />) :
                 shown.length === 0 ? (
                   <tr><td colSpan={4}>
-                    <div className="adm-empty"><Icon name="cap" size={22} />
+                    <div className="adm-empty">
+                      <Icon name="cap" size={22} />
                       <p className="adm-state-title">{search ? `No results for "${search}"` : 'No department heads yet.'}</p>
                     </div>
                   </td></tr>
@@ -635,16 +661,17 @@ function DeptHeadsView({ token, pushToast }) {
                     <td>
                       <div className="adm-user-cell">
                         <span className="adm-avatar adm-avatar--initials" style={{ background: '#1d6b66' }} aria-hidden="true">
-                          {(s.name || '?').split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('')}
+                          {(s.full_name || '?').split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('')}
                         </span>
-                        <div className="adm-user-info"><span className="adm-user-name">{s.name}</span></div>
+                        <div className="adm-user-info"><span className="adm-user-name">{s.full_name}</span></div>
                       </div>
                     </td>
                     <td className="adm-user-email">{s.email}</td>
                     <td className="adm-muted-cell">{s.department_name || <span className="adm-muted">—</span>}</td>
                     <td className="adm-date">{formatDate(s.created_at)}</td>
                   </tr>
-                ))}
+                ))
+              }
             </tbody>
           </table>
         </div>
@@ -653,9 +680,16 @@ function DeptHeadsView({ token, pushToast }) {
   );
 }
 
-/* ─── main Admin page ─── */
+/* ═══════════════════════════════════════════════════════════════
+   Main Admin page
+   Fix for "Admin access required":
+   - auth check reads role from useAuth() which gets it from
+     /api/auth/me → staff_profiles.role (Supabase JWT, not stale MySQL flag)
+   - 401 → session expired → redirect to /auth
+   - role !== 'admin' → redirect to home
+═══════════════════════════════════════════════════════════════ */
 export default function Admin() {
-  const { user: me, token: ctxToken, loading: authLoading, logout } = useAuth();
+  const { user: me, token: ctxToken, role: ctxRole, loading: authLoading, logout } = useAuth();
   const navigate = useNavigate();
 
   const [users,    setUsers]    = useState([]);
@@ -670,51 +704,70 @@ export default function Admin() {
   const [view,     setView]     = useState('dashboard');
   const [contentSlug, setContentSlug] = useState(null);
   const { toasts, push: pushToast } = useToast();
-
-  /* dept head count for sidebar badge */
   const [deptHeadCount, setDeptHeadCount] = useState(0);
 
-  const myRole = me?.role ? String(me.role).toLowerCase() : '';
-  const canTry = !!me && (!myRole || myRole === 'admin');
+  // Derive role: use ctxRole from Supabase JWT (fixes "Admin access required" bug)
+  const myRole = ctxRole ? String(ctxRole).toLowerCase() : (me?.role ? String(me.role).toLowerCase() : '');
 
+  // Guard: wait for auth, then check role
   useEffect(() => {
     if (authLoading) return;
     if (!me) { navigate('/auth', { replace: true }); return; }
-    if (myRole && myRole !== 'admin') navigate('/', { replace: true });
+    if (myRole && myRole !== 'admin') {
+      navigate('/', { replace: true });
+    }
   }, [me, myRole, authLoading, navigate]);
 
+  // ── Fetch users from v_admin_users (no duplicates) ────────────
   const fetchUsers = useCallback(async () => {
+    if (!ctxToken) return;
     setFetching(true); setFetchErr(null);
     try {
       const payload = await request('GET', '/api/admin/users', null, ctxToken);
-      setUsers(normalizeList(payload));
+      // v_admin_users already de-duplicates; just normalise for the table
+      const list = (Array.isArray(payload) ? payload : []).map(u => normalizeUser(u));
+      setUsers(list);
     } catch (err) {
       setFetchErr({ message: err.message || 'Failed to load users.', status: err.status || 0 });
     } finally { setFetching(false); }
   }, [ctxToken]);
 
-  /* fetch dept-head count for sidebar */
+  // ── Fetch dept head count for sidebar badge ───────────────────
   const fetchDeptHeadCount = useCallback(async () => {
+    if (!ctxToken) return;
     try {
       const payload = await request('GET', '/api/admin/staff', null, ctxToken);
-      const heads = (Array.isArray(payload) ? payload : []).filter(s => s.source === 'department_heads');
+      const heads = (Array.isArray(payload) ? payload : []).filter(s => s.role === 'head');
       setDeptHeadCount(heads.length);
     } catch { /* non-critical */ }
   }, [ctxToken]);
 
   useEffect(() => {
-    if (!authLoading && canTry) { fetchUsers(); fetchDeptHeadCount(); }
-  }, [authLoading, canTry, fetchUsers, fetchDeptHeadCount]);
+    if (!authLoading && me && myRole === 'admin') {
+      fetchUsers();
+      fetchDeptHeadCount();
+    }
+  }, [authLoading, me, myRole, fetchUsers, fetchDeptHeadCount]);
 
-  const countOf = (role) => users.filter((u) => u.role === role).length;
-  const counts  = { all: users.length, user: countOf('user'), staff: countOf('staff'), admin: countOf('admin') };
+  // ── Counts for tabs (role names match v_admin_users view) ─────
+  const countOf = (r) => users.filter((u) => u.role === r).length;
+  const counts = {
+    all:     users.length,
+    student: countOf('student'),
+    staff:   countOf('staff'),
+    head:    countOf('head'),
+    admin:   countOf('admin'),
+  };
 
+  // ── Filter + sort + paginate ──────────────────────────────────
   const filtered = users
     .filter((u) => roleTab === 'all' || u.role === roleTab)
     .filter((u) => {
       const q = search.trim().toLowerCase();
       if (!q) return true;
-      return u.full_name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q) || String(u.id).includes(q);
+      return u.full_name?.toLowerCase().includes(q)
+          || u.email?.toLowerCase().includes(q)
+          || String(u.id).includes(q);
     })
     .sort((a, b) => {
       if (sort === 'newest') return new Date(b.created_at || 0) - new Date(a.created_at || 0);
@@ -727,7 +780,7 @@ export default function Admin() {
   const pageUsers  = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
   const rangeStart = filtered.length ? (safePage - 1) * PAGE_SIZE + 1 : 0;
   const rangeEnd   = Math.min(safePage * PAGE_SIZE, filtered.length);
-  const recent     = [...users].sort((a,b) => new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,4);
+  const recent     = [...users].sort((a,b) => new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0, 4);
 
   function handleSaved(updated) {
     setUsers((prev) => prev.map((u) => (rowKey(u) === rowKey(updated) ? { ...u, ...updated } : u)));
@@ -740,13 +793,15 @@ export default function Admin() {
   const isMe = (u) => me && String(me.id) === String(u.id);
 
   if (authLoading) return null;
-  const myName = me?.full_name || me?.name || me?.fullName || 'Admin';
+  const myName = me?.full_name || me?.name || 'Admin';
 
+  // Tabs — one clean set (no duplicates)
   const tabs = [
-    { key: 'all',   label: 'All',    count: counts.all   },
-    { key: 'user',  label: 'Users',  count: counts.user  },
-    { key: 'staff', label: 'Staff',  count: counts.staff },
-    { key: 'admin', label: 'Admins', count: counts.admin },
+    { key: 'all',     label: 'All',     count: counts.all     },
+    { key: 'student', label: 'Students',count: counts.student  },
+    { key: 'staff',   label: 'Staff',   count: counts.staff   },
+    { key: 'head',    label: 'Heads',   count: counts.head    },
+    { key: 'admin',   label: 'Admins',  count: counts.admin   },
   ];
   const emptyText = `No accounts found${search ? ` for "${search}"` : ''}.`;
 
@@ -755,8 +810,18 @@ export default function Admin() {
     return (
       <div className="adm-error-state">
         <span className="adm-state-icon adm-state-icon--danger"><Icon name="alert" size={22} /></span>
-        <p className="adm-state-title">{status === 403 ? "No admin access" : "Couldn't load users"}</p>
-        <p className="adm-state-text">{status === 401 ? 'Session expired.' : fetchErr.message}</p>
+        <p className="adm-state-title">
+          {status === 401 ? 'Session expired'
+           : status === 403 ? 'Admin access required'
+           : "Couldn't load users"}
+        </p>
+        <p className="adm-state-text">
+          {status === 401
+            ? 'Your session has expired. Please log in again.'
+            : status === 403
+              ? 'Your account does not have admin privileges. Ask an existing admin to promote you.'
+              : fetchErr.message}
+        </p>
         <button className="adm-btn adm-btn--primary"
           onClick={status === 401 ? () => navigate('/auth') : fetchUsers}>
           {status === 401 ? 'Log in again' : 'Try again'}
@@ -809,18 +874,27 @@ export default function Admin() {
         </header>
 
         <main className="adm-content">
+          {/* ── Content Manager ── */}
+          {view === 'content' && (
+            <ContentManager token={ctxToken} section={contentSlug} onView={(v) => setView(v)} />
+          )}
+          {view === 'media' && (
+            <MediaLibrary token={ctxToken} onClose={() => setView('dashboard')} />
+          )}
 
-          {view === 'content' && <ContentManager token={ctxToken} section={contentSlug} onView={(v) => setView(v)} />}
-          {view === 'media'   && <MediaLibrary   token={ctxToken} onClose={() => setView('dashboard')} />}
-
-          {/* ── Departments management (Task 5) ── */}
+          {/* ── Departments ── */}
           {view === 'departments' && (
             <DepartmentsView token={ctxToken} pushToast={pushToast} />
           )}
 
-          {/* ── Dept Heads (Task 2 — no duplicate) ── */}
+          {/* ── Dept Heads (reads from v_admin_users, no duplicate rows) ── */}
           {view === 'depthead' && (
             <DeptHeadsView token={ctxToken} pushToast={pushToast} />
+          )}
+
+          {/* ── Staff & Department Heads Manager ── */}
+          {view === 'staffmanager' && (
+            <StaffManager token={ctxToken} pushToast={pushToast} />
           )}
 
           {/* ── Dashboard ── */}
@@ -866,18 +940,19 @@ export default function Admin() {
                     }
                   </ul>
                 </section>
+                {/* ── Quick access — ONE clean list, no duplicates ── */}
                 <div className="adm-side">
                   <section className="adm-card adm-card--pad">
                     <h2 className="adm-card-title">Quick access</h2>
                     <p className="adm-card-sub">Jump to account sections</p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
                       {[
-                        { key: 'all',   label: 'All accounts',    count: counts.all,    icon: 'users',    vw: 'users',    rk: 'all'   },
-                        { key: 'user',  label: 'Users',           count: counts.user,   icon: 'user',     vw: 'users',    rk: 'user'  },
-                        { key: 'staff', label: 'Staff',           count: counts.staff,  icon: 'staff',    vw: 'users',    rk: 'staff' },
-                        { key: 'admin', label: 'Admins',          count: counts.admin,  icon: 'shield',   vw: 'users',    rk: 'admin' },
-                        { key: 'dh',    label: 'Dept. Heads',     count: deptHeadCount, icon: 'cap',      vw: 'depthead', rk: null    },
-                        { key: 'dept',  label: 'Departments',     count: null,          icon: 'building', vw: 'departments', rk: null },
+                        { key: 'all',     label: 'All accounts',   count: counts.all,     icon: 'users',    vw: 'users',        rk: 'all'     },
+                        { key: 'student', label: 'Students',        count: counts.student, icon: 'user',     vw: 'users',        rk: 'student' },
+                        { key: 'staff',   label: 'Staff',           count: counts.staff,   icon: 'staff',    vw: 'users',        rk: 'staff'   },
+                        { key: 'admin',   label: 'Admins',          count: counts.admin,   icon: 'shield',   vw: 'users',        rk: 'admin'   },
+                        { key: 'sm',      label: 'Manage Staff',    count: deptHeadCount + counts.staff, icon: 'cap', vw: 'staffmanager', rk: null },
+                        { key: 'dept',    label: 'Departments',     count: null,           icon: 'building', vw: 'departments',  rk: null      },
                       ].map((item) => (
                         <button key={item.key} className="adm-btn adm-btn--ghost"
                           style={{ justifyContent: 'space-between', width: '100%' }}
@@ -910,7 +985,7 @@ export default function Admin() {
                   <div className="adm-card-head">
                     <div>
                       <h2 className="adm-card-title">All accounts</h2>
-                      <p className="adm-card-sub">Edit name, password and role for any account</p>
+                      <p className="adm-card-sub">No duplicates — sourced from v_admin_users view</p>
                     </div>
                     <select className="adm-sort" value={sort}
                       onChange={(e) => { setSort(e.target.value); setPage(1); }} aria-label="Sort users">
@@ -919,6 +994,8 @@ export default function Admin() {
                       <option value="name">Name A to Z</option>
                     </select>
                   </div>
+
+                  {/* Role tabs — one clean set */}
                   <div className="adm-tabs" role="tablist" aria-label="Filter by role">
                     {tabs.map((t) => (
                       <button key={t.key} role="tab" aria-selected={roleTab === t.key}
@@ -929,84 +1006,69 @@ export default function Admin() {
                       </button>
                     ))}
                   </div>
+
                   {fetchErr ? renderError() : (
                     <>
                       <div className="adm-table-wrap">
                         <table className="adm-table" aria-label="Users">
-                          <thead><tr><th>User</th><th>ID</th><th>Role</th><th>Joined</th><th aria-label="Actions" /></tr></thead>
+                          <thead>
+                            <tr>
+                              <th>User</th>
+                              <th>ID</th>
+                              <th>Role</th>
+                              <th>Department</th>
+                              <th>Joined</th>
+                              <th aria-label="Actions" />
+                            </tr>
+                          </thead>
                           <tbody>
-                            {fetching ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />) :
-                              pageUsers.length === 0 ? (
-                                <tr><td colSpan={5}>
-                                  <div className="adm-empty">
-                                    <span className="adm-state-icon"><Icon name="users" size={22} /></span>
-                                    <p className="adm-state-title">{emptyText}</p>
-                                  </div>
-                                </td></tr>
-                              ) : pageUsers.map((u) => (
-                                <tr key={rowKey(u)} className="adm-row">
-                                  <td>
-                                    <div className="adm-user-cell">
-                                      <Avatar user={u} />
-                                      <div className="adm-user-info">
-                                        <span className="adm-user-name">{u.full_name}{isMe(u) && <span className="adm-you">You</span>}</span>
-                                        <span className="adm-user-email">{u.email}</span>
-                                      </div>
+                            {fetching
+                              ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)
+                              : pageUsers.length === 0
+                                ? (
+                                  <tr><td colSpan={6}>
+                                    <div className="adm-empty">
+                                      <span className="adm-state-icon"><Icon name="users" size={22} /></span>
+                                      <p className="adm-state-title">{emptyText}</p>
                                     </div>
-                                  </td>
-                                  <td className="adm-id">#{u.id}</td>
-                                  <td><RoleBadge role={u.role} /></td>
-                                  <td className="adm-date">{formatDate(u.created_at)}</td>
-                                  <td className="adm-actions-cell">
-                                    <button className="adm-icon-btn adm-icon-btn--bordered"
-                                      onClick={() => setEditing(u)} aria-label={`Edit ${u.full_name}`} title="Edit">
-                                      <Icon name="edit" size={16} />
-                                    </button>
-                                  </td>
-                                </tr>
-                              ))
+                                  </td></tr>
+                                )
+                                : pageUsers.map((u) => (
+                                  <tr key={rowKey(u)} className="adm-row">
+                                    <td>
+                                      <div className="adm-user-cell">
+                                        <Avatar user={u} />
+                                        <div className="adm-user-info">
+                                          <span className="adm-user-name">
+                                            {u.full_name}
+                                            {isMe(u) && <span className="adm-you">You</span>}
+                                          </span>
+                                          <span className="adm-user-email">{u.email}</span>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td className="adm-id">{String(u.id).slice(0, 8)}…</td>
+                                    <td><RoleBadge role={u.role} /></td>
+                                    <td className="adm-muted-cell">{u.department_name || <span className="adm-muted">—</span>}</td>
+                                    <td className="adm-date">{formatDate(u.created_at)}</td>
+                                    <td className="adm-actions-cell">
+                                      <button className="adm-icon-btn adm-icon-btn--bordered"
+                                        onClick={() => setEditing(u)} aria-label={`Edit ${u.full_name}`} title="Edit">
+                                        <Icon name="edit" size={16} />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))
                             }
                           </tbody>
                         </table>
                       </div>
-                      <div className="adm-mobile-list">
-                        {fetching ? Array.from({ length: 4 }).map((_, i) => (
-                          <div key={i} className="adm-mobile-card">
-                            <span className="adm-skeleton adm-skeleton--avatar" />
-                            <div style={{ flex: 1 }}>
-                              <span className="adm-skeleton" style={{ width: '55%' }} />
-                              <span className="adm-skeleton" style={{ width: '80%', marginTop: 8 }} />
-                            </div>
-                          </div>
-                        )) : pageUsers.length === 0 ? (
-                          <div className="adm-empty">
-                            <span className="adm-state-icon"><Icon name="users" size={22} /></span>
-                            <p className="adm-state-title">{emptyText}</p>
-                          </div>
-                        ) : pageUsers.map((u) => (
-                          <div key={rowKey(u)} className="adm-mobile-card">
-                            <Avatar user={u} />
-                            <div className="adm-mobile-body">
-                              <div className="adm-mobile-top">
-                                <span className="adm-user-name">{u.full_name}{isMe(u) && <span className="adm-you">You</span>}</span>
-                                <RoleBadge role={u.role} />
-                              </div>
-                              <span className="adm-user-email">{u.email}</span>
-                              <div className="adm-mobile-meta">
-                                <span className="adm-id">#{u.id}</span>
-                                <span className="adm-date">{formatDate(u.created_at)}</span>
-                              </div>
-                            </div>
-                            <button className="adm-icon-btn adm-icon-btn--bordered"
-                              onClick={() => setEditing(u)} aria-label={`Edit ${u.full_name}`}>
-                              <Icon name="edit" size={16} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
+
                       {!fetching && filtered.length > 0 && (
                         <footer className="adm-pagination">
-                          <span className="adm-page-info">Showing {rangeStart}–{rangeEnd} of {filtered.length}</span>
+                          <span className="adm-page-info">
+                            Showing {rangeStart}–{rangeEnd} of {filtered.length}
+                          </span>
                           {totalPages > 1 && (
                             <nav className="adm-page-nav" aria-label="Pagination">
                               <button className="adm-page-btn" disabled={safePage === 1}
@@ -1014,10 +1076,16 @@ export default function Admin() {
                                 <Icon name="left" size={16} />
                               </button>
                               {pageList(totalPages, safePage).map((p, i) =>
-                                p === '…' ? <span key={`g${i}`} className="adm-page-gap">…</span> : (
-                                  <button key={p} className={`adm-page-btn ${p === safePage ? 'is-active' : ''}`}
-                                    onClick={() => setPage(p)} aria-current={p === safePage ? 'page' : undefined}>{p}</button>
-                                )
+                                p === '…'
+                                  ? <span key={`g${i}`} className="adm-page-gap">…</span>
+                                  : (
+                                    <button key={p}
+                                      className={`adm-page-btn ${p === safePage ? 'is-active' : ''}`}
+                                      onClick={() => setPage(p)}
+                                      aria-current={p === safePage ? 'page' : undefined}>
+                                      {p}
+                                    </button>
+                                  )
                               )}
                               <button className="adm-page-btn" disabled={safePage === totalPages}
                                 onClick={() => setPage(safePage + 1)} aria-label="Next page">
@@ -1030,46 +1098,22 @@ export default function Admin() {
                     </>
                   )}
                 </section>
-                <div className="adm-side">
-                  <section className="adm-card adm-card--pad">
-                    <h2 className="adm-card-title">Recently joined</h2>
-                    <p className="adm-card-sub">Latest accounts created</p>
-                    <ul className="adm-recent">
-                      {fetching ? Array.from({ length: 3 }).map((_, i) => (
-                        <li key={i}>
-                          <span className="adm-skeleton adm-skeleton--avatar" />
-                          <div style={{ flex: 1 }}>
-                            <span className="adm-skeleton" style={{ width: '60%' }} />
-                            <span className="adm-skeleton" style={{ width: '40%', marginTop: 6 }} />
-                          </div>
-                        </li>
-                      )) : recent.length === 0 ? (
-                        <li className="adm-recent-empty">No accounts yet.</li>
-                      ) : recent.map((u) => (
-                        <li key={rowKey(u)}>
-                          <Avatar user={u} />
-                          <div className="adm-recent-info">
-                            <span className="adm-user-name">{u.full_name}</span>
-                            <span className="adm-user-email">{formatDate(u.created_at)}</span>
-                          </div>
-                          <RoleBadge role={u.role} />
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                </div>
               </div>
             </>
           )}
-
         </main>
       </div>
 
+      {/* Edit drawer */}
       {editing && (
         <EditDrawer
-          user={editing} token={ctxToken} meId={me?.id}
+          user={editing}
+          token={ctxToken}
           onClose={() => setEditing(null)}
-          onSaved={handleSaved} onDeleted={handleDeleted} pushToast={pushToast}
+          onSaved={handleSaved}
+          onDeleted={handleDeleted}
+          pushToast={pushToast}
+          meId={me?.id}
         />
       )}
     </div>
