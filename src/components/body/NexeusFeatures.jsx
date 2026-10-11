@@ -61,8 +61,8 @@ const STATS = [
 ];
 
 const QUICK_LINKS = [
-  { label: 'Library',       to: '/'              },
-  { label: 'E-Learning',    to: '/'              },
+  { label: 'Library',       to: '/library'              },
+  { label: 'E-Learning',    to: '/elibrary'       },
   { label: 'Campus Life',   to: '/opportunities' },
   { label: 'Alumni',        to: '/alumni'        },
   { label: 'Departments',   to: '/departments'   },

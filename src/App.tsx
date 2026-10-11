@@ -52,6 +52,7 @@ import PsychologyPage       from './pages/departments/social/PsychologyPage.jsx'
 import PoliticalSciencePage from './pages/departments/social/PoliticalSciencePage.jsx';
 import Apply from './components/Apply/Apply.jsx';
 import Elibrary from './components/E-library/Elibrary.jsx';
+import Library from './components/Libararys/Library.jsx';
 
 export default function App() {
   return (
@@ -106,6 +107,7 @@ export default function App() {
           <Route path="/department/social-science/psychology"        element={<PsychologyPage />} />
           <Route path="/department/social-science/political-science" element={<PoliticalSciencePage />} />
           <Route path="/elibrary"                                    element={<Elibrary/>}/>
+          <Route path='/library'                                     element={<Library/>}/>
         </Route>
 
         {/* ── Standalone pages — no shared Navbar/Footer ── */}
