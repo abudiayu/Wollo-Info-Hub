@@ -51,7 +51,7 @@ import SociologyPage        from './pages/departments/social/SociologyPage.jsx';
 import PsychologyPage       from './pages/departments/social/PsychologyPage.jsx';
 import PoliticalSciencePage from './pages/departments/social/PoliticalSciencePage.jsx';
 import Apply from './components/Apply/Apply.jsx';
-// import Elibrary from './components/E-library/elibrary.jsx';
+import Elibrary from './components/E-library/Elibrary.jsx';
 
 export default function App() {
   return (
@@ -105,7 +105,7 @@ export default function App() {
           <Route path="/department/social-science/sociology"         element={<SociologyPage />} />
           <Route path="/department/social-science/psychology"        element={<PsychologyPage />} />
           <Route path="/department/social-science/political-science" element={<PoliticalSciencePage />} />
-          {/* <Route path="/elibrary"                                    element={<Elibrary/>}/> */}
+          <Route path="/elibrary"                                    element={<Elibrary/>}/>
         </Route>
 
         {/* ── Standalone pages — no shared Navbar/Footer ── */}
