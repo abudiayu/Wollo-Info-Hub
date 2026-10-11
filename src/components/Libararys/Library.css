@@ -65,6 +65,14 @@
   );
 }
 
+.lib-hero-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @keyframes lib-fade {
   from { opacity: 0.35; }
   to { opacity: 1; }
@@ -297,7 +305,7 @@
   gap: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 72px 20px 80px;
+  padding: 48px 20px 80px;
 }
 
 .lib-intro-label {
@@ -455,4 +463,85 @@
   .lib-hero-photo,
   .lib-hero-title { animation: none; }
   .lib-tab { transition: none; }
+}
+
+/* ---------- Campus switcher (middle, between hero and intro) ---------- */
+.lib-switch-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 28px 8px 0;
+}
+
+.lib-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n, 3), 1fr);
+  width: min(560px, 100%);
+  padding: 6px;
+  background: var(--chip);
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+}
+
+/* sliding highlight that moves to the active campus */
+.lib-switch-thumb {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  width: calc((100% - 12px) / var(--n, 3));
+  background: var(--ink);
+  border-radius: 13px;
+  transform: translateX(calc(var(--i, 0) * 100%));
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lib-switch-btn {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 11px 10px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.25s;
+}
+
+.lib-switch-btn:hover { color: var(--ink); }
+
+.lib-switch-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.lib-switch-count {
+  font-size: 0.72rem;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.lib-switch-btn.is-active,
+.lib-switch-btn.is-active:hover { color: var(--white); }
+
+.library-page .lib-switch-btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .lib-switch-wrap { padding-top: 20px; }
+  .lib-switch-btn { padding: 10px 4px; }
+  .lib-switch-name { font-size: 0.82rem; }
+  .lib-switch-count { font-size: 0.66rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lib-switch-thumb,
+  .lib-switch-btn { transition: none; }
 }

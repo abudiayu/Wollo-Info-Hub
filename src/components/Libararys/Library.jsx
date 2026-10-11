@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import "./Library.css";
 
 /*
@@ -106,6 +106,7 @@ function LibraryImage({ src, name }) {
       src={src}
       alt={`${name} building`}
       loading="lazy"
+      referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
     />
   );
@@ -154,15 +155,43 @@ function Library() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const heroRef = useRef(null);
+  const activeIndex = CAMPUSES.findIndex((c) => c.id === activeId);
+
+  // Switch campus from the middle switcher: reset library + search, bring the hero back into view
+  const switchCampus = (id) => {
+    setActiveId(id);
+    setSelectedId(null);
+    setQuery('');
+    if (heroRef.current) heroRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // Arrow keys move between campuses (keyboard accessibility)
+  const onSwitchKeyDown = (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault();
+    const step = e.key === 'ArrowRight' ? 1 : -1;
+    const next = CAMPUSES[(activeIndex + step + CAMPUSES.length) % CAMPUSES.length];
+    switchCampus(next.id);
+    const buttons = e.currentTarget.querySelectorAll('[role="tab"]');
+    const target = buttons[CAMPUSES.findIndex((c) => c.id === next.id)];
+    if (target) target.focus({ preventScroll: true });
+  };
+
   return (
     <div className="library-page">
       {/* ---------- Hero ---------- */}
-      <section className="lib-hero">
-        <div
-          className="lib-hero-photo"
-          key={heroImage}
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
+      <section className="lib-hero" ref={heroRef}>
+        <div className="lib-hero-photo" key={heroImage}>
+          <img
+            src={heroImage}
+            alt=""
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'; // gradient background shows instead
+            }}
+          />
+        </div>
 
         <nav className="lib-tabs" aria-label="Choose a campus">
           {CAMPUSES.map((c) => (
@@ -248,6 +277,33 @@ function Library() {
         </aside>
       </section>
 
+      {/* ---------- Campus switcher (between hero and intro) ---------- */}
+      <div className="lib-switch-wrap">
+        <div
+          className="lib-switch"
+          role="tablist"
+          aria-label="Switch campus library section"
+          onKeyDown={onSwitchKeyDown}
+          style={{ '--i': activeIndex, '--n': CAMPUSES.length }}
+        >
+          <span className="lib-switch-thumb" aria-hidden="true" />
+          {CAMPUSES.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              role="tab"
+              aria-selected={c.id === activeId}
+              tabIndex={c.id === activeId ? 0 : -1}
+              className={`lib-switch-btn ${c.id === activeId ? 'is-active' : ''}`}
+              onClick={() => switchCampus(c.id)}
+            >
+              <span className="lib-switch-name">{c.short}</span>
+              <span className="lib-switch-count">{c.libraries.length} libraries</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* ---------- Intro (statement, feature card, info) ---------- */}
       <section className="lib-intro">
         <span className="lib-intro-label">{selected ? campus.short : 'Wollo University'}</span>
@@ -261,7 +317,7 @@ function Library() {
 
           <div className="lib-intro-row">
             <figure className="lib-feature">
-              <LibraryImage src={featureLib.image} name={featureLib.name} />
+              <LibraryImage key={featureLib.image} src={featureLib.image} name={featureLib.name} />
               <figcaption>
                 <strong>{featureLib.name}.</strong> {featureLib.description}
               </figcaption>
