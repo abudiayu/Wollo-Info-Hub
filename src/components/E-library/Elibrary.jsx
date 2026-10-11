@@ -6,7 +6,7 @@ import "./Elibrary.css";
 /* ------------------------------------------------------------------ */
 const FACULTIES = {
   Informatics: ["Computer Science", "Information Technology", "Information Systems", "Software Engineering"],
-  "Technology & Engineering": ["Civil Engineering", "Electrical Engineering", "Mechanical Engineering"],
+  "Engineering": ["Civil Engineering", "Electrical Engineering", "Mechanical Engineering"],
   "Medicine & Health Sciences": ["Medicine", "Anesthesia", "Nursing", "Pharmacy"],
   "Social Science": ["Law", "Economics"],
   Agriculture: ["Plant Science", "Animal Science"],
