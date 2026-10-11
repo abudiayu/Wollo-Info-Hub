@@ -12,7 +12,7 @@ import DepartmentsPage          from './pages/departmentsPage/DepartmentsPage.js
 import AlumniPage               from './pages/almuniPages/Almuni.jsx';
 import MotivationStandalonePage from './pages/motivationPage/MotivationStandalonePage.jsx';
 import OpportunitiesPage        from './pages/opportunitiesPage/OpportunitiesPage.jsx';
-import SearchPage               from './pages/SearchPage/SearchPage.jsx';
+import SearchPage               from './pages/SearchPage/SearchPage.jsx'; 
 
 /* ── Faculty overview pages ── */
 import Medicine        from './pages/departments/Medicine/Medicine.jsx';
@@ -51,6 +51,7 @@ import SociologyPage        from './pages/departments/social/SociologyPage.jsx';
 import PsychologyPage       from './pages/departments/social/PsychologyPage.jsx';
 import PoliticalSciencePage from './pages/departments/social/PoliticalSciencePage.jsx';
 import Apply from './components/Apply/Apply.jsx';
+import Elibrary from './components/E-library/elibrary.jsx';
 
 export default function App() {
   return (
@@ -104,6 +105,7 @@ export default function App() {
           <Route path="/department/social-science/sociology"         element={<SociologyPage />} />
           <Route path="/department/social-science/psychology"        element={<PsychologyPage />} />
           <Route path="/department/social-science/political-science" element={<PoliticalSciencePage />} />
+          <Route path="/elibrary"                                    element={<Elibrary/>}/>
         </Route>
 
         {/* ── Standalone pages — no shared Navbar/Footer ── */}

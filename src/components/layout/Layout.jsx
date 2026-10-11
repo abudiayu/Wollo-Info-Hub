@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Navebar from '../naveBar/Navebar';
 import NexeusFooter from '../footer/NexeusFooter';
 import UniversityAI from '../../pages/UniversityAi/UniversityAI';
+// import Elibrary from '../E-library/elibrary';
 
 /**
  * Global Layout — wraps every route that needs the shared
@@ -14,6 +15,7 @@ export default function Layout() {
       <Navebar />
       <Outlet />
       <UniversityAI/>
+      {/* <Elibrary/> */}
       <NexeusFooter />
     </>
   );

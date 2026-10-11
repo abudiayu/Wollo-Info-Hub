@@ -1,20 +1,3 @@
-/**
- * src/lib/api.js
- *
- * Thin fetch wrapper for all Express API calls.
- *
- * - Reads the Supabase access_token from localStorage (key: wou_session)
- *   OR the legacy wou_token key for backward compat.
- * - Attaches Authorization: Bearer <token> automatically.
- * - On 401 → clears session and redirects to /auth (unless on login/register route).
- * - On token expiry → attempts one silent refresh before redirecting.
- * - Returns parsed JSON on success; throws an Error with .status and .data on failure.
- *
- * Usage:
- *   import api from '../lib/api';
- *   const users = await api.get('/api/admin/users');
- *   const result = await api.post('/api/auth/login', { email, password });
- */
 
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 

@@ -194,7 +194,7 @@ export default function NexeusFooter() {
           <div className="nx-col">
             <h3>{t('footer.resources.heading')}</h3>
             <ul>
-              <li><a href="/">{t('footer.resources.elearning')}</a></li>
+              <li><Link to="/elibrary">{t('footer.resources.elearning')}</Link></li>
               <li><Link to="/alumni">{t('footer.resources.alumni')}</Link></li>
               <li><Link to="/opportunities">{t('footer.resources.opportunities')}</Link></li>
               <li><Link to="/statistics">{t('footer.resources.statistics')}</Link></li>

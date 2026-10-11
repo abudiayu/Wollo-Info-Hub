@@ -84,7 +84,7 @@ const MEGA_MENU_DATA = {
       {
         heading: 'Resources',
         links: [
-          { label: 'Faculty Directory',        to: '/departments' },
+          { label: 'Faculty Directory',        to: '/elibrary' },
           { label: 'Academic Calendar',        to: '/departments' },
           { label: 'Internship Opportunities', to: '/opportunities' },
           { label: 'Alumni Network',           to: '/alumni' },

@@ -1,13 +1,4 @@
-/**
- * src/lib/supabaseClient.js
- *
- * Browser-side Supabase client.
- * Uses ONLY the public anon key — NEVER the service_role key.
- *
- * Import this wherever you need direct Supabase calls from the frontend
- * (real-time subscriptions, storage downloads, etc.).
- * For calls that go through your Express server use src/lib/api.js instead.
- */
+
 
 import { createClient } from '@supabase/supabase-js';
 
