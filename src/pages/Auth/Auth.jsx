@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import "./Auth.css";
 import teamImg from "../../assets/team.jpg";
 import Logo    from "../../assets/wolloLogo.png";
 import { useAuth } from "../../context/AuthContext";
+import supabase from "../../lib/supabaseClient";
 
 import CloseIcon                 from "@mui/icons-material/Close";
 import AppleIcon                 from "@mui/icons-material/Apple";
@@ -22,10 +23,13 @@ const emptyForm = { name: "", email: "", password: "", remember: false };
 
 /* Department-head token key — must match DepartmentHead.jsx */
 const DEPT_HEAD_TOKEN_KEY = "dept_head_token";
+const DEPT_HEAD_ROUTE     = "/department-head";
+const GOOGLE_PENDING_KEY  = "google_oauth_pending";
+const GOOGLE_FROM_KEY     = "google_oauth_from";
 const BASE = (import.meta.env?.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 export default function Auth() {
-  const { login, register } = useAuth();
+  const { login, register, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,14 +37,49 @@ export default function Auth() {
   const from = location.state?.from?.pathname || "/";
 
   /* mode: "signin" | "signup" | "depthead" */
-  const [mode,         setMode]         = useState("signin");
-  const [form,         setForm]         = useState(emptyForm);
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading,      setLoading]      = useState(false);
-  const [error,        setError]        = useState("");
+  const [mode,          setMode]          = useState("signin");
+  const [form,          setForm]          = useState(emptyForm);
+  const [showPassword,  setShowPassword]  = useState(false);
+  const [loading,       setLoading]       = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(
+    () => !!sessionStorage.getItem(GOOGLE_PENDING_KEY)
+  );
+  const [error,         setError]         = useState("");
 
   const isSignup   = mode === "signup";
   const isDeptHead = mode === "depthead";
+
+  /* ── Finish Google login after Google redirects back to /auth ──
+     AuthContext restores the Supabase session and loads /api/auth/me,
+     so we only wait for it and then redirect. */
+  useEffect(() => {
+    if (!sessionStorage.getItem(GOOGLE_PENDING_KEY)) return;
+    if (authLoading) return;
+
+    const clearPending = () => {
+      sessionStorage.removeItem(GOOGLE_PENDING_KEY);
+    };
+
+    if (user) {
+      const target = sessionStorage.getItem(GOOGLE_FROM_KEY) || "/";
+      sessionStorage.removeItem(GOOGLE_FROM_KEY);
+      clearPending();
+      navigate(target, { replace: true });
+      return;
+    }
+
+    /* Came back without a usable session */
+    const params   = new URLSearchParams(window.location.search);
+    const urlError = params.get("error_description");
+    clearPending();
+    sessionStorage.removeItem(GOOGLE_FROM_KEY);
+    setGoogleLoading(false);
+    setError(
+      urlError ||
+      "Google sign-in could not be completed. Please try again."
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user]);
 
   const switchMode = (next) => (e) => {
     e.preventDefault();
@@ -56,31 +95,75 @@ export default function Auth() {
     if (error) setError("");
   };
 
-  /* ── Department head login ── */
+  /* ── Google sign-in: send the user to Google ── */
+  const handleGoogleSignIn = async () => {
+    if (googleLoading || loading) return;
+    setError("");
+    setGoogleLoading(true);
+
+    sessionStorage.setItem(GOOGLE_PENDING_KEY, "1");
+    sessionStorage.setItem(GOOGLE_FROM_KEY, from);
+
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth`,
+        queryParams: { prompt: "select_account" },
+      },
+    });
+
+    if (oauthError) {
+      sessionStorage.removeItem(GOOGLE_PENDING_KEY);
+      sessionStorage.removeItem(GOOGLE_FROM_KEY);
+      setError(oauthError.message || "Could not start Google sign-in.");
+      setGoogleLoading(false);
+    }
+    /* On success the browser leaves for Google, so nothing else runs here */
+  };
+
+  /* ── Department head login → redirects to /department-head ── */
   const handleDeptHeadSubmit = async (e) => {
     e.preventDefault();
-    if (!form.email.trim())  { setError("Please enter your email."); return; }
-    if (!form.password)      { setError("Please enter your password."); return; }
+    if (loading) return;
+    if (!form.email.trim()) { setError("Please enter your email."); return; }
+    if (!form.password)     { setError("Please enter your password."); return; }
 
     setLoading(true);
     setError("");
+
+    localStorage.removeItem(DEPT_HEAD_TOKEN_KEY);
 
     try {
       const res = await fetch(`${BASE}/api/department-head/login`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ email: form.email.trim(), password: form.password }),
+        body:    JSON.stringify({
+          email:    form.email.trim(),
+          password: form.password,
+        }),
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        throw new Error(data.message || data.error || `Sign-in failed (${res.status})`);
+        throw new Error(
+          data.message || data.error || `Sign-in failed (${res.status})`
+        );
       }
 
-      /* Store dept-head token and redirect to dashboard */
-      localStorage.setItem(DEPT_HEAD_TOKEN_KEY, data.token);
-      navigate("/department-head", { replace: true });
+      const token =
+        data.token ||
+        data.accessToken ||
+        data.access_token ||
+        data.data?.token ||
+        data.data?.accessToken;
+
+      if (!token) {
+        throw new Error("Login succeeded but no token was returned by the server.");
+      }
+
+      localStorage.setItem(DEPT_HEAD_TOKEN_KEY, token);
+      navigate(DEPT_HEAD_ROUTE, { replace: true });
     } catch (err) {
       setError(
         err.message === "Failed to fetch"
@@ -95,17 +178,23 @@ export default function Auth() {
   /* ── Student login / register ── */
   const handleStudentSubmit = async (e) => {
     e.preventDefault();
-    if (isSignup && !form.name.trim())       { setError("Please enter your full name."); return; }
-    if (!form.email.trim())                  { setError("Please enter your email."); return; }
-    if (!form.password)                      { setError("Please enter your password."); return; }
-    if (isSignup && form.password.length < 6){ setError("Password must be at least 6 characters."); return; }
+    if (loading) return;
+    if (isSignup && !form.name.trim())        { setError("Please enter your full name."); return; }
+    if (!form.email.trim())                   { setError("Please enter your email."); return; }
+    if (!form.password)                       { setError("Please enter your password."); return; }
+    if (isSignup && form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
 
     setLoading(true);
     setError("");
 
     try {
       if (isSignup) {
-        await register(form.name.trim(), form.email.trim(), form.password);
+        const result = await register(form.name.trim(), form.email.trim(), form.password);
+        if (result?.confirmEmail) {
+          setError(result.message || "Check your email to confirm your account, then sign in.");
+          setLoading(false);
+          return;
+        }
       } else {
         await login(form.email.trim(), form.password);
       }
@@ -117,10 +206,7 @@ export default function Auth() {
     }
   };
 
-  /* ── Form content varies by mode ── */
-  const formProps = isDeptHead
-    ? { onSubmit: handleDeptHeadSubmit }
-    : { onSubmit: handleStudentSubmit };
+  const handleSubmit = isDeptHead ? handleDeptHeadSubmit : handleStudentSubmit;
 
   return (
     <div className="lg-page">
@@ -158,7 +244,7 @@ export default function Auth() {
           </div>
 
           {/* ── Form ── */}
-          <form key={mode} className="lg-form" noValidate {...formProps}>
+          <form key={mode} className="lg-form" noValidate onSubmit={handleSubmit}>
 
             {isDeptHead ? (
               <>
@@ -234,7 +320,7 @@ export default function Auth() {
             <button
               type="submit"
               className={`lg-submit ${isDeptHead ? "lg-submit--dept" : ""}`}
-              disabled={loading}
+              disabled={loading || googleLoading}
             >
               {loading
                 ? <span className="lg-spinner" />
@@ -248,11 +334,16 @@ export default function Auth() {
             {/* Social buttons — only for students */}
             {!isDeptHead && (
               <div className="lg-socials">
-                <button type="button" className="lg-social">
+                <button type="button" className="lg-social" disabled>
                   <AppleIcon /> Apple
                 </button>
-                <button type="button" className="lg-social">
-                  <GoogleIcon /> Google
+                <button
+                  type="button"
+                  className="lg-social"
+                  onClick={handleGoogleSignIn}
+                  disabled={googleLoading || loading}
+                >
+                  <GoogleIcon /> {googleLoading ? "Connecting…" : "Google"}
                 </button>
               </div>
             )}
@@ -286,7 +377,7 @@ export default function Auth() {
                 <a href="#signin" onClick={switchMode("signin")}>Student sign in</a>
               </span>
             )}
-            <a href="/">Terms &amp; Conditions</a>
+            <Link to="/">Terms &amp; Conditions</Link>
           </footer>
         </section>
 
