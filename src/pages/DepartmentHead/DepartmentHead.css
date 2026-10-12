@@ -1218,3 +1218,17 @@
     padding: 14px;
   }
 }
+
+/* ── Student ID badge ── */
+.dh-id-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  background: rgba(29, 107, 102, 0.1);
+  color: #155550;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
+}

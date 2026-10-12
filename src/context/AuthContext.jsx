@@ -219,8 +219,12 @@ export function AuthProvider({ children }) {
   }, []);
 
   // ── register ─────────────────────────────────────────────────
-  const register = useCallback(async (full_name, email, password, username) => {
-    const data = await api.post('/api/auth/register', { full_name, email, password, username });
+  const register = useCallback(async (full_name, email, password, username, department_id, id_number) => {
+    const data = await api.post('/api/auth/register', {
+      full_name, email, password, username,
+      ...(department_id ? { department_id } : {}),
+      ...(id_number     ? { id_number }     : {}),
+    });
 
     // Email confirmation may be required — check for that case
     if (data?.code === 'CONFIRM_EMAIL') {

@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import "./Auth.css";
 import teamImg from "../../assets/team.jpg";
 import Logo    from "../../assets/wolloLogo.png";
 import { useAuth } from "../../context/AuthContext";
 import supabase from "../../lib/supabaseClient";
+// clearSession is used after dept-head login to ensure clean state
+import { clearSession } from "../../lib/api";
 
 import CloseIcon                 from "@mui/icons-material/Close";
 import AppleIcon                 from "@mui/icons-material/Apple";
@@ -19,21 +21,42 @@ const DAYS = [
   { d: "Sat", n: 28 },
 ];
 
-const emptyForm = { name: "", email: "", password: "", remember: false };
+const emptyForm = {
+  name: "", email: "", password: "", remember: false,
+  department_id: "", id_number: "",
+};
 
-/* Department-head token key — must match DepartmentHead.jsx */
+/* Token key — must match DepartmentHead.jsx */
 const DEPT_HEAD_TOKEN_KEY = "dept_head_token";
 const DEPT_HEAD_ROUTE     = "/department-head";
 const GOOGLE_PENDING_KEY  = "google_oauth_pending";
 const GOOGLE_FROM_KEY     = "google_oauth_from";
 const BASE = (import.meta.env?.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
+/* ─── tiny public fetch helper (no auth token needed) ─── */
+async function apiFetch(path, opts = {}) {
+  let res;
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      headers: { "Content-Type": "application/json" },
+      ...opts,
+    });
+  } catch {
+    throw new Error("Server is starting or unreachable — please try again in a moment.");
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || data.message || `Request failed (${res.status})`);
+  }
+  return data;
+}
+
 export default function Auth() {
   const { login, register, user, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
-  /* After student login/register, go back to where they came from */
+  /* After student login/register go back where they came from */
   const from = location.state?.from?.pathname || "/";
 
   /* mode: "signin" | "signup" | "depthead" */
@@ -44,14 +67,45 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(
     () => !!sessionStorage.getItem(GOOGLE_PENDING_KEY)
   );
-  const [error,         setError]         = useState("");
+  const [error, setError] = useState("");
+
+  /* Departments for the signup dropdown */
+  const [departments,     setDepartments]     = useState([]);
+  const [deptLoading,     setDeptLoading]     = useState(false);
+  const [deptLoadError,   setDeptLoadError]   = useState("");
 
   const isSignup   = mode === "signup";
   const isDeptHead = mode === "depthead";
 
-  /* ── Finish Google login after Google redirects back to /auth ──
-     AuthContext restores the Supabase session and loads /api/auth/me,
-     so we only wait for it and then redirect. */
+  /* ── Load departments once when entering signup mode ── */
+  const loadDepartments = useCallback(async () => {
+    setDeptLoading(true);
+    setDeptLoadError("");
+    try {
+      const data = await apiFetch("/api/public/departments");
+      // Accept both shapes: { departments: [...] }  OR  flat array  OR  { data: [...] }
+      const list =
+        Array.isArray(data)              ? data :
+        Array.isArray(data?.departments) ? data.departments :
+        Array.isArray(data?.data)        ? data.data :
+        [];
+      if (list.length === 0) {
+        setDeptLoadError("No departments found. Contact your administrator.");
+      } else {
+        setDepartments(list);
+      }
+    } catch (err) {
+      setDeptLoadError(err?.message || "Could not load departments.");
+    } finally {
+      setDeptLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isSignup) loadDepartments();
+  }, [isSignup, loadDepartments]);
+
+  /* ── Finish Google login after redirect back to /auth ── */
   useEffect(() => {
     if (!sessionStorage.getItem(GOOGLE_PENDING_KEY)) return;
     if (authLoading) return;
@@ -64,11 +118,15 @@ export default function Auth() {
       const target = sessionStorage.getItem(GOOGLE_FROM_KEY) || "/";
       sessionStorage.removeItem(GOOGLE_FROM_KEY);
       clearPending();
-      navigate(target, { replace: true });
+      /* If the student's profile is incomplete, send them to complete-profile */
+      if (user.profileIncomplete) {
+        navigate("/complete-profile", { replace: true });
+      } else {
+        navigate(target, { replace: true });
+      }
       return;
     }
 
-    /* Came back without a usable session */
     const params   = new URLSearchParams(window.location.search);
     const urlError = params.get("error_description");
     clearPending();
@@ -95,7 +153,7 @@ export default function Auth() {
     if (error) setError("");
   };
 
-  /* ── Google sign-in: send the user to Google ── */
+  /* ── Google sign-in ── */
   const handleGoogleSignIn = async () => {
     if (googleLoading || loading) return;
     setError("");
@@ -118,51 +176,44 @@ export default function Auth() {
       setError(oauthError.message || "Could not start Google sign-in.");
       setGoogleLoading(false);
     }
-    /* On success the browser leaves for Google, so nothing else runs here */
   };
 
-  /* ── Department head login → redirects to /department-head ── */
+  /* ── Department Head login ── */
   const handleDeptHeadSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
-    if (!form.email.trim()) { setError("Please enter your email."); return; }
+    if (!form.email.trim()) { setError("Please enter your email.");    return; }
     if (!form.password)     { setError("Please enter your password."); return; }
 
     setLoading(true);
     setError("");
-
     localStorage.removeItem(DEPT_HEAD_TOKEN_KEY);
 
     try {
-      const res = await fetch(`${BASE}/api/department-head/login`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          email:    form.email.trim(),
-          password: form.password,
-        }),
+      const data = await apiFetch("/api/department-head/login", {
+        method: "POST",
+        body:   JSON.stringify({ email: form.email.trim(), password: form.password }),
       });
 
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        throw new Error(
-          data.message || data.error || `Sign-in failed (${res.status})`
-        );
-      }
-
-      const token =
-        data.token ||
-        data.accessToken ||
-        data.access_token ||
-        data.data?.token ||
-        data.data?.accessToken;
+      const token        = data.token || data.access_token;
+      const refreshToken = data.refresh_token;
 
       if (!token) {
         throw new Error("Login succeeded but no token was returned by the server.");
       }
 
+      // Store for DepartmentHead.jsx API calls
       localStorage.setItem(DEPT_HEAD_TOKEN_KEY, token);
+
+      // Also register with the Supabase client so ProtectedRoute's
+      // AuthContext can confirm role = 'head'
+      if (refreshToken) {
+        await supabase.auth.setSession({
+          access_token:  token,
+          refresh_token: refreshToken,
+        });
+      }
+
       navigate(DEPT_HEAD_ROUTE, { replace: true });
     } catch (err) {
       setError(
@@ -179,17 +230,38 @@ export default function Auth() {
   const handleStudentSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
-    if (isSignup && !form.name.trim())        { setError("Please enter your full name."); return; }
-    if (!form.email.trim())                   { setError("Please enter your email."); return; }
-    if (!form.password)                       { setError("Please enter your password."); return; }
-    if (isSignup && form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
+
+    /* Client-side validation */
+    if (isSignup && !form.name.trim())
+      { setError("Please enter your full name."); return; }
+    if (!form.email.trim())
+      { setError("Please enter your email."); return; }
+    if (!form.password)
+      { setError("Please enter your password."); return; }
+    if (isSignup && form.password.length < 6)
+      { setError("Password must be at least 6 characters."); return; }
+
+    /* Student-specific fields */
+    if (isSignup) {
+      if (!form.department_id)
+        { setError("Please select your department."); return; }
+      if (!form.id_number.trim())
+        { setError("Please enter your student ID number."); return; }
+    }
 
     setLoading(true);
     setError("");
 
     try {
       if (isSignup) {
-        const result = await register(form.name.trim(), form.email.trim(), form.password);
+        const result = await register(
+          form.name.trim(),
+          form.email.trim(),
+          form.password,
+          undefined,          // username — optional
+          form.department_id,
+          form.id_number.trim()
+        );
         if (result?.confirmEmail) {
           setError(result.message || "Check your email to confirm your account, then sign in.");
           setLoading(false);
@@ -260,7 +332,9 @@ export default function Auth() {
               </>
             )}
 
-            {error && <div className="lg-error" role="alert">{error}</div>}
+            {error && (
+              <div className="lg-error" role="alert">{error}</div>
+            )}
 
             {/* Full name — signup only */}
             {isSignup && (
@@ -270,6 +344,7 @@ export default function Auth() {
                   id="name" name="name" type="text"
                   placeholder="Abdu Kadir" autoComplete="name"
                   value={form.name} onChange={handleChange}
+                  required
                 />
               </div>
             )}
@@ -280,6 +355,7 @@ export default function Auth() {
                 id="email" name="email" type="email"
                 placeholder="you@example.com" autoComplete="email"
                 value={form.email} onChange={handleChange}
+                required
               />
             </div>
 
@@ -292,16 +368,73 @@ export default function Auth() {
                   placeholder="••••••••••••••••"
                   autoComplete={isSignup ? "new-password" : "current-password"}
                   value={form.password} onChange={handleChange}
+                  required
                 />
                 <button
                   type="button" className="lg-eye"
                   onClick={() => setShowPassword((s) => !s)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
+                  {showPassword
+                    ? <VisibilityOffOutlinedIcon />
+                    : <VisibilityOutlinedIcon />}
                 </button>
               </div>
             </div>
+
+            {/* ── Student-only signup fields ── */}
+            {isSignup && (
+              <>
+                {/* Department dropdown */}
+                <div className="lg-field">
+                  <label htmlFor="department_id">Department</label>
+                  {deptLoadError ? (
+                    <div className="lg-dept-error">
+                      <span>{deptLoadError}</span>
+                      <button type="button" className="lg-dept-retry" onClick={loadDepartments}>
+                        Retry
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="lg-select-wrap">
+                      <select
+                        id="department_id"
+                        name="department_id"
+                        className="lg-select"
+                        value={form.department_id}
+                        onChange={handleChange}
+                        disabled={deptLoading}
+                        required
+                        aria-busy={deptLoading}
+                      >
+                        <option value="">
+                          {deptLoading ? "Loading departments…" : "— Select your department —"}
+                        </option>
+                        {departments.map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.name_en || d.name}
+                          </option>
+                        ))}
+                      </select>
+                      {deptLoading && <span className="lg-select-spinner" aria-hidden="true" />}
+                    </div>
+                  )}
+                </div>
+
+                {/* Student ID number */}
+                <div className="lg-field">
+                  <label htmlFor="id_number">Student ID number</label>
+                  <input
+                    id="id_number" name="id_number" type="text"
+                    placeholder="e.g. WU/0123/14"
+                    autoComplete="off"
+                    value={form.id_number} onChange={handleChange}
+                    required
+                    spellCheck={false}
+                  />
+                </div>
+              </>
+            )}
 
             {/* Remember me — sign-in and dept-head */}
             {!isSignup && (
@@ -331,7 +464,7 @@ export default function Auth() {
                     : "Sign in"}
             </button>
 
-            {/* Social buttons — only for students */}
+            {/* Social buttons — students only */}
             {!isDeptHead && (
               <div className="lg-socials">
                 <button type="button" className="lg-social" disabled>
@@ -348,7 +481,7 @@ export default function Auth() {
               </div>
             )}
 
-            {/* Dept-head helper text */}
+            {/* Dept-head helper */}
             {isDeptHead && (
               <p className="lg-dept-hint">
                 Department head accounts are created by the university admin.

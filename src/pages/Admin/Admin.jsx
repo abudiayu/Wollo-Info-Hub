@@ -590,6 +590,199 @@ function DepartmentsView({ token, pushToast }) {
   );
 }
 
+/* ─── Register Department Head — quick form ─── */
+function RegisterDeptHead({ token, pushToast }) {
+  const [fullName,    setFullName]    = useState('');
+  const [email,       setEmail]       = useState('');
+  const [password,    setPassword]    = useState('');
+  const [confirmPw,   setConfirmPw]   = useState('');
+  const [deptId,      setDeptId]      = useState('');
+  const [showPw,      setShowPw]      = useState(false);
+  const [saving,      setSaving]      = useState(false);
+  const [errors,      setErrors]      = useState({});
+  const [departments, setDepartments] = useState([]);
+  const [deptLoading, setDeptLoading] = useState(true);
+  const [success,     setSuccess]     = useState('');
+
+  // Load departments for the dropdown
+  const loadDepts = useCallback(async () => {
+    setDeptLoading(true);
+    try {
+      const data = await request('GET', '/api/admin/departments-list', null, token);
+      setDepartments(Array.isArray(data) ? data : []);
+    } catch (e) {
+      setErrors(p => ({ ...p, dept: 'Could not load departments: ' + e.message }));
+    } finally { setDeptLoading(false); }
+  }, [token]);
+
+  useEffect(() => { loadDepts(); }, [loadDepts]);
+
+  function validate() {
+    const e = {};
+    if (!fullName.trim())                                  e.fullName  = 'Full name is required.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) e.email     = 'Valid email is required.';
+    if (!password || password.length < 6)                  e.password  = 'Password must be at least 6 characters.';
+    if (password !== confirmPw)                            e.confirmPw = 'Passwords do not match.';
+    if (!deptId)                                           e.dept      = 'Please select a department.';
+    return e;
+  }
+
+  async function handleSubmit(ev) {
+    ev.preventDefault();
+    setSuccess('');
+    const errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setSaving(true);
+    setErrors({});
+    try {
+      const result = await request('POST', '/api/admin/staff', {
+        full_name:     fullName.trim(),
+        email:         email.trim().toLowerCase(),
+        password,
+        role:          'head',
+        department_id: deptId,
+      }, token);
+
+      const name    = result?.full_name || fullName.trim();
+      const dept    = departments.find(d => d.id === deptId);
+      const deptName = dept?.name_en || 'the selected department';
+
+      pushToast(`${name} registered as head of ${deptName}.`, 'success');
+      setSuccess(`✓ ${name} (${email.trim()}) was registered as Department Head of ${deptName}. They can now log in on the Dept. Head tab.`);
+
+      // Reset form
+      setFullName(''); setEmail(''); setPassword(''); setConfirmPw(''); setDeptId('');
+      loadDepts(); // refresh has_head flags
+    } catch (err) {
+      const msg = err.message || 'Registration failed.';
+      const low = msg.toLowerCase();
+      if      (low.includes('email'))                              setErrors(p => ({ ...p, email:    msg }));
+      else if (low.includes('department') || low.includes('head')) setErrors(p => ({ ...p, dept:     msg }));
+      else                                                         pushToast(msg, 'error');
+    } finally { setSaving(false); }
+  }
+
+  // Group departments by faculty for the optgroup select
+  const groups = {};
+  for (const d of departments) {
+    const k = d.faculty_name || 'Other';
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(d);
+  }
+
+  return (
+    <div>
+      <div className="adm-header">
+        <p className="adm-eyebrow">Admin console</p>
+        <h1 className="adm-title">Register Department Head</h1>
+        <p className="adm-subtitle">
+          Create a new department head account and assign them to a department.
+          They will be able to sign in using the "Dept. Head" tab on the login page.
+        </p>
+      </div>
+
+      <div className="adm-grid" style={{ maxWidth: 560 }}>
+        <section className="adm-card adm-card--pad">
+          {success && (
+            <div style={{
+              padding: '12px 16px', marginBottom: 20, borderRadius: 10,
+              background: '#dcfce7', color: '#166534', fontSize: 13.5, lineHeight: 1.55,
+            }}>
+              {success}
+            </div>
+          )}
+
+          <form className="adm-form" onSubmit={handleSubmit} noValidate>
+            {/* Full name */}
+            <div className="adm-field">
+              <label className="adm-label" htmlFor="rdh-name">Full name *</label>
+              <div className={`adm-input-wrap${errors.fullName ? ' is-error' : ''}`}>
+                <Icon name="user" size={15} />
+                <input id="rdh-name" className="adm-input" value={fullName}
+                  onChange={e => { setFullName(e.target.value); setErrors(p => ({ ...p, fullName: '' })); }}
+                  placeholder="e.g. Dr. Abebe Bikila" autoComplete="off" />
+              </div>
+              {errors.fullName && <span className="adm-field-err">{errors.fullName}</span>}
+            </div>
+
+            {/* Email */}
+            <div className="adm-field">
+              <label className="adm-label" htmlFor="rdh-email">Email *</label>
+              <div className={`adm-input-wrap${errors.email ? ' is-error' : ''}`}>
+                <Icon name="user" size={15} />
+                <input id="rdh-email" className="adm-input" type="email" value={email}
+                  onChange={e => { setEmail(e.target.value); setErrors(p => ({ ...p, email: '' })); }}
+                  placeholder="head@wollo.edu" autoComplete="off" />
+              </div>
+              {errors.email && <span className="adm-field-err">{errors.email}</span>}
+            </div>
+
+            {/* Department */}
+            <div className="adm-field">
+              <label className="adm-label" htmlFor="rdh-dept">Department *</label>
+              <div className={`adm-input-wrap${errors.dept ? ' is-error' : ''}`}>
+                <Icon name="building" size={15} />
+                {deptLoading ? (
+                  <span className="adm-input" style={{ color: '#94a3b8' }}>Loading…</span>
+                ) : (
+                  <select id="rdh-dept" className="adm-input adm-select" value={deptId}
+                    onChange={e => { setDeptId(e.target.value); setErrors(p => ({ ...p, dept: '' })); }}>
+                    <option value="">— select a department —</option>
+                    {Object.entries(groups).map(([faculty, depts]) => (
+                      <optgroup key={faculty} label={faculty}>
+                        {depts.map(d => (
+                          <option key={d.id} value={d.id} disabled={d.has_head}>
+                            {d.name_en}{d.has_head ? ' (head assigned)' : ''}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                )}
+              </div>
+              {errors.dept && <span className="adm-field-err">{errors.dept}</span>}
+            </div>
+
+            {/* Password */}
+            <div className="adm-field">
+              <label className="adm-label" htmlFor="rdh-pw">Password *</label>
+              <div className={`adm-input-wrap${errors.password ? ' is-error' : ''}`}>
+                <Icon name="lock" size={15} />
+                <input id="rdh-pw" className="adm-input" type={showPw ? 'text' : 'password'} value={password}
+                  onChange={e => { setPassword(e.target.value); setErrors(p => ({ ...p, password: '' })); }}
+                  placeholder="Min 6 characters" autoComplete="new-password" />
+                <button type="button" className="adm-eye"
+                  onClick={() => setShowPw(v => !v)} aria-label={showPw ? 'Hide' : 'Show'}>
+                  <Icon name={showPw ? 'eyeOff' : 'eye'} size={15} />
+                </button>
+              </div>
+              {errors.password && <span className="adm-field-err">{errors.password}</span>}
+            </div>
+
+            {/* Confirm password */}
+            <div className="adm-field">
+              <label className="adm-label" htmlFor="rdh-cpw">Confirm password *</label>
+              <div className={`adm-input-wrap${errors.confirmPw ? ' is-error' : ''}`}>
+                <Icon name="lock" size={15} />
+                <input id="rdh-cpw" className="adm-input" type={showPw ? 'text' : 'password'} value={confirmPw}
+                  onChange={e => { setConfirmPw(e.target.value); setErrors(p => ({ ...p, confirmPw: '' })); }}
+                  placeholder="Repeat password" autoComplete="new-password" />
+              </div>
+              {errors.confirmPw && <span className="adm-field-err">{errors.confirmPw}</span>}
+            </div>
+
+            <div className="adm-drawer-actions" style={{ marginTop: 24 }}>
+              <button type="submit" className="adm-btn adm-btn--primary" disabled={saving || deptLoading}>
+                {saving ? <span className="adm-spinner" /> : <><Icon name="plus" size={14} /> Register Department Head</>}
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Department Heads view — reads from v_admin_users (no duplicates) ─── */
 function DeptHeadsView({ token, pushToast }) {
   const [list,    setList]    = useState([]);
@@ -887,6 +1080,11 @@ export default function Admin() {
             <DepartmentsView token={ctxToken} pushToast={pushToast} />
           )}
 
+          {/* ── Register Department Head ── */}
+          {view === 'register-head' && (
+            <RegisterDeptHead token={ctxToken} pushToast={pushToast} />
+          )}
+
           {/* ── Dept Heads (reads from v_admin_users, no duplicate rows) ── */}
           {view === 'depthead' && (
             <DeptHeadsView token={ctxToken} pushToast={pushToast} />
@@ -951,8 +1149,9 @@ export default function Admin() {
                         { key: 'student', label: 'Students',        count: counts.student, icon: 'user',     vw: 'users',        rk: 'student' },
                         { key: 'staff',   label: 'Staff',           count: counts.staff,   icon: 'staff',    vw: 'users',        rk: 'staff'   },
                         { key: 'admin',   label: 'Admins',          count: counts.admin,   icon: 'shield',   vw: 'users',        rk: 'admin'   },
-                        { key: 'sm',      label: 'Manage Staff',    count: deptHeadCount + counts.staff, icon: 'cap', vw: 'staffmanager', rk: null },
-                        { key: 'dept',    label: 'Departments',     count: null,           icon: 'building', vw: 'departments',  rk: null      },
+                        { key: 'sm',      label: 'Manage Staff',         count: deptHeadCount + counts.staff, icon: 'cap',      vw: 'staffmanager',   rk: null },
+                        { key: 'reg-hd',  label: 'Register Dept. Head',  count: null,                         icon: 'cap',      vw: 'register-head',  rk: null },
+                        { key: 'dept',    label: 'Departments',           count: null,                         icon: 'building', vw: 'departments',    rk: null },
                       ].map((item) => (
                         <button key={item.key} className="adm-btn adm-btn--ghost"
                           style={{ justifyContent: 'space-between', width: '100%' }}

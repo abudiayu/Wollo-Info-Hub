@@ -663,7 +663,7 @@ function Students({ notify }) {
   }, [load]);
 
   const shown = students.filter((student) =>
-    `${student.name} ${student.email}`
+    `${student.name} ${student.email} ${student.id_number || ''}`
       .toLowerCase()
       .includes(q.toLowerCase())
   );
@@ -672,8 +672,8 @@ function Students({ notify }) {
     <>
       <PageHeader
         eyebrow="Student activity"
-        title="Interested students"
-        subtitle="Students who want to join your department."
+        title="Department students"
+        subtitle="Students registered in your department."
       />
 
       <section className="dh-card dh-search-card">
@@ -682,7 +682,7 @@ function Students({ notify }) {
 
           <input
             className="dh-search"
-            placeholder="Search by name or email..."
+            placeholder="Search by name, email or ID number..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -725,7 +725,7 @@ function Students({ notify }) {
               text={
                 q
                   ? `No results for "${q}".`
-                  : 'No interested students yet.'
+                  : 'No students registered in this department yet.'
               }
             />
           ) : (
@@ -734,8 +734,9 @@ function Students({ notify }) {
                 <tr>
                   <th>#</th>
                   <th>Name</th>
+                  <th>Student ID</th>
                   <th>Email</th>
-                  <th>Chose on</th>
+                  <th>Registered on</th>
                 </tr>
               </thead>
 
@@ -754,13 +755,17 @@ function Students({ notify }) {
                       </div>
                     </td>
 
+                    <td>
+                      {student.id_number
+                        ? <span className="dh-id-badge">{student.id_number}</span>
+                        : <span className="dh-muted">—</span>}
+                    </td>
+
                     <td>{student.email}</td>
 
                     <td>
                       {student.created_at
-                        ? new Date(
-                            student.created_at
-                          ).toLocaleDateString()
+                        ? new Date(student.created_at).toLocaleDateString()
                         : '—'}
                     </td>
                   </tr>

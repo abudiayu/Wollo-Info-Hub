@@ -1,11 +1,20 @@
+/**
+ * src/lib/api.js
+ *
+ * Thin fetch wrapper used by every page that talks to the Express backend.
+ *
+ * - All requests go to VITE_API_URL (set per-environment via .env files).
+ * - 401 responses silently attempt a token refresh once, then redirect to /auth.
+ * - Network failures (ERR_FAILED, 502, etc.) show a friendly message instead
+ *   of the raw "Failed to fetch" that the browser throws.
+ */
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 // ── Token helpers ─────────────────────────────────────────────
 
 /** Read access token — prefers Supabase session, falls back to legacy key. */
 function getAccessToken() {
-  // Supabase stores the whole session as JSON in localStorage
   try {
     const raw = localStorage.getItem('wou_session');
     if (raw) {
@@ -14,8 +23,6 @@ function getAccessToken() {
       if (token) return token;
     }
   } catch { /* ignore parse errors */ }
-
-  // Fallback: old plain token key written by the legacy login flow
   return localStorage.getItem('wou_token') || null;
 }
 
@@ -48,7 +55,6 @@ function persistNewToken(accessToken, refreshToken) {
         localStorage.setItem('wou_session', JSON.stringify(session));
       }
     }
-    // Also update legacy key
     localStorage.setItem('wou_token', accessToken);
   } catch { /* ignore */ }
 }
@@ -68,7 +74,6 @@ async function tryRefreshToken() {
   _refreshPromise = (async () => {
     const refreshToken = getRefreshToken();
     if (!refreshToken) return null;
-
     try {
       const res = await fetch(`${BASE}/api/auth/refresh`, {
         method:  'POST',
@@ -92,6 +97,23 @@ async function tryRefreshToken() {
   return _refreshPromise;
 }
 
+// ── Friendly error message for network / gateway failures ─────
+function networkErrorMessage(rawMessage) {
+  const m = (rawMessage || '').toLowerCase();
+  if (
+    m === 'failed to fetch' ||
+    m.includes('networkerror') ||
+    m.includes('network request failed') ||
+    m.includes('err_failed') ||
+    m.includes('502') ||
+    m.includes('503') ||
+    m.includes('load failed')
+  ) {
+    return 'Server is starting or unreachable — please try again in a moment.';
+  }
+  return rawMessage;
+}
+
 // ── Core request ──────────────────────────────────────────────
 async function request(path, options = {}, _retry = false) {
   const token = getAccessToken();
@@ -102,7 +124,15 @@ async function request(path, options = {}, _retry = false) {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
-  const res = await fetch(`${BASE}${path}`, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(`${BASE}${path}`, { ...options, headers });
+  } catch (networkErr) {
+    // fetch() itself threw — the server is unreachable (502, ERR_FAILED, etc.)
+    const err = new Error(networkErrorMessage(networkErr.message || 'Failed to fetch'));
+    err.status = 0;
+    throw err;
+  }
 
   let data = {};
   const contentType = res.headers.get('content-type') || '';
@@ -112,8 +142,10 @@ async function request(path, options = {}, _retry = false) {
 
   // ── 401 handling ─────────────────────────────────────────────
   if (res.status === 401) {
-    // Skip redirect for login / register
-    const isAuthRoute = path.startsWith('/api/auth/login') || path.startsWith('/api/auth/register');
+    const isAuthRoute =
+      path.startsWith('/api/auth/login') ||
+      path.startsWith('/api/auth/register');
+
     if (isAuthRoute) {
       const err = new Error(data.error || 'Unauthorized');
       err.status = 401;
@@ -121,22 +153,19 @@ async function request(path, options = {}, _retry = false) {
       throw err;
     }
 
-    // Try one silent token refresh
     if (!_retry) {
       const newToken = await tryRefreshToken();
-      if (newToken) {
-        return request(path, options, true);  // retry once with new token
-      }
+      if (newToken) return request(path, options, true);
     }
 
-    // Refresh failed — clear session and redirect
     clearSession();
     window.location.href = '/auth';
     return;
   }
 
   if (!res.ok) {
-    const err = new Error(data.error || `Request failed (${res.status})`);
+    const rawMsg = data.error || `Request failed (${res.status})`;
+    const err = new Error(networkErrorMessage(rawMsg));
     err.status = res.status;
     err.data   = data;
     err.code   = data.code;
@@ -148,11 +177,11 @@ async function request(path, options = {}, _retry = false) {
 
 // ── Public API object ─────────────────────────────────────────
 const api = {
-  get(path, opts)     { return request(path, { method: 'GET', ...opts }); },
-  post(path, body)    { return request(path, { method: 'POST',   body: JSON.stringify(body) }); },
-  put(path, body)     { return request(path, { method: 'PUT',    body: JSON.stringify(body) }); },
-  patch(path, body)   { return request(path, { method: 'PATCH',  body: JSON.stringify(body) }); },
-  delete(path)        { return request(path, { method: 'DELETE' }); },
+  get(path, opts)   { return request(path, { method: 'GET',    ...opts }); },
+  post(path, body)  { return request(path, { method: 'POST',   body: JSON.stringify(body) }); },
+  put(path, body)   { return request(path, { method: 'PUT',    body: JSON.stringify(body) }); },
+  patch(path, body) { return request(path, { method: 'PATCH',  body: JSON.stringify(body) }); },
+  delete(path)      { return request(path, { method: 'DELETE' }); },
 
   /** Upload files using FormData (no Content-Type override). */
   upload(path, formData) {
@@ -161,15 +190,18 @@ const api = {
       method:  'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body:    formData,
-    }).then(async res => {
+    }).then(async (res) => {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const err = new Error(data.error || `Upload failed (${res.status})`);
+        const err = new Error(networkErrorMessage(data.error || `Upload failed (${res.status})`));
         err.status = res.status;
         err.data   = data;
         throw err;
       }
       return data;
+    }).catch((networkErr) => {
+      if (networkErr.status !== undefined) throw networkErr; // already shaped
+      throw new Error(networkErrorMessage(networkErr.message || 'Failed to fetch'));
     });
   },
 };
