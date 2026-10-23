@@ -89,7 +89,7 @@ const CAMPUSES = [
         description: 'Language, literature, history and journalism resources.', // rename to your real library
         hours: 'Mon–Sat, 8:00 AM – 9:00 PM',
         services: ['Language and literature books', 'Archive shelves', 'Quiet reading area', 'Wi-Fi'],
-        image: '/images/libraries/social-humanities.jpg',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq3ZWLOyFyulr8_n8vnJbKmyiQIOC_nmXk1_a9cb6zXTyW3rStXSAgUjk&s=10',
       },
     ],
   },
