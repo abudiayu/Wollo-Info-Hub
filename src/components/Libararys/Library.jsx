@@ -63,7 +63,7 @@ const CAMPUSES = [
         description: 'Nursing, midwifery, public health and laboratory sciences.', // rename to your real library
         hours: 'Mon–Sat, 8:00 AM – 9:00 PM',
         services: ['Nursing and midwifery books', 'Public health journals', 'Group study tables', 'Wi-Fi'],
-        image: '/images/libraries/health-public.jpg',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToyud01MsyZYYSNTBn4bIL_URGbQf8wdS6SOhvO0qyO-LxfRDG',
       },
     ],
   },
@@ -81,7 +81,7 @@ const CAMPUSES = [
         description: 'Law, economics, sociology and political science collections.', // rename to your real library
         hours: 'Mon–Sat, 8:00 AM – 9:00 PM',
         services: ['Law and economics books', 'Reading hall', 'Reference desk', 'Wi-Fi'],
-        image: '/images/libraries/social-main.jpg',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq3ZWLOyFyulr8_n8vnJbKmyiQIOC_nmXk1_a9cb6zXTyW3rStXSAgUjk&s=10',
       },
       {
         id: 'social-humanities',
