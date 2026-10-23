@@ -55,7 +55,7 @@ const CAMPUSES = [
         description: 'Medical textbooks, anatomy atlases and clinical references.', // rename to your real library
         hours: 'Mon–Sat, 8:00 AM – 9:00 PM',
         services: ['Medical textbooks', 'Anatomy atlases', 'Quiet study rooms', 'Wi-Fi'],
-        image: '/images/libraries/health-medicine.jpg',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTarQ4KQR76FeNIDbm9GP_CYmzMRbmW-Rp9IZS0q-ah2Q&s=10',
       },
       {
         id: 'health-public',
