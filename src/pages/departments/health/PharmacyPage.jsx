@@ -1,5 +1,5 @@
 import DepartmentDetailPage from '../shared/DepartmentDetailPage';
-import img from '../../../assets/health.png';
+import img from '../../../assets/medicin/pharmacy.jpg';
 
 export default function PharmacyPage() {
   return (
