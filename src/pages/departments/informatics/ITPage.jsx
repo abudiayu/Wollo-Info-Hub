@@ -1,5 +1,5 @@
 import DepartmentDetailPage from '../shared/DepartmentDetailPage';
-import img from '../../../assets/informatics.png';
+import img from '../../../assets/information/is.jpg';
 
 export default function ITPage() {
   return (

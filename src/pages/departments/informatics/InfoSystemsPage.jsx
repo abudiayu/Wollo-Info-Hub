@@ -1,5 +1,5 @@
 import DepartmentDetailPage from '../shared/DepartmentDetailPage';
-import img from '../../../assets/informatics.png';
+import img from '../../../assets/information/it.jpg';
 
 export default function InfoSystemsPage() {
   return (

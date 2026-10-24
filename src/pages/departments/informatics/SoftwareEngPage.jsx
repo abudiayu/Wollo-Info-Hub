@@ -1,5 +1,5 @@
 import DepartmentDetailPage from '../shared/DepartmentDetailPage';
-import img from '../../../assets/informatics.png';
+import img from '../../../assets/information/se.jpg';
 
 export default function SoftwareEngPage() {
   return (
